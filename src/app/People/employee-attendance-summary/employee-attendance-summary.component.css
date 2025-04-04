@@ -1,0 +1,157 @@
+/* General Styling */
+.content {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.date-range {
+  display: flex;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.date-range label {
+  margin-right: 10px;
+  font-weight: bold; /* Optional: makes label text bold */
+  font-size: 14px; /* Optional: adjust font size */
+}
+
+.date-range input {
+  padding: 10px;
+  margin-right: 10px;
+  width: auto;
+  border: 1px solid #ccc;  /* Light border */
+  border-radius: 5px;      /* Rounded corners */
+  font-size: 14px;         /* Font size for the input */
+  transition: border 0.3s ease; /* Smooth transition on focus */
+}
+
+.date-range input:focus {
+  border-color: #007bff; /* Change border color on focus */
+  outline: none;         /* Remove default outline */
+}
+
+button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;    /* Optional: rounded corners for the button */
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+/* Table Styling */
+.attendance-details {
+  overflow-x: auto;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.attendance-table th {
+  background-color: #2d9df8;
+  color: white;
+  font-weight: bold;
+  padding: 12px;
+  text-align: left;
+}
+
+.attendance-table td {
+  padding: 8px 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+  word-wrap: break-word;
+}
+
+/* Adjust column widths */
+.attendance-table th:nth-child(1),
+.attendance-table td:nth-child(1) {
+  width: 5%;
+}
+
+.attendance-table th:nth-child(2),
+.attendance-table td:nth-child(2) {
+  width: 10%;
+}
+
+.attendance-table th:nth-child(3),
+.attendance-table td:nth-child(3) {
+  width: 20%;
+}
+
+.attendance-table th:nth-child(4),
+.attendance-table td:nth-child(4) {
+  width: 15%;
+}
+
+.attendance-table th:nth-child(5),
+.attendance-table td:nth-child(5) {
+  width: 10%;
+}
+
+.attendance-table th:nth-child(6),
+.attendance-table td:nth-child(6) {
+  width: 15%;
+}
+
+.attendance-table th:nth-child(7),
+.attendance-table td:nth-child(7) {
+  width: 15%;
+}
+
+.attendance-table th:nth-child(8),
+.attendance-table td:nth-child(8) {
+  width: 10%;
+}
+
+p {
+  text-align: center;
+  font-size: 1.2em;
+  color: #888;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .date-range {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+  }
+
+  .date-range label,
+  .date-range input {
+    width: 100%;
+  }
+
+  button {
+    width: 100%;
+    margin-top: 10px;
+  }
+
+  .attendance-table th, .attendance-table td {
+    font-size: 14px;
+  }
+
+  .attendance-table {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .attendance-table th, .attendance-table td {
+    font-size: 12px;
+    padding: 8px;
+  }
+}

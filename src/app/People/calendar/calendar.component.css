@@ -1,0 +1,135 @@
+/* Calendar container styling */
+.calendar-container {
+    width: 100%;
+    max-width: 450px;
+    margin: 0 auto;
+    text-align: center;
+    background-color: #e7f1fd; /* Light blue background */
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Calendar header styling */
+  .calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+  }
+  
+  /* Navigation buttons */
+  .nav-button {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    color: #1e3a8a; /* Dark blue for navigation buttons */
+  }
+  
+  .calendar-header h2 {
+    font-size: 20px;
+    font-weight: bold;
+    margin: 0;
+    color: #1e3a8a; /* Dark blue for the header text */
+  }
+  
+  /* Calendar grid (week and date cells) */
+  .calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    grid-auto-rows: minmax(50px, auto);
+    gap: 10px;
+    margin-top: 10px;
+  }
+  
+  /* Calendar days header (Sun, Mon, etc.) */
+  .calendar-day {
+    font-weight: bold;
+    color: #1e3a8a; /* Dark blue for day names */
+    padding: 10px 0;
+    background-color: #dbeafe; /* Light blue for day headers */
+    border-radius: 4px;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  /* Individual calendar date box */
+  .calendar-date {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 6px;
+    background-color: #ffffff;
+    cursor: pointer;
+    height: 60px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  
+  .calendar-date:hover {
+    background-color: #bfdbfe; /* Light blue hover effect */
+  }
+  
+  /* Status-based colors for dates */
+  .calendar-date.present {
+    background-color: #93c5fd; /* Light blue-green for present */
+    font-weight: bold;
+  }
+  
+  .calendar-date.half-day {
+    background-color: #fde68a; /* Yellow for half-day */
+    font-weight: bold;
+  }
+  
+  .calendar-date.absent {
+    background-color: #fca5a5; /* Red for absent */
+    font-weight: bold;
+  }
+  
+  /* Sunday holiday styling */
+  .calendar-date.holiday {
+    background-color: #f3f4f6; /* Light gray background for Sunday */
+    color: #9e9e9e; /* Gray text for Sunday */
+    font-weight: bold; /* Bold text to highlight Sunday */
+    cursor: not-allowed; /* Optionally disable clicks */
+  }
+  
+  /* Sunday hover effect (if desired) */
+  .calendar-date.holiday:hover {
+    background-color: #e0e0e0; /* Slightly darker gray on hover */
+  }
+  
+  /* Media Query for smaller screens (responsive design) */
+  @media (max-width: 768px) {
+    .calendar-container {
+      max-width: 100%; /* Full width on smaller screens */
+      padding: 10px;   /* Adjust padding for mobile */
+    }
+  
+    .calendar-header h2 {
+      font-size: 18px; /* Adjust header font size */
+    }
+  
+    .nav-button {
+      font-size: 16px; /* Slightly smaller font for navigation buttons */
+    }
+  
+    .calendar-grid {
+      gap: 8px; /* Reduce gap between date cells */
+    }
+  
+    .calendar-date {
+      height: 50px; /* Reduce height of date cells */
+      font-size: 14px; /* Adjust font size for date numbers */
+    }
+  
+    .calendar-day {
+      font-size: 12px; /* Adjust font size for day names */
+      padding: 8px 0;  /* Reduce padding for day headers */
+    }
+  }
+  

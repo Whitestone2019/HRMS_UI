@@ -1,0 +1,69 @@
+<div class="container">
+  <div class="header">
+    <div class="date-range">
+      <i class=""> <h2><p>Current Year</p></h2></i>
+      <div class="date-picker-container">
+        <input
+          type="date"
+          [(ngModel)]="startDate"
+          class="date-input start-date"
+          readonly
+        />
+        <span class="separator">-</span>
+        <input
+          type="date"
+          [(ngModel)]="endDate"
+          class="date-input end-date"
+          readonly
+        />
+      </div>
+    </div>
+    <button
+      (click)="applyLeave()"
+      class="apply-leave"
+      (mouseover)="enableApplyLeave = true"
+      (mouseleave)="enableApplyLeave = false"
+      [disabled]="!enableApplyLeave"
+    >
+      Apply Leave
+    </button>
+  </div>
+
+  <div class="leave-cards">
+    <div
+    *ngFor="let leaveType of leaveTypes"
+    class="leave-card"
+    (click)="navigateToApplyLeave(leaveType.name)"
+    [class.disabled]="leaveType.available === 0"
+  >
+      <div class="icon" [style.color]="leaveType.color">
+        <i [class]="leaveType.icon"></i>
+      </div>
+      <h3>{{ leaveType.name }}</h3>
+      <div>Booked <span class="booked">{{ leaveType.booked }}</span></div>
+      <div>Available <span class="available">{{ leaveType.available }}</span></div>
+    </div>
+  </div>
+
+  <div class="upcoming-leave">
+    <h2>Upcoming Holidays</h2>
+    <div class="holiday-list-container">
+      <table class="holiday-table">
+        <thead>
+          <tr>
+            <th>Holiday Name</th>
+            <th>Date</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let holiday of upcomingHolidays" class="holiday-row">
+            <td class="holiday-name">{{ holiday.eventName }}</td>
+            <td class="holiday-date">{{ holiday.eventDate | date: 'dd MMMM yyyy' }}</td>
+            <td class="holiday-type">{{ holiday.eventType }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

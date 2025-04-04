@@ -1,0 +1,11 @@
+footer {
+    background-color:  hsl(239, 89%, 17%);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 30px;
+  }
+  

@@ -1,0 +1,99 @@
+<div class="main">
+    <div class="sidebar">
+      <div class="profile-card">
+        <img alt="Profile Picture" height="80" src="https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg" width="80"/>
+        <h2>{{ employeeId }}</h2>
+        <h2>{{ username }}</h2>
+        <div class="status" [ngClass]="{ 'in': employeeStatus === 'In', 'out': employeeStatus === 'Out' }">{{ employeeStatus }}</div>
+        <div class="timer">{{ timerDisplay }}</div>
+        <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>
+        <button *ngIf="employeeStatus === 'In'" (click)="checkOut()" class="checkout-btn">Check-out</button>
+      </div>
+      <div class="reportees">
+        <h3>Reportees</h3>
+        <div class="reportee" *ngFor="let reportee of reportees">
+          <!-- <img alt="Reportee Picture" height="30" [src]="reportee.imageUrl" width="30"/>
+          <div>
+            <div>{{ reportee.id }} - {{ reportee.name }}</div>
+            <div class="status">{{ reportee.status }}</div>
+          </div> -->
+        </div>
+      </div>
+    </div>
+    
+    <div class="content">
+      <div class="greeting">
+        <img alt="Greeting Image" height="50" src="https://storage.googleapis.com/a1aa/image/J4oA29iMvR5iEd3wnSSLboIKIETtV1GY5r51w13ew1ayvG3JA.jpg" width="50"/>
+        <div class="text">
+          <h2>Good Morning {{ username }}</h2>
+          <p>Have a productive day!</p>
+        </div>
+      </div>
+      <div class="quote">
+        "Success is liking yourself, liking what you do, and liking how you do it." - Maya Angelou
+      </div>
+    <div class="main-page">
+      <div class="menu-container">
+        <a class="menu-item " >Activities</a>
+        <a class="menu-item">Feeds</a>
+        <a  class="menu-item">Profile</a>
+        <a class="menu-item">Approvals</a>
+        <a  class="menu-item">Leave</a>
+        <!-- <a id="dropdownToggle">...</a> -->
+
+        <!-- Dropdown menu -->
+        <div class="dropdown" id="dropdownMenu">
+          <a href="#">Leave</a>
+          <a href="#">Attendance</a>
+          <a href="#">Time Logs</a>
+          <a href="#">Timesheets</a>
+          <a href="#">Jobs</a>
+          <a href="#">Files</a>
+          <a href="#">Career History</a>
+          <a href="#">Goals</a>
+        </div>
+        <script>
+          document.getElementById('dropdownToggle').addEventListener('click', function () {
+            var dropdownMenu = document.getElementById('dropdownMenu');
+            if (dropdownMenu.style.display === 'none' || dropdownMenu.style.display === '') {
+              dropdownMenu.style.display = 'block';
+            } else {
+              dropdownMenu.style.display = 'none';
+            }
+          });
+
+          // Close the dropdown if the user clicks outside of it
+          window.onclick = function (event) {
+            if (!event.target.matches('#dropdownToggle')) {
+              var dropdowns = document.getElementsByClassName("dropdown");
+              for (var i = 0; i < dropdowns.length; i++) {
+                var openDropdown = dropdowns[i];
+                if (openDropdown.style.display === 'block') {
+                  openDropdown.style.display = 'none';
+                }
+              }
+            }
+          }
+
+        </script>
+
+      </div>
+     
+    </div>
+
+
+   
+    <!-- <div class="schedule">
+        <h3>Work Schedule</h3>
+        <div class="date-range">{{ workSchedule.dateRange }}</div>
+        <div class="time">{{ workSchedule.time }}</div>
+        <div class="calendar">
+          <div *ngFor="let day of workSchedule.calendar">
+            <div>{{ day.day }}<br/>{{ day.date }}</div>
+          </div>
+        </div>
+      </div> --> <div class="menu-content">
+        <ng-template #dynamicComponentContainer></ng-template>  
+      </div>
+  </div>
+</div>

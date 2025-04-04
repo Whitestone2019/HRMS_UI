@@ -1,0 +1,396 @@
+.schedule {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 830px;
+    display: flex;
+  }
+  .schedule h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .schedule .date-range {
+    font-size: 14px;
+    margin-bottom: 10px;
+    
+  }
+  .schedule .time {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .schedule .calendar {
+    display: flex;
+    justify-content: space-between;
+    max-width: 830px;
+    display: flex;
+  }
+  .schedule .calendar div {
+    width: 14%;
+    text-align: center;
+    padding: 10px;
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    max-width: 830px;
+    display: flex;
+  }
+
+  .local-box{
+    background-color: white;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .main {
+    display: flex;
+    max-width: 830px;
+  }
+  .sidebar {
+    width: 250px;
+    background-color: #fff;
+    padding: 20px;
+    border-right: 1px solid #e0e0e0;
+  }
+  .profile-card {
+    text-align: center;
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  .profile-card img {
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+  }
+  .profile-card h2 {
+    font-size: 18px;
+    margin: 10px 0;
+  }
+  .profile-card .status {
+    font-size: 14px;
+    color: green;
+    margin-bottom: 10px;
+  }
+  .profile-card .timer {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+  .profile-card .checkout-btn {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .reportees {
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+  }
+  .reportees h3 {
+    font-size: 16px;
+    margin-bottom: 10px;
+  }
+  .reportee {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .reportee img {
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  .reportee .status {
+    color: red;
+    font-size: 14px;
+  }
+  .content {
+    flex: 1;
+    padding: 20px;
+  }
+  .banner {
+    background-color: #6a1b9a;
+    color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .banner button {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  .greeting {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+  }
+  .greeting img {
+    height: 50px;
+    margin-right: 20px;
+  }
+  .greeting .text {
+    flex: 1;
+  }
+  .greeting .text h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  .greeting .text p {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+  .quote {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+ 
+  .checkin-btn {
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .checkout-btn {
+    background-color: #ff4d4d;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .status.in {
+    color: green;
+  }
+  
+  .status.out {
+    color: red;
+  }
+
+  .menu-container {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+  }
+
+  /* Ellipsis button styling */
+  .menu-item.ellipsis {
+    font-size: 1.5em;
+    cursor: pointer;
+    margin-left: 15px;
+  }
+
+  /* Dropdown menu styling */
+  .dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 40px; /* Adjusted to position below the ellipsis */
+    right: 10px;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow-y: auto;
+    max-height: 200px;
+    z-index: 1000;
+  }
+
+  .dropdown.show {
+    display: block; /* Show dropdown when 'show' class is added */
+  }
+
+  .dropdown-item {
+    padding: 10px 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* Highlight effect on hover for dropdown items */
+  .dropdown-item:hover {
+    background-color: #f1f1f1;
+    color: #0073e6;
+  }
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    background-color: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    border-radius: 5px;
+    overflow-y: auto;
+    max-height: 200px;
+    cursor: pointer;
+}
+.dropdown a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: black;
+    font-size: 16px;
+}
+.dropdown a:hover {
+    background-color: #f0f0f0;
+}
+  
+  /* Main menu container styling */
+  .main-page{
+    display: flex;
+    flex-direction:column ;
+  }
+  .menu-container {
+    display: flex;
+    justify-content: flex-start;
+    background-color: #fff;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    position: relative;
+  }
+
+  /* Styling for each menu item */
+  .menu-item {
+    margin: 0 15px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-decoration: none;
+    font-weight: 500;
+    padding-bottom: 10px;
+    cursor: pointer;
+  }
+
+  .menu-item:hover {
+    color: #0073e6;
+  }
+
+  /* Active menu item styling */
+  .menu-item.active {
+    font-weight: bold;
+    color: #000;
+  }
+
+  /* Dropdown menu styling */
+  .dropdown {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%;
+    right: 10px;
+    background-color: #fff;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 8px;
+    overflow-y: auto;
+    max-height: 200px;
+    z-index: 1000;
+  }
+
+  .dropdown.show {
+    display: block; /* Show dropdown when 'show' class is added */
+  }
+
+  .dropdown-item {
+    padding: 10px 20px;
+    font-family: Arial, sans-serif;
+    color: #333;
+    text-decoration: none;
+    display: block;
+    white-space: nowrap;
+  }
+
+  /* Highlight effect on hover for dropdown items */
+  .dropdown-item:hover {
+    background-color: #f1f1f1;
+    color: #0073e6;
+  }
+
+  /* Styling for ellipsis menu item */
+  .menu-item.ellipsis {
+    font-size: 1.5em;
+    cursor: pointer;
+  }
+  .dropdown {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow-y: auto;
+    max-height: 200px;
+    display: none;
+}
+.dropdown a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: black;
+}
+.dropdown a:hover {
+    background-color: #f0f0f0;
+}
+.nav-bar {
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+.nav-bar a {
+  padding: 15px 20px;
+  text-decoration: none;
+  color: black;
+  font-weight: normal;
+  cursor: pointer;
+}
+.nav-bar a.active {
+  font-weight: bold;
+  border-bottom: 2px solid blue;
+}
+.nav-bar .more {
+  position: relative;
+}
+.dropdown {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  overflow-y: auto;
+  max-height: 200px;
+  display: none;
+}
+.dropdown a {
+  display: block;
+  padding: 10px 20px;
+  text-decoration: none;
+  color: black;
+}
+.dropdown a:hover {
+  background-color: #f0f0f0;
+}

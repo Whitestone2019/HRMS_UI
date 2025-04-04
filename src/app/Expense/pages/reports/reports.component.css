@@ -1,0 +1,180 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  background-color: #f3f4f7;
+  color: #333;
+}
+
+.report-container,
+.single-report-container {
+  max-width: 1200px;
+  margin: 30px auto;
+  padding: 25px;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #dadbdd, #f4f5f6, #bebec1);
+  color: #060606;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+.report-container h1,
+.single-report-container h2 {
+  font-size: 2rem;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.single-report-container h3 {
+  font-size: 1.5rem;
+  margin-top: 15px;
+  text-align: center;
+}
+
+.date-input-container {
+  margin-bottom: 15px;
+  display: flex; 
+  align-items: center; 
+}
+
+.date-input-container label {
+  display: inline-block;
+  margin-right: 10px; 
+  font-weight: bold;
+  width: 100px; 
+  text-align: right; 
+}
+
+.date-input-container input[type="date"] {
+  padding: 8px;
+  margin-right: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+.date-input-container button {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+/* Table Styling */
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: rgba(184, 232, 250, 0.9);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 20px;
+}
+
+.report-table th,
+.report-table td {
+  padding: 12px 16px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+.report-table th {
+  background-color: #03a8fa;
+  color: #000000;
+  text-transform: uppercase;
+  font-size: 0.9rem;
+}
+
+/* Button Styling */
+button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.download-btn {
+  background: #090367;
+  color: #fff;
+}
+
+.action-btn {
+  background: #007bff;
+  color: #fff;
+}
+
+button:hover {
+  transform: translateY(-2px);
+  opacity: 0.9;
+}
+
+.back-btn {
+  background: #dc3545;
+  color: #fff;
+  margin-bottom: 15px;
+}
+
+.button-container {
+  display: flex; 
+  gap: 15px; 
+  align-items: center; 
+}
+
+
+.month-year-select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: auto; 
+  margin-left: 10px; 
+}
+.month-year-container {
+  margin-bottom: 15px;
+}
+
+.month-year-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.month-year-select {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  width: auto;
+}
+
+.search-container {
+  margin-bottom: 15px;
+}
+
+.search-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.search-container input[type="text"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  box-sizing: border-box; 
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(20px);
+  }
+  to {
+      opacity: 1;
+      transform: translateY(0);
+  }
+}

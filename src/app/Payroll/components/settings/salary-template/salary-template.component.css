@@ -1,0 +1,222 @@
+.salary-template {
+  background: #f8f9fa;
+  min-height: 100vh;
+}
+
+/* Header Styles */
+.template-header {
+  padding: 20px;
+  background: #fff;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.template-form {
+  display: grid;
+  gap: 20px;
+  max-width: 800px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: #333;
+}
+
+.required {
+  color: #ff4444;
+}
+
+input, textarea {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+.ctc-input {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.currency {
+  font-weight: 500;
+  color: #666;
+}
+
+.period {
+  color: #666;
+  font-size: 14px;
+}
+
+/* Body Styles */
+.template-body {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h2 {
+  color: #333;
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+h3 {
+  color: #333;
+  margin: 20px 0;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+/* Table Styles */
+.component-list {
+  margin: 20px 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+th, td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+th {
+  background: #f8f9fa;
+  font-weight: 500;
+  color: #666;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+td {
+  color: #333;
+}
+
+select {
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-right: 8px;
+  background: #fff;
+}
+
+.percentage-input {
+  width: 80px;
+  padding: 6px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+tfoot tr {
+  font-weight: 500;
+  background: #f8f9fa;
+}
+
+tfoot td {
+  border-top: 2px solid #eee;
+}
+
+/* Net Salary Styles */
+.net-salary {
+  background: #fff;
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.net-salary-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  font-weight: 500;
+}
+
+.net-salary-row:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+/* Action Buttons */
+.actions {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-start;
+}
+
+button {
+  padding: 8px 24px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.btn-save {
+  background: #0088cc;
+  color: white;
+}
+
+.btn-save:hover {
+  background: #006699;
+}
+
+.btn-cancel {
+  background: #fff;
+  border: 1px solid #ddd;
+  color: #666;
+}
+
+.btn-cancel:hover {
+  background: #f8f9fa;
+}
+.sidebar {
+  width: 300px;
+  float: left;
+  padding: 20px;
+  background-color: #f7f7f7;
+  border-right: 1px solid #ddd;
+}
+
+.sidebar h3 {
+  margin-top: 0;
+}
+
+.sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.sidebar li {
+  margin-bottom: 10px;
+}
+
+.sidebar button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.sidebar button:hover {
+  background-color: #45a049;
+}

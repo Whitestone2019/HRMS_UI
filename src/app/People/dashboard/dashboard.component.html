@@ -1,0 +1,16 @@
+<app-header></app-header> <!-- The header component at the top -->
+
+<div class="main-container">
+  <app-sidebar></app-sidebar> <!-- Sidebar on the left -->
+
+  <div class="content-container">
+    <!-- Show home header only if userRole is NOT null -->
+    <app-home-header *ngIf="userRole !== null"></app-home-header>
+
+    <div class="content">
+      <router-outlet></router-outlet> <!-- Dynamic routed content -->
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer> <!-- Footer at the bottom -->

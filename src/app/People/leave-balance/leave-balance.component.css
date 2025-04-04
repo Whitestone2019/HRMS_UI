@@ -1,0 +1,96 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+.navbar {
+    display: flex;
+    background-color: #f5f7fa;
+    padding: 10px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.navbar a {
+    text-decoration: none;
+    color: #000;
+    margin-right: 20px;
+    font-size: 16px;
+}
+
+.navbar a.active {
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 5px;
+}
+
+.container {
+    padding: 20px;
+}
+
+.leave-card {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 10px;
+}
+
+.icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 20px;
+}
+
+.icon i {
+    font-size: 20px;
+}
+
+.details {
+    flex-grow: 1;
+}
+
+.details .title {
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.details .info {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+}
+
+.details .info .available {
+    color: green;
+}
+
+.details .info .booked {
+    color: #000;
+}
+
+.apply-button {
+    background-color: #007bff;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    opacity: 0.5; /* Initially dim button */
+    transition: opacity 0.3s ease;
+}
+
+.apply-button:hover:enabled {
+    opacity: 1; /* Brighten button on hover */
+}
+
+.apply-button:disabled {
+    cursor: not-allowed;
+}

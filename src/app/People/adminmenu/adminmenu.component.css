@@ -1,0 +1,40 @@
+.admin-menu {
+  padding: 190px;
+  background-color: #060b5a; /* Light background */
+  border-right: 1px solid #ccc; /* Right border for separation */
+  height: 100vh; /* Full height */
+  overflow-y: auto; /* Allow scrolling */
+  padding-left: 12px;
+  padding-right: 0px;
+  
+}
+
+.admin-menu h3 {
+  margin-bottom: 21px;
+  margin-top: -107px;
+  color: #ffffff;
+}
+
+.admin-menu ul {
+  list-style-type: none; /* Remove bullet points */
+  padding-left: 0; /* Remove default padding */
+}
+
+.admin-menu li {
+  margin: 10px 0;
+}
+
+.admin-menu a {
+  text-decoration: none;
+  color: #ffffff; /* Link color */
+  cursor: pointer; /* Pointer on hover */
+}
+
+.admin-menu a:hover {
+  text-decoration: underline; /* Underline on hover */
+}
+
+.admin-menu ul ul {
+  margin-left: 20px; /* Indent submenus */
+}
+

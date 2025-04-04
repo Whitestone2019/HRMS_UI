@@ -1,0 +1,123 @@
+<div class="navbar">
+    <i class="fas fa-arrow-left">
+    </i>
+    <div class="title">
+     Employee Information
+    </div>
+    <div class="menu">
+     <a href="#">
+      User-specific Operations
+     </a>
+     <a href="#">
+      Insights
+     </a>
+     <a href="#">
+      Employees
+     </a>
+     <a href="#">
+      Departments
+     </a>
+     <i class="fas fa-search icon">
+     </i>
+     <i class="fas fa-bell icon">
+     </i>
+     <i class="fas fa-cog icon">
+     </i>
+     <i class="fas fa-user-circle icon">
+     </i>
+    </div>
+   </div>
+   <div class="content">
+    <div class="header">
+     <select>
+      <option>
+       Employee View
+      </option>
+     </select>
+     <a href="#" style="color: #007bff; text-decoration: none;">
+      Edit
+     </a>
+     <select>
+      <option>
+       Reportees + My Data
+      </option>
+     </select>
+     <button>
+        <a (click)="loadComponent('./add-emp')" routerLink="./add-emp" >
+            <div class="icon approvals"></div>
+            <p>Add Employee</p>
+          </a>
+     </button>
+    </div>
+    <div class="table-container">
+     <table>
+      <thead>
+       <tr>
+        <th>
+         <input type="checkbox"/>
+        </th>
+        <th>
+         Employee ID
+        </th>
+        <th>
+         First Name
+        </th>
+        <th>
+         Last Name
+        </th>
+        <th>
+         Nick name
+        </th>
+        <th>
+         Email address
+        </th>
+        <th>
+         Photo
+        </th>
+        <th>
+         Department
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <td>
+         <input type="checkbox"/>
+        </td>
+        <td>
+         10009
+        </td>
+        <td>
+         Admin
+        </td>
+        <td>
+         1
+        </td>
+        <td>
+        </td>
+        <td>
+         anbarasan.sekar
+        </td>
+        <td>
+         <img alt="User photo" height="30" src="https://storage.googleapis.com/a1aa/image/eJWyTAoKbSQHeULiiiiteGVodPAMeT6T0wroDsLhwXL0KzAPB.jpg" style="border-radius: 50%;" width="30"/>
+        </td>
+        <td>
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <div class="footer">
+     Total Record Count: 1
+    </div>
+    <div class="pagination">
+     <select>
+      <option>
+       10
+      </option>
+     </select>
+     <div class="page-info">
+      1 - 1
+     </div>
+    </div>
+   </div>

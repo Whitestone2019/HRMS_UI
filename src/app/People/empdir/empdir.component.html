@@ -1,0 +1,35 @@
+<app-header></app-header>
+
+<div class="main-container">
+  <app-adminmenu></app-adminmenu>
+  <div class="content">
+    <h1>Employee Directory</h1>
+    
+    <div *ngIf="errorMessage" class="alert alert-danger">{{ errorMessage }}</div>
+    
+    <table *ngIf="employees.length > 0" class="employee-table">
+      <thead>
+        <tr>
+          <th>Employee ID</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Date of Joining</th>
+          <!-- Add more headers as needed -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let employee of employees">
+          <td>{{ employee.employeeId }}</td>
+          <td>{{ employee.employeeName }}</td>
+          <td>{{ employee.role }}</td>
+          <td>{{ employee.dateOfJoining | date }}</td>
+          <!-- Add more data as needed -->
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="employees.length === 0" class="alert alert-info">No employees found.</div>
+  </div>
+</div>
+
+<app-footer></app-footer>

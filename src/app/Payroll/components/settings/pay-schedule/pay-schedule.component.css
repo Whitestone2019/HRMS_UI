@@ -1,0 +1,89 @@
+.pay-schedule-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-title {
+    text-align: center;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .form-label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #555;
+  }
+  
+  .required {
+    color: red;
+  }
+  
+  .work-week {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  
+  .day {
+    padding: 10px 15px;
+    text-align: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .day.selected {
+    background-color: #007bff;
+    color: white;
+    border-color: #007bff;
+  }
+  
+  .inline-input {
+    width: 60px;
+    margin-left: 10px;
+  }
+  
+  .input-field {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .btn-save {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .btn-cancel {
+    background-color: #f44336;
+    color: white;
+  }
+  

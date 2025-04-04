@@ -1,0 +1,23 @@
+<div class="container">
+    <div *ngFor="let leave of leaves" class="leave-card" 
+         (mouseenter)="leave.hover = true" 
+         (mouseleave)="leave.hover = false">
+        
+        <div class="icon" [ngStyle]="{'background-color': leave.backgroundColor}">
+            <i [class]="leave.icon" [ngStyle]="{'color': leave.iconColor}"></i>
+        </div>
+
+        <div class="details">
+            <div class="title">{{ leave.title }}</div>
+            <div class="info">
+                <div class="available">Available<br>{{ leave.available }} days</div>
+                <div class="booked">Booked<br>{{ leave.booked }} day</div>
+            </div>
+        </div>
+        
+        <!-- Apply Leave button enabled only on hover -->
+        <button class="apply-button" 
+                [disabled]="!leave.hover" 
+                (click)="applyLeave()">Apply Leave</button>
+    </div>
+</div>

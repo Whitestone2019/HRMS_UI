@@ -1,0 +1,17 @@
+<!-- check-out-dialog.component.html -->
+<div class="dialog-container">
+  <h2 mat-dialog-title>Check-Out Status</h2>
+  
+  <mat-dialog-content>
+    <mat-form-field>
+      <mat-label>Status</mat-label>
+      <input matInput [(ngModel)]="status" placeholder="Enter your check-out status">
+    </mat-form-field>
+  </mat-dialog-content>
+  
+  <div class="button-container">
+    <button mat-button [mat-dialog-close]="status" type="button">Submit</button>
+    <button mat-button mat-dialog-close>Cancel</button>
+  </div>
+</div>
+

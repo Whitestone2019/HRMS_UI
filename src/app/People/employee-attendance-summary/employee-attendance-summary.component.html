@@ -1,0 +1,50 @@
+<div class="content">
+    <div class="top-bar">
+      <div class="date-range">
+        <label for="fromDate">From:</label>
+        <input id="fromDate" type="date" [(ngModel)]="startDate" />
+    
+        <label for="toDate">To:</label>
+        <input id="toDate" type="date" [(ngModel)]="endDate" />
+    
+        <button (click)="getAttendanceDetails()">Fetch Attendance</button>
+      </div>
+    </div>
+  
+    <div class="attendance-details">
+      <table class="attendance-table" *ngIf="paginatedAttendanceData && paginatedAttendanceData.length > 0">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Emp_Id</th>
+            <th>Emp_Name</th>
+            <th>Attendance Date</th>
+            <th>Status</th>
+            <th>Check-In</th>
+            <th>Check-Out</th>
+            <th>Hours Worked</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of paginatedAttendanceData; let i = index">
+            <td>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
+            <td>{{ record.employeeId }}</td>
+            <td>{{ record.employeeName }}</td>
+            <td>{{ record.attendanceDate }}</td>
+            <td>{{ record.status }}</td>
+            <td>{{ record.checkIn }}</td>
+            <td>{{ record.checkOut }}</td>
+            <td>{{ record.hoursWorked }}</td>
+          </tr>
+        </tbody>
+      </table>
+      <p *ngIf="!paginatedAttendanceData || paginatedAttendanceData.length === 0">No records found</p>
+    </div>
+  
+    <div class="pagination">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+    </div>
+  </div>
+  

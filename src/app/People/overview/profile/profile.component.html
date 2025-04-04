@@ -1,0 +1,390 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+<body>
+
+<div class="Profile">
+    <div>
+        <i class="fas fa-tools"></i>
+        <span>
+            <span>Shift</span>
+            <span>General</span>
+        </span>
+    </div>
+    <div>
+        <i class="fas fa-clock"></i>
+        <span>
+            <span>Time zone</span>
+            <span>(GMT+05:30)</span>
+        </span>
+    </div>
+    <div>
+        <i class="fas fa-envelope"></i>
+        <span>
+            <span>Email</span>
+            <span>Vasanth.Mani</span>
+            
+            
+        </span>
+    </div>
+    <div>
+        <i class="fas fa-mobile-alt"></i>
+        <span>
+            <span>Mobile number</span>
+            <span>91-8973663332</span>
+        </span>
+    </div>
+    <div>
+        <i class="fas fa-phone"></i>
+        <span>
+            <span>Work Phone Number</span>
+            <span>8973663332</span>
+        </span>
+    </div>
+</div>
+<div class="about-Info">
+  <h3>About</h3>
+  <hr />
+  <div *ngIf="aboutText; else addAbout" class="about-content">
+    <p>{{ aboutText }}</p>
+    <button class="edit-btn" (click)="openAboutModal()">Edit</button>
+  </div>
+  <ng-template #addAbout>
+    <div class="add-about-card" (click)="openAboutModal()">
+      <div class="add-icon">
+        <span>+</span>
+      </div>
+      <p>Add About</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Modal for Add About -->
+<div class="modal" [ngClass]="{'show': isAboutModalOpen}">
+  <div class="modal-content">
+    <span class="close-btn" (click)="closeModal()">&times;</span>
+    <h3>Add About Information</h3>
+    <textarea [(ngModel)]="modalInput" rows="4" placeholder="Enter your about info here..."></textarea>
+    <button (click)="saveAbout()">Save</button>
+  </div>
+</div>
+
+<div class="Skill-set">
+  <h3>Skill Set</h3>
+  <hr />
+  <div *ngIf="skillText; else addSkill" class="skill-content">
+    <p>{{ skillText }}</p>
+    <button class="edit-btn" (click)="openSkillModal()">Edit</button>
+  </div>
+  <ng-template #addSkill>
+    <div class="add-about-card" (click)="openSkillModal()">
+      <div class="add-icon">
+        <span>+</span>
+      </div>
+      <p>Add Skill Set</p>
+    </div>
+  </ng-template>
+</div>
+
+<!-- Modal for Add Skill Set -->
+<div class="modal" [ngClass]="{'show': isSkillModalOpen}">
+  <div class="modal-content">
+    <span class="close-btn" (click)="closeModal()">�</span>
+    <h3>Add Skill Set</h3>
+    <textarea [(ngModel)]="skillModalInput" rows="4" placeholder="Enter your skill set here..."></textarea>
+    <button (click)="saveSkill()">Save</button>
+  </div>
+</div>
+
+  <div class="basic-info">
+    <h3>Basic information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Employee ID</label>
+        <span></span>
+      </div>
+      <div class="info-item">
+        <label>Nick name</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>First Name</label>
+        <span></span>
+      </div>
+      <div class="info-item">
+        <label>Email address</label>
+        <span>
+         
+        </span>
+      </div>
+      <div class="info-item">
+        <label>Last Name</label>
+        <span>1</span>
+      </div>
+      <div class="divider"></div>
+    </div>
+  </div>
+
+  <div class="work-info">
+    <h3>Work Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Department</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Role</label>
+        <span></span>
+      </div>
+      <div class="info-item">
+        <label>Location</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Employment Type</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Designation</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Employee Status</label>
+        <span>Active</span>
+      </div>
+    </div>
+  </div>
+  
+  <div class="additional-work-info">
+    <h3>Additional Work Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Source of Hire</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Date of Joining</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Current Experience</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Total Experience</label>
+        <span>-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="Hierarchy-Information">
+    <h3>Hierarchy Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Source of Hire</label>
+        <span>-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="personal-info">
+    <h3>personal Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Date of Birth</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Ask me about/Expertise</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Age</label>
+        <span>-</span>
+      </div>
+      <div class="info-item">
+        <label>Gender</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Marital Status</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>About Me</label>
+        <span>-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="Identity-info">
+    <h3>Identity Information</h3>
+  <div class="info-grid">
+    <div class="info-item">
+            <label >UAN</label>
+            <input type="password"  value="**********" readonly>
+            <i class="eye-icon">&#128065;</i>
+            
+        </div>
+        <div class="info-item">
+            <label>PAN</label>
+            <input type="password"  value="**********" readonly>
+            <i class="eye-icon">&#128065;</i>
+        </div>
+        <div class="info-item">
+            <label >Aadhaar</label>
+            <input type="password"  value="**********" readonly>
+            <i class="eye-icon">&#128065;</i>
+        </div>
+  </div>
+  </div>
+
+  <div class="contact-info">
+    <h3>Contact Details</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Work Phone Number</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Personal Mobile Number</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Extension</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Personal Email Address</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Seating Location</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Tags</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Present Address</label>
+        <span>-</span>
+      </div>
+
+      <div class="info-item">
+        <label>Permanent Address</label>
+        <span>-</span>
+      </div>
+
+
+    </div>
+  </div>
+  
+  <div class="Separation-Info">
+    <h3>Separation Information</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Date of Exit</label>
+        <span>-</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="System-Info">
+    <h3>System Fields</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <label>Added By</label>
+        <span>1 - chinnasamy.kandasamy -</span>
+      </div>
+
+      <div class="info-item">
+        <label>Modified By</label>
+        <span>1 - chinnasamy.kandasamy -</span>
+      </div>
+
+      <div class="info-item">
+        <label>Added Time</label>
+        <span>2024 10:58 AM</span>
+      </div>
+
+      <div class="info-item">
+        <label>Onboarding Status</label>
+        <span>Completed</span>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="Workexperience-Info">
+    <h3>Work experience</h3>
+  <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Company name</th>
+                <th>Job Title</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Job Description</th>
+                <th>Relevant</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="8" class="no-rows">No rows found.</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  </div>
+
+  <div class="education-Info">
+    <h3>Education Details</h3>
+  <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Institute Name</th>
+                <th>Degree/Diploma</th>
+                <th>Specialization</th>
+                <th>Date of Completion</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="8" class="no-rows">No rows found.</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  </div>
+
+  <div class="Dependent-Info">
+    <h3>Dependent Details</h3>
+  <div class="table-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Relationship</th>
+                <th>Date of Birth</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="8" class="no-rows">No rows found.</td>
+            </tr>
+        </tbody>
+    </table>
+  </div>
+  </div>
+
+  
+</body>

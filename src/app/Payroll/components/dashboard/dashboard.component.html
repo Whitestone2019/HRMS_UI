@@ -1,0 +1,146 @@
+<div class="app-container">
+  <app-sidebar></app-sidebar>
+  <div class="main-wrapper">
+    <app-header></app-header>
+    <main class="main-content">
+      <div class="content">
+        <router-outlet></router-outlet> <!-- Dynamic routed content -->
+       <!-- <app-overview></app-overview>--> <!-- Static or default content (Overview) -->
+      </div>
+      <div class="dashboard">
+        <div class="dashboard-header">
+          <h4>Dashboard</h4>
+          <div class="actions">
+            <button class="btn btn-primary" (click)="runPayroll()">
+              <i class="fas fa-play me-2"></i>
+              Run Payroll
+            </button>            
+            <button class="btn btn-secondary" (click)="exportPayrollData()">
+              <i class="fas fa-download me-2"></i>
+              Export
+            </button>            
+          </div>
+        </div>
+
+        <div class="grid grid-4">
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-users"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Total Employees</h3>
+                <p class="stat-value">156</p>
+                <p class="stat-change positive">+3 this month</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-money-bill-wave"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Next Payroll</h3>
+                <p class="stat-value">$125,750</p>
+                <p class="stat-change">Due in 5 days</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Time Tracking</h3>
+                <p class="stat-value">1,248 hrs</p>
+                <p class="stat-change">This month</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="stat-card">
+              <div class="stat-icon">
+                <i class="fas fa-file-invoice-dollar"></i>
+              </div>
+              <div class="stat-info">
+                <h3>Tax Deductions</h3>
+                <p class="stat-value">$37,725</p>
+                <p class="stat-change">This month</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2">
+          <div class="card">
+            <h3>Recent Activities</h3>
+            <div class="activity-list">
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-user-plus"></i>
+                </div>
+                <div class="activity-details">
+                  <p>New employee John Smith added</p>
+                  <span class="activity-time">2 hours ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-money-check"></i>
+                </div>
+                <div class="activity-details">
+                  <p>April Payroll processed successfully</p>
+                  <span class="activity-time">1 day ago</span>
+                </div>
+              </div>
+              <div class="activity-item">
+                <div class="activity-icon">
+                  <i class="fas fa-file-alt"></i>
+                </div>
+                <div class="activity-details">
+                  <p>Tax documents updated</p>
+                  <span class="activity-time">2 days ago</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Upcoming Tasks</h3>
+            <div class="task-list">
+              <div class="task-item">
+                <div class="task-status pending"></div>
+                <div class="task-details">
+                  <p>Process May Payroll</p>
+                  <span class="task-due">Due in 5 days</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm">Start</button>
+              </div>
+              <div class="task-item">
+                <div class="task-status pending"></div>
+                <div class="task-details">
+                  <p>Review Time Sheets</p>
+                  <span class="task-due">Due in 2 days</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm">Review</button>
+              </div>
+              <div class="task-item">
+                <div class="task-status pending"></div>
+                <div class="task-details">
+                  <p>Update Tax Settings</p>
+                  <span class="task-due">Due in 1 week</span>
+                </div>
+                <button class="btn btn-outline-primary btn-sm">Update</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

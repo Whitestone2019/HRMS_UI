@@ -1,0 +1,12 @@
+<div class="schedule">
+    <h3>Work Schedule</h3>
+ <div class="local-box">
+  <div class="date-range">{{ workSchedule.dateRange }}</div>
+    <div class="time">{{ workSchedule.time }}</div>
+    <div class="calendar">
+      <div *ngFor="let day of workSchedule.calendar">
+        <div>{{ day.day }}<br/>{{ day.date }}</div>
+      </div>
+  </div>
+ </div> 
+</div>

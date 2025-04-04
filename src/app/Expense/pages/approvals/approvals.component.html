@@ -1,0 +1,162 @@
+<div class="approvals-page" *ngIf="!viewingDetails && !showAllExpenses">
+  <div class="page-header">
+    <h2>Approvals</h2>
+  </div>
+  <div class="header-actions">
+    <div class="filter-container">
+      <select (click)="$event.stopPropagation()" (change)="filterExpenses()" [(ngModel)]="filterStatus">
+        <option value="all">All Requests</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <input type="text" [(ngModel)]="pendingEmployeeSearch" placeholder="Search Pending Employee" />
+    </div>
+  </div>
+  <div *ngIf="pendingEmployees.length > 0" class="pending-employees">
+    <h3>Employee Pending Approval</h3>
+    <div class="employee-grid">
+      <div *ngFor="let employee of filteredPendingEmployees" class="employee-card">
+        <div class="employee-info">
+          <span class="employee-name">{{ getEmployeeInfo(employee)?.empName}} ({{ getEmployeeInfo(employee)?.empId }})</span>
+          <span class="employee-status">Pending</span>
+        </div>
+        <button class="view-button" (click)="showEmployeeExpenses(employee)">
+          <i class="fas fa-eye"></i> View Details
+        </button>
+      </div>
+    </div>
+  </div>
+  <button class="view-all-button" (click)="showAllExpensesList()">
+    <i class="fas fa-list"></i> View All Approvals
+  </button>
+</div>
+<div class="approvals-page" *ngIf="viewingDetails && !showAllExpenses && !selectedExpense">
+  <div class="page-header">
+    <h2>Pending Expenses for {{ selectedEmployee }}</h2>
+    <button class="btn-icon back-btn" (click)="backToList()">Back</button>
+  </div>
+  <div class="approvals-list">
+    <div class="list-header">
+      <div class="col-date">Date</div>
+      <div class="col-employee">Employee</div>
+      <div class="col-type">Category</div>
+      <div class="col-amount">Amount</div>
+      <div class="col-status">Status</div>
+      <div class="col-actions">Actions</div>
+      <div class="col-file">Reject Reason</div>
+    </div>
+    <div *ngFor="let expense of pendingExpenses" class="approval-item" (click)="viewExpenseDetails(expense, $event)">
+      <div class="col-date">{{ expense.date | date: 'mediumDate' }}</div>
+      <div class="col-employee">{{ expense.employeeName }}</div>
+      <div class="col-type">{{ expense.category }}</div>
+      <div class="col-amount">
+        {{ expense.currency }} {{ expense.amount | number: '1.2-2' }}
+      </div>
+      <div class="col-status">
+        <span class="status-badge" [class]="expense.status">{{ expense.status | titlecase }}</span>
+      </div>
+      <div class="col-actions">
+        <button class="btn-icon view-btn" (click)="viewExpenseDetails(expense, $event)">
+          View
+        </button>
+      </div>
+      <div class="col-file">{{ expense.rejectreason }}</div>
+    </div>
+    <div *ngIf="pendingExpenses.length === 0" class="no-items">
+      <p>No pending approval requests found for this employee.</p>
+    </div>
+  </div>
+</div>
+<div class="approvals-page" *ngIf="showAllExpenses && !selectedExpense">
+  <div class="page-header">
+    <h2>Approvals</h2>
+    <button class="btn-icon back-btn" (click)="hideAllExpensesList()">Back</button>
+    <div class="header-actions">
+      <div class="filter-container">
+        <select (click)="$event.stopPropagation()" (change)="filterExpenses()" [(ngModel)]="filterStatus">
+          <option value="all">All Requests</option>
+          <option value="pending">Pending</option>
+          <option value="approved">Approved</option>
+          <option value="rejected">Rejected</option>
+        </select>
+        <input type="text" [(ngModel)]="searchEmpName" (input)="filterExpenses()" placeholder="Search Employee Name" (keyup.enter)="filterExpenses()" />
+      </div>
+    </div>
+  </div>
+  <div class="approvals-list">
+    <div class="list-header">
+      <div class="col-date">Date</div>
+      <div class="col-employee">Employee</div>
+      <div class="col-type">Category</div>
+      <div class="col-amount">Amount</div>
+      <div class="col-status">Status</div>
+      <div class="col-actions">Actions</div>
+      <div class="col-file">Reject Reason</div>
+    </div>
+    <div *ngFor="let expense of pagedExpenses" class="approval-item" (click)="viewExpenseDetails(expense, $event)">
+      <div class="col-date">{{ expense.date | date: 'mediumDate' }}</div>
+      <div class="col-employee">{{ expense.employeeName }}</div>
+      <div class="col-type">{{ expense.category }}</div>
+      <div class="col-amount">
+        {{ expense.currency }} {{ expense.amount | number: '1.2-2' }}
+      </div>
+      <div class="col-status">
+        <span class="status-badge" [class]="expense.status">{{ expense.status | titlecase }}</span>
+      </div>
+      <div class="col-actions">
+        <button class="btn-icon view-btn" (click)="viewExpenseDetails(expense, $event)">
+          View
+        </button>
+      </div>
+      <div class="col-file">{{ expense.rejectreason }}</div>
+    </div>
+    <div *ngIf="filteredExpenses.length === 0" class="no-items">
+      <p>No approval requests found</p>
+    </div>
+  </div>
+  <div class="pagination-controls">
+    <button class="arrow-button" (click)="previousPage()" [disabled]="currentPage === 1">
+      <i class="fas fa-chevron-left"></i>
+    </button>
+    <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
+    <button class="arrow-button" (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= filteredExpenses.length">
+      <i class="fas fa-chevron-right"></i>
+    </button>
+  </div>
+  <div *ngIf="currentPage === 1" class="pagination-info">
+    Total Records: {{ totalRecords }}, Total Pages: {{ totalPages }}
+  </div>
+</div>
+
+<div class="details-page" *ngIf="selectedExpense && viewingDetails">
+  <div class="details-header">
+    <h3>Expense Details</h3>
+    <button class="btn-icon back-btn" (click)="selectedExpense = null; viewingDetails = !showAllExpenses;">Back</button>
+  </div>
+  <div class="details-content">
+    <p><strong>Date:</strong> {{ selectedExpense.date | date: 'mediumDate' }}</p>
+    <p><strong>Employee:</strong> {{ selectedExpense.employeeName }}</p>
+    <p><strong>Category:</strong> {{ selectedExpense.category }}</p>
+    <p>
+      <strong>Amount:</strong> {{ selectedExpense.currency }}
+      {{ selectedExpense.amount | number: '1.2-2' }}
+    </p>
+    <p><strong>Status:</strong> {{ selectedExpense.status | titlecase }}</p>
+  </div>
+  <div *ngIf="showRejectReason" class="reject-reason">
+    <label for="rejectreason">Reason for Rejection:</label>
+    <textarea id="rejectreason" [(ngModel)]="rejectreason" placeholder="Enter reason for rejection"></textarea>
+  </div>
+  <div class="details-actions" *ngIf="selectedExpense.status === 'pending'">
+    <button class="btn-approve" (click)="confirmApprove(selectedExpense)">
+      Approve
+    </button>
+    <button class="btn-reject" (click)="handleRejectButton()">Reject</button>
+  </div>
+  <div *ngIf="showApproveConfirmation" class="approve-confirmation">
+    <p>Are you sure you want to approve this expense?</p>
+    <button (click)="approveExpense(selectedExpense)">Yes, Approve</button>
+    <button (click)="cancelApproval()">Cancel</button>
+  </div>
+</div>

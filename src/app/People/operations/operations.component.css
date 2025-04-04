@@ -1,0 +1,181 @@
+/* Container */
+.container {
+  width: 100%;
+  max-width: 600px;
+  background-color: white;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+  
+  /* User Info Section */
+  .user-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  
+  .avatar {
+    width: 50px;
+    height: 50px;
+    background-color: #ccc;
+    border-radius: 50%;
+  }
+  
+  .user-details {
+    margin-left: 10px;
+  }
+  
+  .user-details p {
+    margin: 0;
+    color: #333;
+  }
+  
+  /* Search Bar */
+  .search-bar input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 20px;
+  }
+  
+  /* Operations Section */
+  .operations .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .operations h2 {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  .operations a {
+    color: #d01010;
+    text-decoration: none;
+  }
+  
+  .description {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 20px;
+  }
+  
+  /* Operation Item */
+  .operation-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    background-color: #fff;
+    max-width: 1000px;
+  }
+  
+  .icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 4px;
+    margin-right: 10px;
+
+  }
+  
+  .employee-info {
+    background-color: #ffc107; /* Example color */
+  }
+  
+  .leave-tracker {
+    background-color: #17a2b8;
+  }
+  
+  .approvals {
+    background-color: #ffc107;
+  }
+
+  /* Existing styles for icons */
+.icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: blueviolet;
+    background-color: #a49494;
+  }
+  
+  /* Icon styles for specific operations */
+  .employee-info {
+    background-color: #f0f0f0; /* Customize as needed */
+  }
+  .leave-tracker {
+    background-color: #f0f8ff; /* Customize as needed */
+  }
+  .approvals {
+    background-color: #ffefd5; /* Customize as needed */
+  }
+  
+  /* New icon styles */
+  .data-administration {
+    background-color: #f1090d; /* Light pink background */
+  }
+  .assessment {
+    background-color: #765421; /* Light coral background */
+  }
+  
+  /* Make the whole page a flex container to center the content */
+body, html {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Style the container */
+.container {
+  width: 80%; /* Adjust width as needed */
+  max-width: 400px; /* Set a max width */
+  padding: 20px;
+  background-color: #f9f9f9; /* Optional: background color */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Optional: shadow */
+  border-radius: 8px; /* Optional: rounded corners */
+  align-items: center;
+  right: 100px;
+}
+
+/* Style for user-info and other inner sections */
+.user-info, .search-bar, .operations {
+  margin-bottom: 20px;
+}
+
+.operation-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  text-decoration: none;
+  color: inherit; /* Keep text color consistent */
+  background-color: #fff; /* Optional: background for items */
+  border-radius: 8px; /* Optional: rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow */
+  margin-bottom: 10px;
+  transition: transform 0.2s; /* Optional: hover effect */
+}
+
+.operation-item:hover {
+  transform: scale(1.02); /* Optional: hover effect */
+}
+
+.butten{
+  max-width: 550px;
+}
+
+.operation-item{
+  max-width: 700px;
+  cursor: grabbing;
+  max-height: 40px;
+  height: 30px;
+}

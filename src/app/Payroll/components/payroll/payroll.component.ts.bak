@@ -1,0 +1,44 @@
+import { Component, ViewChild } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RunPayrollFormComponent } from '../forms/run-payroll-form.component';
+import { ProcessPayrollFormComponent } from '../forms/process-payroll-form.component';
+
+@Component({
+  selector: 'app-payroll',
+  standalone: true,
+  imports: [CommonModule, RunPayrollFormComponent, ProcessPayrollFormComponent],
+  template: `
+    <div class="payroll">
+      <div class="payroll-header">
+        <h2>Payroll Management</h2>
+        <div class="actions">
+          <button class="btn primary" (click)="showRunPayrollForm()">
+            <i class="fas fa-play me-2"></i>
+            Run Payroll
+          </button>
+          <button class="btn secondary" (click)="showProcessPayrollForm()">
+            <i class="fas fa-cog me-2"></i>
+            Process Payroll
+          </button>
+        </div>
+      </div>
+
+      <!-- Rest of the payroll component template remains the same -->
+
+      <app-run-payroll-form></app-run-payroll-form>
+      <app-process-payroll-form></app-process-payroll-form>
+    </div>
+  `
+})
+export class PayrollComponent {
+  @ViewChild(RunPayrollFormComponent) runPayrollForm!: RunPayrollFormComponent;
+  @ViewChild(ProcessPayrollFormComponent) processPayrollForm!: ProcessPayrollFormComponent;
+
+  showRunPayrollForm() {
+    this.runPayrollForm.show();
+  }
+
+  showProcessPayrollForm() {
+    this.processPayrollForm.show();
+  }
+}

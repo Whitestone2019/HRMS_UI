@@ -1,0 +1,114 @@
+<div class="pay-schedule-container">
+    <form [formGroup]="payScheduleForm" (ngSubmit)="onSubmit()">
+      <h4 class="form-title">Pay Schedule</h4>
+  
+      <!-- Work Week Selection -->
+      <label class="form-label">
+        Select your work week<span class="required">*</span>
+      </label>
+      <div class="work-week">
+        <div
+          *ngFor="let day of workWeekDays"
+          class="day"
+          [class.selected]="isDaySelected(day)"
+          (click)="toggleDay(day)"
+        >
+          {{ day }}
+        </div>
+      </div>
+  
+      <!-- Monthly Salary Calculation -->
+      <label class="form-label">
+        Calculate monthly salary based on<span class="required">*</span>
+      </label>
+      <div class="form-group">
+        <input
+          type="radio"
+          formControlName="salaryCalculation"
+          value="actualDays"
+          id="actualDays"
+        />
+        <label for="actualDays">Actual days in a month</label>
+      </div>
+      <div class="form-group">
+        <input
+          type="radio"
+          formControlName="salaryCalculation"
+          value="workingDays"
+          id="workingDays"
+        />
+        <label for="workingDays">
+          Organisation working days -
+          <input
+            type="number"
+            formControlName="workingDaysPerMonth"
+            class="inline-input"
+            min="1"
+            [disabled]="!isWorkingDaysSelected"
+          />
+          days per month
+        </label>
+      </div>
+  
+      <!-- Pay On Selection -->
+      <label class="form-label">
+        Pay on<span class="required">*</span>
+      </label>
+      <div class="form-group">
+        <input
+          type="radio"
+          formControlName="payOn"
+          value="lastWorkingDay"
+          id="lastWorkingDay"
+        />
+        <label for="lastWorkingDay">The last working day of every month</label>
+      </div>
+      <div class="form-group">
+        <input
+          type="radio"
+          formControlName="payOn"
+          value="specificDay"
+          id="specificDay"
+        />
+        <label for="specificDay">
+          Day
+          <input
+            type="number"
+            formControlName="specificDayOfMonth"
+            class="inline-input"
+            min="1"
+            max="31"
+            [disabled]="!isSpecificDaySelected"
+          />
+          of every month
+        </label>
+      </div>
+  
+      <!-- First Payroll -->
+      <label class="form-label">
+        Start your first payroll from<span class="required">*</span>
+      </label>
+      <input type="month" formControlName="firstPayrollStart" class="input-field" />
+  
+      <label class="form-label">
+        Select a pay date for your first payroll<span class="required">*</span>
+      </label>
+      <input
+        type="date"
+        formControlName="firstPayrollDate"
+        class="input-field"
+        [min]="minFirstPayrollDate"
+      />
+  
+      <!-- Buttons -->
+      <div class="form-buttons">
+        <button type="submit" [disabled]="payScheduleForm.invalid" class="btn btn-save">
+          Save
+        </button>
+        <button type="button" (click)="resetForm()" class="btn btn-cancel">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+  

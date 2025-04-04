@@ -1,0 +1,364 @@
+/* General styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.content {
+  background-color: #ffffff; /* White background for clarity */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.date-range label,
+.date-range input {
+  display: inline-block;
+  margin: 5px 10px;
+}
+
+.date-range input {
+  padding: 5px 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.actions button {
+  background-color: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* Check-in section */
+.check-in {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.checkin-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #28a745; /* Green for success actions */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+}
+
+.checkin-btn:hover {
+  background-color: #218838; /* Darker green on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.checkin-btn:active {
+  background-color: #1e7e34; /* Even darker green for active state */
+  transform: scale(0.95); /* Slight shrink effect */
+}
+
+.timer {
+  display: block;
+  margin-top: 15px;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Attendance table */
+.attendance-details {
+  overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+  margin-top: 20px;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.attendance-table th {
+  background-color: #007bff; /* Blue header */
+  color: #fff; /* White text for contrast */
+  font-weight: bold;
+}
+
+.attendance-table td {
+  background-color: #f9f9f9; /* Light gray rows */
+  color: #333; /* Dark text for readability */
+}
+
+.attendance-table tr:hover td {
+  background-color: #f1f8ff; /* Light blue hover effect for rows */
+}
+
+.attendance-table tr:nth-child(even) td {
+  background-color: #f2f2f2; /* Alternating row color */
+}
+.checkout-btn {
+  display: inline-block;
+  padding: 12px 24px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #dc3545; /* Red for danger actions */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+}
+
+.checkout-btn:hover {
+  background-color: #c82333; /* Darker red on hover */
+  transform: scale(1.05); /* Slight zoom effect */
+}
+
+.checkout-btn:active {
+  background-color: #bd2130; /* Even darker red for active state */
+  transform: scale(0.95); /* Slight shrink effect */
+}
+
+
+/* Footer timeline */
+.footer {
+  margin-top: 30px;
+  display: flex;
+  justify-content: space-evenly;
+  flex-wrap: wrap;
+}
+
+.timeline span {
+  display: inline-block;
+  padding: 10px;
+  font-size: 14px;
+  background-color: #f8d7da; /* Light red for warnings or status */
+  color: #721c24; /* Dark red for contrast */
+  border-radius: 5px;
+  margin: 5px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.timeline i {
+  display: block;
+  width: 5px;
+  height: 5px;
+  background-color: #007bff;
+  margin: 0 auto;
+  border-radius: 50%;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .date-range label,
+  .date-range input {
+    margin: 5px 0;
+  }
+
+  .checkin-btn,
+  .checkout-btn {
+    width: 100%;
+    font-size: 18px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  .timeline {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .date-range label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .checkin-btn,
+  .checkout-btn {
+    font-size: 16px;
+    padding: 8px;
+  }
+
+  .timer {
+    font-size: 16px;
+  }
+
+  .timeline span {
+    font-size: 12px;
+    padding: 5px;
+  }
+}
+/* General container styles (kept the same) */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.content {
+  background-color: #ffffff; /* White background for clarity */
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Date range section */
+.date-range label {
+  display: inline-block;
+  margin-right: 10px;
+  font-size: 14px;
+  color: #333;
+  font-weight: bold;
+}
+
+.date-range input {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-right: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.date-range input:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Fetch button */
+.date-range button {
+  padding: 10px 20px;
+  font-size: 16px;
+  color: #fff;
+  background-color: #007bff; /* Primary blue color */
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s ease-in-out;
+}
+
+.date-range button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+  transform: scale(1.05);
+}
+
+.date-range button:active {
+  background-color: #003f7f; /* Even darker blue on active */
+  transform: scale(0.95);
+}
+
+/* Attendance table styles */
+.attendance-details {
+  overflow-x: auto; /* Enable horizontal scrolling on smaller screens */
+  margin-top: 20px;
+}
+
+.attendance-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.attendance-table th,
+.attendance-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.attendance-table th {
+  background-color: #007bff; /* Blue header */
+  color: #fff; /* White text for contrast */
+  font-weight: bold;
+}
+
+.attendance-table td {
+  background-color: #f9f9f9; /* Light gray rows */
+  color: #333; /* Dark text for readability */
+}
+
+.attendance-table tr:hover td {
+  background-color: #f1f8ff; /* Light blue hover effect for rows */
+}
+
+.attendance-table tr:nth-child(even) td {
+  background-color: #f2f2f2; /* Alternating row color */
+}
+
+/* No records message */
+.attendance-details p {
+  margin-top: 10px;
+  font-size: 16px;
+  color: #777;
+  text-align: center;
+}
+
+/* Responsive styles for table and inputs */
+@media (max-width: 768px) {
+  .date-range input,
+  .date-range button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    font-size: 14px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  .date-range label {
+    display: block;
+    margin-bottom: 5px;
+  }
+
+  .date-range input {
+    font-size: 14px;
+    padding: 6px;
+  }
+
+  .attendance-table {
+    font-size: 12px;
+  }
+
+  .attendance-table th,
+  .attendance-table td {
+    padding: 6px;
+  }
+}
+

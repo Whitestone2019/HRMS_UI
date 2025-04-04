@@ -1,0 +1,126 @@
+/* Main container to hold the sidebar and content area */
+.main-container {
+  display: flex;
+  flex-direction: row;  /* Sidebar and content in a row */
+  min-height: 100vh;     /* Full height of the viewport */
+  margin-top: 40px;      /* Add margin for the fixed header */
+}
+
+/* Header styles */
+app-header {
+  width: 100%;           /* Full width across the top */
+  background-color: #f4f4f4;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow to the header */
+  position: fixed;       /* Fix header to the top */
+  top: 0;                /* Position it at the top of the page */
+  left: 0;
+  z-index: 1000;         /* Ensure the header stays on top of other elements */
+  height: 30px;          /* Adjust height of the header */
+  display: flex;
+  align-items: center;   /* Center items vertically in the header */
+  padding-left: 20px;    /* Optional: Add space on the left for content */
+  box-sizing: border-box;
+}
+
+/* Sidebar styles */
+app-sidebar {
+  width: 50px;           /* Adjust width of the sidebar */
+  background-color: #f4f4f4;
+  height: 100%;
+  padding: 10px;
+  position: fixed;       /* Sidebar is fixed */
+  top: 40px;             /* Offset the sidebar below the fixed header */
+  left: 0;
+  z-index: 999;          /* Sidebar should be below the header */
+}
+
+/* Content container holds the home header and content */
+.content-container {
+  flex-grow: 2;           /* Content area takes up the remaining space */
+  display: flex;
+  flex-direction: column; /* Stack home header and content */
+  margin-left: 60px;      /* Offset content to the right of the sidebar */
+  padding: 20px;
+  margin-top: 0;          /* Remove the space caused by margin-top */
+}
+
+/* Home header specific styles */
+app-home-header {
+  display: flex;
+  background-color: #ffffff;
+  padding: 10px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #ccc;
+  margin-top: 0; /* Ensure there is no margin-top */
+}
+
+/* Content area for dynamic content and overview */
+.content {
+  flex-grow: 1; /* Content area takes up remaining space */
+  padding: 10px;
+  background-color: #fafafa;
+}
+
+/* Footer at the bottom */
+app-footer {
+  background-color: #333;
+  color: #fff;
+  padding: 10px;
+  text-align: center;
+  width: 100%;
+}
+
+/* Media Queries for Responsiveness */
+
+/* Tablet and below (max-width: 768px) */
+@media (max-width: 768px) {
+  .main-container {
+    flex-direction: column;  /* Stack the sidebar and content vertically */
+  }
+
+  app-sidebar {
+    width: 100%;            /* Sidebar takes full width */
+    height: auto;           /* Adjust height to content */
+    position: relative;     /* Sidebar moves out of fixed position */
+    top: 0;                 /* Reset position */
+    margin-top: 0;          /* No need for margin as the header is not fixed */
+  }
+
+  .content-container {
+    margin-left: 0;         /* Reset margin */
+    margin-top: 0;          /* No margin needed for header offset */
+  }
+
+  app-header {
+    height: 50px;           /* Increase header height on small screens */
+    padding: 15px;
+  }
+
+  .content {
+    padding: 15px;         /* Increase padding for mobile content */
+  }
+}
+
+/* Mobile devices (max-width: 480px) */
+@media (max-width: 480px) {
+  app-header {
+    height: 50px;           /* Ensure header is taller on smaller screens */
+    font-size: 14px;        /* Reduce font size for small devices */
+  }
+
+  app-sidebar {
+    width: 100%;            /* Sidebar takes full width */
+    position: relative;     /* Sidebar is no longer fixed */
+    height: auto;           /* Adjust sidebar height */
+  }
+
+  .content-container {
+    margin-left: 0;         /* Reset left margin */
+    margin-top: 50px;       /* Ensure content starts below the header */
+  }
+
+  .content {
+    padding: 10px;          /* Reduce padding on small screens */
+  }
+}

@@ -1,0 +1,47 @@
+<div class="content">
+  <!-- Table to display leave requests -->
+  <div *ngIf="hasData; else noDataTemplate">
+    <table class="leave-table">
+      <thead>
+        <tr>
+          <th>Employee ID</th>
+          <th>Leave Type</th>
+          <th>Leave Reason</th>
+          <th>No. of Days</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let request of leaveRequests; let i = index" class="table-row">
+          <td>{{ request.empid }}</td>
+          <td>{{ request.leavetype }}</td>
+          <td>{{ request.leavereason }}</td>
+          <td>{{ request.noofdays }}</td>
+          <td>{{ request.status }}</td>
+          <td>
+            <!-- Hide buttons if the request belongs to the logged-in user -->
+            <div *ngIf="(request.entitycreflg === 'N' && (request.status === 'Pending' || request.status === '')) && (request.empid !== currentEmpId)">
+              <button class="reject-btn" (click)="deleteRequest(i)">Reject</button>
+              <button class="approve-btn" (click)="approve(request, i)">Approve</button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- No data template -->
+  <ng-template #noDataTemplate>
+    <div class="no-data">
+      <img
+        src="https://storage.googleapis.com/a1aa/image/5MWcRUNssN6KO9yUPQlebQ8HjUGlnX5qfMo29HAb2E3duPwTA.jpg"
+        alt="Illustration of a robot with a magnifying glass"
+        width="150"
+        height="150"
+      />
+      <p>No Data Found</p>
+      <button (click)="addRequest()" class="add-request-btn">Add Request</button>
+    </div>
+  </ng-template>
+</div>

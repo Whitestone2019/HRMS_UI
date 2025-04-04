@@ -1,0 +1,38 @@
+.widget-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .widget {
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .widget h3 {
+    margin-top: 0;
+  }
+  
+  .widget ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .widget ul li {
+    margin: 5px 0;
+  }
+  
+  .widget.leave-pending {
+    background-color: #ffeeba;
+  }
+  
+  .widget.birthdays {
+    background-color: #d1ecf1;
+  }
+  
+  .widget.attendance {
+    background-color: #c3e6cb;
+  }
+  

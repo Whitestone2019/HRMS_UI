@@ -1,0 +1,57 @@
+/* Sidebar styles */
+.sidebar {
+  width: 90px;
+  background-color: hsl(239, 89%, 17%);
+  padding: 5px 0;
+  color: white;
+  height: 100vh;
+  position: fixed;
+  top: 60px; /* Below the header */
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px; /* Space between links */
+}
+
+/* Sidebar link styles */
+.sidebar a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: white;
+  text-decoration: none;
+  padding: 8px 0;
+  width: 100%; /* Full width to enhance hover effect */
+  font-size: 12px;
+  text-align: center;
+  border-radius: 5px;
+}
+
+/* Active link style */
+.sidebar a.active {
+  background-color: #1c75f6;
+}
+
+/* Sidebar icon styles */
+.sidebar i {
+  font-size: 20px;
+  margin-bottom: 3px;
+  transition: color 0.3s ease;
+}
+
+/* Icon hover effect only */
+.sidebar a:hover i {
+  color: #2d95fd; /* Changes icon color on hover */
+}
+
+/* Responsive adjustment */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 50px;
+  }
+
+  .sidebar a {
+    font-size: 10px;
+  }
+}

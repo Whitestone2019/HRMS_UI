@@ -1,0 +1,63 @@
+<!-- <div class="salary-template">
+  <div class="header">
+    <h1>Salary Structure</h1>
+    <div class="company-info">
+      <h2>Your Company Name</h2>
+      <p>123 Business Street, City, Country</p>
+    </div>
+  </div>
+
+  <div class="employee-details">
+    <div class="form-group">
+      <label>Employee Name:</label>
+      <input type="text" [(ngModel)]="employeeName" placeholder="Enter employee name">
+    </div>
+    <div class="form-group">
+      <label>Employee ID:</label>
+      <input type="text" [(ngModel)]="employeeId" placeholder="Enter employee ID">
+    </div>
+  </div>
+
+  <div class="salary-breakdown">
+    <div class="earnings-section">
+      <h3>Earnings</h3>
+      <div class="salary-items">
+        <div class="salary-item header-row">
+          <span>Component</span>
+          <span>Amount</span>
+        </div>
+        <div class="salary-item" *ngFor="let earning of earnings">
+          <span>{{earning.name}}</span>
+          <input type="number" [(ngModel)]="earning.amount">
+        </div>
+        <div class="salary-item total">
+          <span>Total Earnings</span>
+          <span>{{getTotalEarnings() | number:'1.2-2'}}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="deductions-section">
+      <h3>Deductions</h3>
+      <div class="salary-items">
+        <div class="salary-item header-row">
+          <span>Component</span>
+          <span>Amount</span>
+        </div>
+        <div class="salary-item" *ngFor="let deduction of deductions">
+          <span>{{deduction.name}}</span>
+          <input type="number" [(ngModel)]="deduction.amount">
+        </div>
+        <div class="salary-item total">
+          <span>Total Deductions</span>
+          <span>{{getTotalDeductions() | number:'1.2-2'}}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="net-salary">
+    <h3>Net Salary</h3>
+    <div class="amount">{{getNetSalary() | number:'1.2-2'}}</div>
+  </div>
+</div> -->

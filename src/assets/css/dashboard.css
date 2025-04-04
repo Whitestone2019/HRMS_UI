@@ -1,0 +1,190 @@
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      overflow: hidden;
+    }
+
+    /* Top Navbar */
+    .navbar {
+      background-color: #1E3A6E;
+      color: white;
+      padding: 1px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 60px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000; /* Ensure navbar stays on top */
+    }
+    .navbar h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: normal;
+    }
+    .navbar .title-left {
+      padding-left: 10px;
+      font-size: 18px;
+    }
+    .navbar .title-center {
+      flex: 1; /* Allow center title to take available space */
+      text-align: center; /* Center the title */
+      font-size: 18px; /* Adjust font size as needed */
+    }
+    /* User Info Styling */
+    .user-info {
+      display: flex;
+      align-items: center;
+      margin-right: 20px;
+    }
+    .user-info span {
+      color: white;
+      margin-right: 15px;
+      font-size: 14px; /* Adjust font size */
+    }
+    #logoutBtn {
+      background-color: #e74c3c; /* Logout button color */
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background-color 0.3s;
+    }
+    #logoutBtn:hover {
+      background-color: #3B82F6; /* Darker shade on hover */
+    }
+    #editProfileBtn {
+      background-color: #3498db; /* Edit Profile button color */
+      border: none;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      margin-left: 10px; /* Space between buttons */
+      transition: background-color 0.3s;
+    }
+    #editProfileBtn:hover {
+      background-color: #2980b9; /* Darker shade on hover */
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: calc(100vh - 100px);
+      width: 250px;
+      background-color: #1E3A6E;
+      position: fixed;
+      top: 60px; /* Align under the top navbar */
+      left: 0;
+      padding-top: 20px;
+      overflow-y: auto; /* Make sidebar scrollable if content exceeds */
+      transition: transform 0.3s ease;
+    }
+    .sidebar img {
+      display: block;
+      margin: 0 auto;
+      width: 100px;
+      padding: 10px 0;
+    }
+    .sidebar ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .sidebar ul li {
+      padding: 15px 20px;
+      color: white;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+    }
+    .sidebar ul li.active,
+    .sidebar ul li:hover {
+      background-color: blue;
+    }
+    .sidebar ul li i {
+      margin-right: 10px;
+    }
+    .sidebar ul li:first-child {
+      background-color: #4A658B;
+    }
+    /* Dropdown icon */
+    .dropdown-icon {
+      margin-left: auto;
+      transition: transform 0.3s;
+    }
+    .submenu {
+      display: none; /* Hide submenus initially */
+      padding-left: 30px; /* Indent submenu items */
+      background-color: #4A658B; /* Same as hover color */
+    }
+    .submenu li {
+      padding: 10px 20px;
+      font-size: 14px;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+    }
+    .submenu li i {
+      margin-right: 10px;
+    }
+    .submenu li:hover {
+      background-color: #3B82F6; /* Lighter color on hover */
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 250px;
+      padding: 20px;
+      background-color: #f4f4f4;
+      min-height: calc(100vh - 60px); /* Adjust height based on navbar */
+      padding-top: 20px;
+      overflow-y: auto; /* Allow vertical scrolling */
+      transition: margin-left 0.3s ease;
+    }
+
+    /* Widget styling */
+    .widget {
+      background-color: white;
+      padding: 15px;
+      margin-bottom: 20px;
+      border-radius: 8px;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    .logo-image {
+      width: 200px; /* Custom width for the company logo */
+    }
+
+    /* Footer */
+    .footer {
+      background-color: #1E3A6E;
+      color: white;
+      text-align: center;
+      padding: 1px 0;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    /* Mobile view adjustments */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      .main-content {
+        margin-left: 0;
+      }
+      .navbar .menu-toggle {
+        display: block;
+        cursor: pointer;
+      }
+    }
+  

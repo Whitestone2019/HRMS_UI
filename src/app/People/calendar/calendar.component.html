@@ -1,0 +1,24 @@
+<div class="calendar-container">
+    <!-- Calendar Header with navigation buttons -->
+    <div class="calendar-header">
+      <button (click)="changeMonth(-1)" class="nav-button">&#8249;</button> <!-- Previous Month -->
+      <h2>{{ currentMonth }} {{ currentYear }}</h2>
+      <button (click)="changeMonth(1)" class="nav-button">&#8250;</button> <!-- Next Month -->
+    </div>
+  
+    <!-- Calendar Grid -->
+    <div class="calendar-grid">
+      <!-- Days of the week (Sun, Mon, etc.) -->
+      <div class="calendar-day" *ngFor="let day of daysOfWeek">{{ day }}</div>
+  
+      <!-- Dates of the month -->
+      <div 
+        *ngFor="let date of monthDates" 
+        class="calendar-date" 
+        [ngClass]="getStatusClass(date)"
+        (click)="onDateClick(date)">
+        {{ date.day }}
+      </div>
+    </div>
+  </div>
+  

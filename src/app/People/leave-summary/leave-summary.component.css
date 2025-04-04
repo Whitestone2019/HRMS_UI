@@ -1,0 +1,173 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #fcfbfb, #ffebc6);
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+.container {
+  padding: 20px;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.date-range .date-input {
+  background: #fff4e0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 8px;
+  padding: 10px;
+  font-size: 16px;
+  transition: all 0.3s ease-in-out;
+}
+.leave-card.disabled {
+  pointer-events: none; /* Prevents clicking */
+  opacity: 0.5; /* Makes it look disabled */
+}
+
+.date-input:focus {
+  border: 2px solid #ffc107;
+  outline: none;
+}
+
+.apply-leave {
+  background: linear-gradient(45deg, #375699, #375e99);
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  box-shadow: 0 5px 15px rgba(52, 52, 111, 0.3);
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.apply-leave:hover {
+  background: linear-gradient(45deg, #515c86, #48548f);
+  transform: scale(1.1);
+}
+
+.leave-cards {
+  display: flex;
+  gap: 20px;
+  margin: 20px 0;
+  animation: fadeInUp 1s ease-in-out;
+}
+
+.leave-card {
+  background: linear-gradient(135deg, #dbdbdb, #ffffff);
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  width: 20%;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease-in-out;
+}
+
+.leave-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.leave-card h3 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.icon {
+  font-size: 40px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* .icon:hover {
+  transform: rotate(360deg);
+} */
+
+.booked,
+.available {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.booked {
+  color: #ff7043;
+}
+
+.available {
+  color: #66bb6a;
+}
+
+.upcoming-leave {
+  background: linear-gradient(135deg, #e7f9ff, #cfeffd);
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  animation: fadeIn 1.5s ease;
+}
+
+.holiday-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin-top: 10px;
+}
+
+.holiday-table th,
+.holiday-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.holiday-table th {
+  background: #1f3057;
+  color: white;
+  font-size: 16px;
+}
+
+.holiday-name {
+  font-weight: bold;
+  color: #388e3c;
+}
+
+.holiday-date {
+  font-weight: bold;
+  color: #388e3c;
+}
+
+.holiday-type {
+  font-weight: bold;
+  color: #388e3c;
+}
+
+.holiday-row {
+  animation: rowLoad 0.6s ease-in-out;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+/* .holiday-row:hover {
+  background-color:linear-gradient(135deg, #e7f9ff, #cfeffd);
+  transform: scale(1.05);
+} */
+
+@keyframes fadeInUp {
+  0% {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

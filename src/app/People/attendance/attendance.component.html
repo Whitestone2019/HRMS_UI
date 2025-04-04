@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="content">
+    <div class="top-bar">
+      <div class="date-range">
+      </div>
+    </div>
+    <div class="check-in">
+      <div class="status" [ngClass]="{ 'in': employeeStatus === 'In', 'out': employeeStatus === 'Out' }">{{ employeeStatus }}</div>
+      <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>
+      <button *ngIf="employeeStatus === 'In'" (click)="checkOut()" class="checkout-btn">Check-out</button>
+    
+      <span class="timer">{{ elapsedTime }} Hrs</span>
+    </div>
+     <div class="content">
+      <div class="top-bar">
+        <div class="date-range">
+          <label for="fromDate">From:</label>
+          <input id="fromDate" type="date" [(ngModel)]="startDate" />
+          
+          <label for="toDate">To:</label>
+          <input id="toDate" type="date" [(ngModel)]="endDate" />
+          
+         <!-- <label for="employeeId">Employee ID:</label>
+          <input id="employeeId" type="text" [(ngModel)]="employeeId" />  -->
+          
+          <button (click)="getAttendanceDetails()">Fetch Attendance</button>
+        </div>
+      </div>
+      
+      <div class="attendance-details">
+        <table class="attendance-table" *ngIf="attendanceData && attendanceData.length > 0">
+          <thead>
+            <tr>
+              <th>Attendance Date</th>
+              <th>Status</th>
+              <th>Check-In</th>
+              <th>Check-Out</th>
+              <th>Hours Worked</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let record of attendanceData">
+              <td>{{ record.attendanceDate }}</td>
+              <td>{{ record.status }}</td>
+              <td>{{ record.checkIn }}</td>
+              <td>{{ record.checkOut }}</td>
+              <td>{{ record.hoursWorked }}</td>
+            </tr>
+          </tbody>
+        </table>
+        <p *ngIf="!attendanceData || attendanceData.length === 0">No records found</p>
+      </div>
+    </div> 
+    
+    <div class="footer">
+      <div class="timeline">
+        <span><i></i> 09AM</span>
+        <span><i></i> 10AM</span>
+        <span><i></i> 11AM</span>
+        <span><i></i> 12PM</span>
+        <span><i></i> 01PM</span>
+        <span><i></i> 02PM</span>
+        <span><i></i> 03PM</span>
+        <span><i></i> 04PM</span>
+        <span><i></i> 05PM</span>
+        <span><i></i> 06PM</span>
+      </div>
+    </div>
+  </div>
+</div>

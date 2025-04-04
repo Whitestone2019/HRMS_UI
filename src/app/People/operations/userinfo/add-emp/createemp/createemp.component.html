@@ -1,0 +1,458 @@
+<body>
+    <div class="container">
+        <div class="header">
+          
+          <div class="bkbutton" >
+          <button [routerLink]="['/add-emp']">
+            <i class="fas fa-arrow-left"></i> 
+          </button>
+        </div>
+
+            <h1>Add User(s)</h1>
+        </div>
+        <div class="steps">
+            <div class="step">
+                <span>1</span>
+                <p>Create User Account</p>
+            </div>
+            <div class="step active">
+                <span>2</span>
+                <p>Edit User Data</p>
+            </div>
+            <div class="step">
+                <span>3</span>
+                <p>Trigger Onboarding</p>
+            </div>
+        </div>
+        <div class="content">
+            <div class="section">
+                <h2>Basic information</h2>
+                <div class="form-group">
+                    <label for="employee-id">Employee ID <span class="required">*</span></label>
+                    <input type="text" id="employee-id">
+                
+                    <label for="nick-name">Nick name</label>
+                    <input type="text" id="nick-name">
+                
+                    <label for="first-name">First Name <span class="required">*</span></label>
+                    <input type="text" id="first-name">
+                
+                
+                    <label for="last-name">Last Name <span class="required">*</span></label>
+                    <input type="text" id="last-name">
+
+                    <label for="email-address">Email address <span class="required">*</span></label>
+                    <input type="text" id="email-address" value="sowmiyaa.govindhasamy@whitestones.in" readonly>
+                </div>
+            </div>
+            
+        </div>
+       
+    
+    
+        <div class="work-info-container">
+            <h3>Work Information</h3>
+            <div class="form-grid">
+              <!-- Left Column -->
+              <div class="form-group">
+                <label for="department">Department</label>
+                <div class="input-container">
+                  <select id="department">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="location">Location</label>
+                <div class="input-container">
+                  <select id="location">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="designation">Designation</label>
+                <div class="input-container">
+                  <select id="designation">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <!-- Right Column -->
+              <div class="form-group">
+                <label for="zohoRole"> Role</label>
+                <select id="zohoRole">
+                  <option>Select</option>
+                  <option>Team member</option>
+                </select>
+              </div>
+          
+              <div class="form-group">
+                <label for="employmentType">Employment Type</label>
+                <div class="input-container">
+                  <select id="employmentType">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="employeeStatus">Employee Status</label>
+                <div class="input-container">
+                  <select id="employeeStatus">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="sourceOfHire">Source of Hire</label>
+                <div class="input-container">
+                  <select id="sourceOfHire">
+                    <option>Select</option>
+                  </select>
+                  <button class="add-btn">+</button>
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="dateOfJoining">Date of Joining</label>
+                <input type="text" id="dateOfJoining" placeholder="dd-MMM-yyyy" />
+              </div>
+          
+              <div class="form-group">
+                <label>Current Experience</label>
+                <p>-</p>
+              </div>
+          
+              <div class="form-group">
+                <label>Total Experience</label>
+                <p>-</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hierarchy-info-container">
+            <h3>Hierarchy Information</h3>
+            <div class="form-group">
+              <label>Reporting Manager</label>
+              <select id="reportingManager">
+                <option>Select</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="personal-details-container">
+            <h3>Personal Details</h3>
+            <div class="form-grid">
+              <!-- Left Column -->
+              <div class="form-group">
+                <label for="dateOfBirth">Date of Birth</label>
+                <input type="text" id="dateOfBirth" placeholder="dd-MMM-yyyy" />
+              </div>
+          
+              <div class="form-group">
+                <label>Age</label>
+                <p>-</p>
+              </div>
+          
+              <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender">
+                  <option>Select</option>
+                </select>
+              </div>
+          
+              <div class="form-group">
+                <label>Marital Status</label>
+                <div class="radio-group">
+                  <label>
+                    <input type="radio" name="maritalStatus" value="single" /> Single
+                  </label>
+                  <label>
+                    <input type="radio" name="maritalStatus" value="married" /> Married
+                  </label>
+                </div>
+                <button class="add-btn">+</button>
+              </div>
+          
+              <div class="form-group">
+                <label for="aboutMe">About Me</label>
+                <textarea id="aboutMe" rows="3"></textarea>
+              </div>
+          
+              <!-- Right Column -->
+              <div class="form-group">
+                <label for="expertise">Ask me about/Expertise</label>
+                <textarea id="expertise" rows="3"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <div class="container">
+            <div class="header">Identity Information</div>
+            <div class="form-group">
+                <label for="uan">UAN</label>
+                <input type="text" id="uan" name="uan">
+            </div>
+            <div class="form-group">
+                <label for="pan">PAN</label>
+                <input type="text" id="pan" name="pan">
+            </div>
+            <div class="form-group">
+                <label for="aadhaar">Aadhaar</label>
+                <input type="text" id="aadhaar" name="aadhaar">
+            </div>
+        </div>
+          
+
+        <div class="contact-details-container">
+            <h3>Contact Details</h3>
+            <div class="form-grid">
+              <!-- Left Column -->
+              <div class="form-group">
+                <label for="workPhone">Work Phone Number</label>
+                <input type="text" id="workPhone" />
+              </div>
+          
+              <div class="form-group">
+                <label for="extension">Extension</label>
+                <input type="text" id="extension" />
+              </div>
+          
+              <div class="form-group">
+                <label for="seatingLocation">Seating Location</label>
+                <input type="text" id="seatingLocation" />
+              </div>
+          
+              <div class="form-group">
+                <label for="tags">Tags</label>
+                <textarea id="tags" rows="3"></textarea>
+              </div>
+          
+              <div class="form-group">
+                <label>Present Address</label>
+                <input type="text" placeholder="Address line 1" />
+                <input type="text" placeholder="Address line 2" />
+                <input type="text" placeholder="City" />
+                <select>
+                  <option>INDIA</option>
+                </select>
+                <select>
+                  <option>Select State</option>
+                </select>
+                <input type="text" placeholder="Postal Code" />
+              </div>
+          
+              <div class="form-group">
+                <label>Permanent Address</label>
+                <div class="checkbox-group">
+                  <input type="checkbox" id="sameAddress" />
+                  <label for="sameAddress">Same as Present Address</label>
+                </div>
+                <input type="text" placeholder="Address line 1" />
+                <input type="text" placeholder="Address line 2" />
+                <input type="text" placeholder="City" />
+                <select>
+                  <option>INDIA</option>
+                </select>
+                <select>
+                  <option>Select State</option>
+                </select>
+                <input type="text" placeholder="Postal Code" />
+              </div>
+          
+              <!-- Right Column -->
+              <div class="form-group">
+                <label for="personalMobile">Personal Mobile Number</label>
+                <div class="mobile-group">
+                  <select>
+                    <option>Select</option>
+                  </select>
+                  <input type="text" id="personalMobile" />
+                </div>
+              </div>
+          
+              <div class="form-group">
+                <label for="personalEmail">Personal Email Address</label>
+                <input type="email" id="personalEmail" />
+              </div>
+
+              <div class="form-group">
+                <input type="text" placeholder="Postal Code" class="postal-code-input" />
+              </div>
+            </div>
+          </div>
+
+
+          <div class="date-section">
+            <h3>Separation Information</h3>
+            <div class="form-group">
+              <label for="dateOfExit">Date of Exit</label>
+              <input type="text" id="dateOfExit" placeholder="dd-MMM-yyyy" class="date-picker-input" />
+            </div>
+          </div>
+          
+          <div class="system-fields-section">
+            <h3>System Fields</h3>
+            <div class="system-fields-container">
+              <div class="system-field">
+                <span class="label">Added By</span>
+                <span class="value">10009 - Admin - 1</span>
+              </div>
+              <div class="system-field">
+                <span class="label">Modified By</span>
+                <span class="value">10009 - Admin - 1</span>
+              </div>
+              <div class="system-field">
+                <span class="label">Added Time</span>
+                <span class="value">13-Nov-2024 10:04 AM</span>
+              </div>
+              <div class="system-field">
+                <span class="label">Modified Time</span>
+                <span class="value">13-Nov-2024 10:04 AM</span>
+              </div>
+              <div class="system-field">
+                <span class="label">Onboarding Status</span>
+                <span class="value">Not Triggered</span>
+              </div>
+            </div>
+          </div>
+
+          
+
+          <div class="education-details-section1">
+            <h3>Work Experience</h3>
+            <table class="education-details-table1" >
+              <table id="educationDetails1Table">
+              <thead>
+                <tr>
+                  <th>Company name</th>
+                  <th>Job Title</th>
+                  <th>From Date</th>
+                  <th>To Date</th>
+                  <th>Job Description</th>
+                  <th>Relevant</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let detail of educationDetails1; let i = index" class="education-row">
+                 <td><input [(ngModel)]="detail.company" placeholder="Company name" /></td>
+                <td><input [(ngModel)]="detail.job" placeholder="Job Title" /></td>
+                <td><input [(ngModel)]="detail.fyear" type="date" placeholder="dd-MMM-yyyy" /></td>
+                <td><input [(ngModel)]="detail.tyear" type="date" placeholder="dd-MMM-yyyy" /></td>
+                <td><input [(ngModel)]="detail.description" placeholder="Job Description" /></td>
+
+                  <td>
+                    <select>
+                      <option>Select</option>
+                      <option>Yes</option>
+                      <option>No</option>
+                    </select>
+                  </td>
+                  <td>
+                    <button (click)="removeRow(i)" *ngIf="educationDetails1.length > 1" class="remove-row-button">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </table>
+          
+            <!-- Button to add a new row -->
+            <button (click)="addRow1()" class="add-row-button">Add Row</button>
+          </div>
+
+          <div class="education-details-section">
+            <h3>Education Details</h3>
+            <table class="education-details-table">
+              <table id="educationDetailsTable">
+              <thead>
+                <tr>
+                  <th>Degree</th>
+                  <th>Institution</th>
+                  <th>Year</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let detail of educationDetails; let i = index" class="education-row">
+                  <td><input [(ngModel)]="detail.degree" placeholder="Enter degree" /></td>
+                  <td><input [(ngModel)]="detail.institution" placeholder="Enter institution" /></td>
+                  <td><input [(ngModel)]="detail.year" placeholder="Enter year" /></td>
+                  <td>
+                    <button (click)="removeRow(i)" *ngIf="educationDetails.length > 1" class="remove-row-button">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </table>
+          
+            <!-- Button to add a new row -->
+            <button (click)="addRow()" class="add-row-button">Add Row</button>
+          </div>
+
+
+          <div class="education-details-section2">
+            <h3>Dependent Details</h3>
+            <table class="education-details-table2">
+              <table id="educationDetails2Table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Relationship</th>
+                  <th>Date of Birth</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let detail of educationDetails2; let i = index" class="education-row">
+                  <td><input [(ngModel)]="detail.dname" placeholder="Enter Name " /></td>
+                  <td><input [(ngModel)]="detail.relation" placeholder="Enter Relationship details" /></td>
+                  <td><input [(ngModel)]="detail.dobyear" type="date" placeholder="dd-MMM-yyyy" /></td>
+                  <td>
+                    <button (click)="removeRow(i)" *ngIf="educationDetails2.length > 1" class="remove-row-button">
+                      Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            </table>
+          
+            <!-- Button to add a new row -->
+            <button (click)="addRow2()" class="add-row-button">Add Row</button>
+          </div>
+          
+                    
+
+
+          <div class="footer">
+            <button class="update" (click)="validateForm()">
+              <div class="icon approvals"></div>
+              <p>UPDATE</p>
+            </button>
+            <button class="update" (click)="validateForm()">
+              <div class="icon approvals"></div>
+              <p>SKIP</p>
+            </button>
+          </div>
+
+    </div>
+      
+
+</body>
+
+

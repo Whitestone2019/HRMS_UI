@@ -1,0 +1,220 @@
+/* Background Animation */
+@keyframes backgroundAnimation {
+  0% {
+    background: linear-gradient(45deg, #3498db, #2c3e50);
+  }
+  50% {
+    background: linear-gradient(45deg, #e74c3c, #f39c12);
+  }
+  100% {
+    background: linear-gradient(45deg, #3498db, #2c3e50);
+  }
+}
+
+body {
+  animation: backgroundAnimation 8s ease-in-out infinite;
+  background-size: 400% 400%;
+}
+
+/* General styles for form sections */
+.form-section, .form-section1 {
+  margin: 20px auto;
+  padding: 20px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(145deg, #f8f9fa, #e2e8f0);
+  max-width: 1400px; /* Increased max-width for wider forms */
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+}
+
+/* Select field styling */
+select {
+  padding: 10px 14px; /* Smaller padding */
+  border: 1px solid #bdc3c7;
+  border-radius: 6px; /* Smaller border-radius */
+  background-color: #ecf0f1;
+  cursor: pointer;
+  font-size: 0.9em; /* Smaller font */
+  transition: border-color 0.3s ease;
+}
+
+select:focus {
+  outline: none;
+  border-color: #3498db; /* Highlight color on focus */
+  box-shadow: 0 0 6px rgba(52, 152, 219, 0.5); /* Subtle glow on focus */
+}
+
+/* Heading style */
+.form-section h2, .form-section h3 {
+  margin-bottom: 12px;
+  font-size: 1.6em; /* Slightly smaller font */
+  font-weight: bold;
+  color: #34495e;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Subtle text shadow */
+}
+
+/* Form rows and columns */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px; /* Reduced gap */
+  margin-bottom: 15px; /* Reduced margin */
+}
+
+.form-column {
+  flex: 1; /* Smaller input width */
+  max-width: 600px;
+  padding: 8px; /* Reduced padding */
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px; /* Reduced margin */
+  color: #2c3e50;
+}
+
+/* Input field styling */
+input[type="text"], input[type="email"], input[type="tel"], input[type="file"], select {
+  width: 100%;
+  padding: 10px 15px; /* Smaller padding */
+  border: 1px solid #bdc3c7;
+  border-radius: 6px; /* Smaller radius */
+  box-sizing: border-box;
+  margin-bottom: 12px; /* Reduced margin */
+  font-size: 0.9em; /* Smaller font size */
+  transition: border-color 0.3s ease;
+}
+
+input[type="text"]:disabled, input[type="email"]:disabled, input[type="tel"]:disabled, select:disabled {
+  background-color: #ecf0f1;
+  cursor: not-allowed;
+}
+
+/* Button styles */
+button {
+  background: linear-gradient(90deg, #3498db, #2c3e50);
+  color: white;
+  padding: 10px 20px; /* Smaller padding */
+  border: none;
+  border-radius: 6px; /* Reduced border-radius */
+  cursor: pointer;
+  font-size: 0.9em; /* Smaller font size */
+  transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1); /* More prominent shadow */
+}
+
+/* Animation effect on button click */
+button:active {
+  animation: clickAnimation 0.3s ease-in-out;
+}
+
+@keyframes clickAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.95); /* Slight shrink effect */
+  }
+  100% {
+    transform: scale(1); /* Return to original size */
+  }
+}
+
+/* Button hover effect */
+button:hover {
+  background-color: #2980b9;
+  transform: translateY(-2px); /* Add slight elevation effect */
+}
+
+/* Styling for the checkbox container */
+input[type="checkbox"] {
+  margin-top: 8px; /* Reduced margin */
+  margin-right: 6px; /* Reduced margin */
+}
+
+/* Error messages */
+.error-message {
+  color: #e74c3c;
+  font-size: 13px; /* Smaller font */
+  margin-top: 5px;
+  margin-left: 5px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px; /* Reduced margin */
+  background-color: #fff;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+}
+
+th, td {
+  padding: 10px; /* Smaller padding */
+  text-align: left;
+  border: 1px solid #bdc3c7;
+}
+
+th {
+  background-color: #3498db;
+  color: white;
+  font-size: 1.1em;
+}
+
+td {
+  font-size: 0.9em;
+  color: #7f8c8d;
+}
+
+tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+input[type="text"]:disabled {
+  background-color: #ecf0f1;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+  .form-row {
+    flex-direction: column;
+  }
+
+  .form-column {
+    min-width: 100%;
+  }
+
+  button {
+    width: 100%;
+  }
+}
+
+.mandatory {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.delete-icon {
+  color: #e74c3c;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.delete-icon i {
+  color: #e74c3c;
+}
+
+.delete-icon:hover {
+  opacity: 0.7;
+}
+
+/* Dropdown container */
+.dropdown-container {
+  position: relative;
+  overflow: visible !important;
+}

@@ -1,0 +1,132 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f0f2f5;
+  margin: 0;
+  padding: 0;
+}
+
+.modal {
+  display: flex;
+  align-items: stretch;
+  height: auto;
+  justify-content: space-around;
+  align-content: space-between;
+  flex-wrap: wrap;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 600px;
+  max-width: 100%;
+}
+
+.modal-header, .modal-footer {
+  padding: 15px;
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.modal-header .close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: transparent;
+color: #ff6b6b; /* Soft red color */
+padding: 0.5rem;
+/* position: absolute; */
+top: 10px;
+left: 10px;
+transition: transform 0.2s, color 0.2s;  
+}
+.modal-header .close-btn:hover {
+  transform: scale(1.2);
+  color: #ff4c4c; /* Brighter red on hover */
+}
+
+.modal-header .close-btn span {
+  display: inline-block;
+  font-family: Arial, sans-serif;
+  font-weight: bold;
+}
+
+.modal-header .close-btn:focus {
+  outline: none; 
+  color: #ff4c4c; 
+}
+.modal-body {
+  padding: 20px;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.form-group input, .form-group select, .form-group textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.form-group input[type="date"] {
+  width: calc(50% - 20px);
+}
+
+.form-group .date-group {
+  display: flex;
+  align-items: center;
+}
+
+.form-group .date-group input {
+  margin-right: 10px;
+}
+
+.form-group .date-group .calendar-icon {
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #e5e5e5;
+}
+
+.modal-footer button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.modal-footer .btn-submit {
+  background-color: #007bff;
+  color: white;
+  margin-right: 10px;
+}
+
+.modal-footer .btn-cancel {
+  background-color: #f8f9fa;
+  color: black;
+}

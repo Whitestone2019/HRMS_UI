@@ -1,0 +1,72 @@
+<app-header></app-header>
+
+<div class="main-container">
+    <app-adminmenu></app-adminmenu>
+    <div class="double-container">
+      <div class="container left-container">
+        <h1>Add Employee</h1>
+        <form [formGroup]="addEmployeeForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="organizationName">Organization Name:</label>
+            <input formControlName="organizationName" type="text" id="organizationName" required>
+          </div>
+          <div class="form-group">
+            <label for="employeeName">Employee Name:</label>
+            <input formControlName="employeeName" type="text" id="employeeName" required>
+          </div>
+          <div class="form-group">
+            <label for="employeeId">Employee ID:</label>
+            <input formControlName="employeeId" type="text" id="employeeId" required>
+          </div>
+          <div class="form-group">
+            <label for="dateOfJoining">Date of Joining:</label>
+            <input formControlName="dateOfJoining" type="date" id="dateOfJoining" required>
+          </div>
+          <div class="form-group">
+            <label for="role">Role:</label>
+            <select formControlName="role" id="role" required>
+              <option value="" disabled>Select a role</option>
+              <option value="manager">Manager</option>
+              <option value="developer">Developer</option>
+              <!-- Add more roles as needed -->
+            </select>
+          </div>
+       
+          <div class="form-group">
+            <label for="designation">Designation:</label>
+            <input formControlName="designation" type="text" id="designation">
+          </div>
+        </form>
+    </div>
+          <div class="container right-container">
+            <form [formGroup]="addEmployeeForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="reportingManagerId">Reporting Manager ID:</label>
+            <input formControlName="reportingManagerId" type="text" id="reportingManagerId">
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input formControlName="password" type="password" id="password" required>
+          </div>
+          <div class="form-group">
+            <label for="disableDate">Disable Date:</label>
+            <input formControlName="disableDate" type="date" id="disableDate">
+            <input formControlName="disable" type="checkbox" id="disable">
+            <label for="disable">Disable Employee</label>
+          </div>
+          <div class="form-group">
+            <label for="deleteDate">Delete Date:</label>
+            <input formControlName="deleteDate" type="date" id="deleteDate">
+            <input formControlName="delete" type="checkbox" id="delete">
+            <label for="delete">Delete Employee</label>
+          </div>
+          <button type="submit" [disabled]="!addEmployeeForm.valid">Add Employee</button>
+        </form>
+        <div *ngIf="successMessage" class="alert alert-success">{{ successMessage }}</div>
+      </div>
+    </div>
+  </div>
+  <!--<app-adminmenu></app-adminmenu> -->
+
+
+<app-footer></app-footer>

@@ -1,0 +1,22 @@
+<!-- widget.component.html -->
+<div class="widget-container">
+    <div class="widget leave-pending">
+      <h3>Leave Pending</h3>
+      <p>{{ leavePendingCount }} Pending Leaves</p>
+    </div>
+    
+    <div class="widget birthdays">
+      <h3>Upcoming Birthdays</h3>
+      <ul>
+        <li *ngFor="let employee of upcomingBirthdays">
+          {{ employee.name }} - {{ employee.birthday | date:'dd MMM' }}
+        </li>
+      </ul>
+    </div>
+    
+    <div class="widget attendance">
+      <h3>Attendance</h3>
+      <p>{{ totalAttendance }} Employees Present Today</p>
+    </div>
+  </div>
+  

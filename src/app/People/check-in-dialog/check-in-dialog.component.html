@@ -1,0 +1,12 @@
+<h2>Check-In Status</h2>
+<div class="dialog-container">
+  <mat-form-field>
+    <mat-label>Enter your check-in status</mat-label>
+    <input matInput [(ngModel)]="checkInStatus" />
+  </mat-form-field>
+
+  <div class="button-container">
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-button (click)="onConfirm()">Confirm</button>
+  </div>
+</div>

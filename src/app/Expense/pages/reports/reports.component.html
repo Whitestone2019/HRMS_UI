@@ -1,0 +1,87 @@
+<div class="report-container" *ngIf="!showSingleReport">
+  <h1>Expenses Report</h1>
+  <div class="date-input-container">
+    <label for="month-year-select">Select Month:</label>
+    <select
+      id="month-year-select"
+      (click)="$event.stopPropagation()"
+      (change)="onMonthYearChange($event)"
+      [(ngModel)]="selectedMonthYear"
+      style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 1rem;"
+    >
+      <option value="" disabled selected>Select Month</option>
+      <option *ngFor="let option of monthYearOptions" [value]="option.month + '-' + option.year">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+  <table class="report-table" *ngIf="expenses && expenses.length > 0">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Employee Name</th>
+        <th>Date</th>
+        <th>Category/Description</th>
+        <th>Amount</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let expense of expenses">
+        <td>{{ expense.empId }}</td>
+        <td>{{ expense.employeeName }}</td>
+        <td>{{ expense.date | date: 'yyyy-MM-dd' }}</td>
+        <td>{{ expense.category }} / {{ expense.description }}</td>
+        <td>{{ expense.currency }} {{ expense.amount }}</td>
+        <td>{{ expense.status }}</td>
+        <td>
+          <button class="action-btn" (click)="viewExpenseDetails(expense)">
+            View Details
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <p *ngIf="expenses && expenses.length === 0">No expenses found for the selected month.</p>
+  <p *ngIf="!expenses">Loading...</p>
+  <div class="button-container" *ngIf="expenses && expenses.length > 0">
+    <button (click)="downloadReport()" class="download-btn">
+      Download Report
+    </button>
+  </div>
+</div>
+<div class="single-report-container" *ngIf="showSingleReport">
+  <button (click)="backToMainPage()" class="back-btn">Back</button>
+  <h2>Expense Details for Selected Date</h2>
+  <h3>Employee Name: {{ selectedExpense.employeeName }}</h3>
+  <table class="report-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Category</th>
+        <th>Description</th>
+        <th>Amount</th>
+        <th>Currency</th>
+        <th>Status</th>
+        <th>Reject Reason</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>{{ selectedExpense.date | date: 'yyyy-MM-dd' }}</td>
+        <td>{{ selectedExpense.category }}</td>
+        <td>{{ selectedExpense.description }}</td>
+        <td>{{ selectedExpense.amount }}</td>
+        <td>{{ selectedExpense.currency }}</td>
+        <td>{{ selectedExpense.status }}</td>
+        <td>{{ selectedExpense.rejectreason }}</td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="button-container">
+    <button (click)="downloadSingleExpenseReport()" class="download-btn">
+      Download Expense Report
+    </button>
+  </div>
+</div>

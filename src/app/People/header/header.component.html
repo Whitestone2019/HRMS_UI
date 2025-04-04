@@ -1,0 +1,47 @@
+<div class="header">
+  <div class="left">
+    <!-- Company logo section -->
+    <div class="company-logo">
+      <img src="/HRMS/assets/images/WHITESTONE.png" alt="Company Logo" class="company-icon" />
+    </div>
+
+    <!-- Links section -->
+    <div class="menu-links" [class.show]="isMenuVisible">
+      <a *ngIf="isMenuItemVisible('dashboard')" [routerLink]="'/dashboard'" [routerLinkActive]="['active']"
+        [class.disabled]="!userRole.trim()" (click)="!userRole.trim() && $event.preventDefault()">
+        My Space
+      </a>
+      <a *ngIf="isMenuItemVisible('team')" routerLink="/dashboard" [routerLinkActive]="['active']">
+        Team
+      </a>
+      <a *ngIf="isMenuItemVisible('organization')" routerLink="/dashboard" [routerLinkActive]="['active']">
+        Organization
+      </a>
+    </div>
+  </div>
+
+  <!-- Right Section -->
+  <div class="right">
+    <!-- Menu button for dropdown -->
+    <div class="menu-button-dropdown" (document:click)="handleOutsideClick($event)">
+      <img
+        src="/HRMS/assets/images/menu-button.png"
+        alt="Menu Button"
+        class="menu-icon"
+        (click)="toggleMenu($event)"
+      />
+      
+      <div class="dropdown-menu" [class.show]="isMenuVisible">
+        <a *ngIf="isAdmin" routerLink="/dashboard/overview" (click)="closeMenu()">People</a>
+        <a *ngIf="isAdmin" routerLink="/expences/dashboardexp" (click)="closeMenu()">Expense</a>
+        <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>
+      </div>      
+    </div>
+  
+
+    <!-- Logout button -->
+    <button class="logout-button" (click)="logout()">
+      <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+  </div>
+</div>

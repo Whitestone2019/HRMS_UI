@@ -1,0 +1,83 @@
+ /* Body styling to center the login form */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1E3A8A; /* Blue background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        /* Styling for the login container */
+        /* .login-container {
+            background-color: #FFFFFF;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 300px;
+            position: relative;
+        } */
+
+        /* Styling for the user image */
+        .user-image {
+            width: 80px; /* Custom width for user image */
+            height: 80px;
+            margin-bottom: 20px;
+            border-radius: 50%; /* Make it circular if desired */
+            position: absolute;
+            top: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: white; /* Teal background */
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .user-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        /* Styling for the company logo */
+        .logo-image {
+            width: 120px; /* Custom width for the company logo */
+        }
+
+        /* Input field styling */
+        /* .login-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #3B82F6; 
+            border-radius: 4px;
+            font-size: 14px;
+        } */
+
+        /* Button styling */
+        /* .login-container button {
+            background-color: #FFFFFF;
+            color: #000000;
+            padding: 10px;
+            border: 1px solid #3B82F6; 
+            border-radius: 4px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        } */
+
+        /* .login-container button:hover {
+            background-color: #3B82F6; 
+            color: #FFFFFF;
+        } */
+
+        /* Error message styling */
+        .error-message {
+            color: red;
+            margin-top: 10px;
+        }

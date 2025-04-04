@@ -1,0 +1,123 @@
+<div class="content">
+  <div class="main-content">
+    <div class="controls">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <span style="font-size: 28px; font-weight: bold; color: #2c3e50; text-transform: uppercase; letter-spacing: 1px;">
+          Travel Request View
+        </span>
+        <button
+          (click)="addRecord()"
+          style="
+            padding: 12px 20px;
+            background: linear-gradient(90deg, #ff6f61, #f15bb5);
+            color: white;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.2s ease;
+            margin-left: 700px;
+          "
+          onmouseover="this.style.background='linear-gradient(90deg, #f15bb5, #ff6f61)'; this.style.transform='translateY(-2px)'"
+          onmouseout="this.style.background='linear-gradient(90deg, #ff6f61, #f15bb5)'; this.style.transform='translateY(0)'"
+        >
+          Add Travel Record
+        </button>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <!-- Snowflakes -->
+      <div class="snowflakes">
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+         <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+        <div class="snowflake"></div>
+      </div>
+      <!-- End Snowflakes -->
+
+      <table *ngIf="records && records.length > 0" class="styled-table">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Travel ID</th>
+            <th>Employee Department</th>
+            <th>Place of Visit</th>
+            <th>Expected Date of Departure</th>
+            <th>Expected Date of Arrival</th>
+            <th>Purpose of Visit</th>
+            <th>Expected Duration in Days</th>
+            <th>Is Billable to Customer</th>
+            <th>Client Name</th>
+            <th>Approval Status</th>
+            <th>Requested Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let record of records">
+            <td>{{ record.employeeId }}</td>
+            <td>{{ record.travelId }}</td>
+            <td>{{ record.department }}</td>
+            <td>{{ record.placeOfVisit }}</td>
+            <td>{{ record.departureDate | date }}</td>
+            <td>{{ record.arrivalDate | date }}</td>
+            <td>{{ record.purpose }}</td>
+            <td>{{ record.expdur }}</td>
+            <td>{{ record.billcust }}</td>
+            <td>{{ record.custname }}</td>
+            <td [ngClass]="{
+              'pending-status': record.status === 'Y',
+              'approved-status': record.status === 'N'
+            }">
+              {{ record.status === 'Y' ? 'Pending' : record.status === 'N' ? 'Approved' : 'Unknown' }}
+            </td>
+            <td>{{ record.addedTime }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table *ngIf="!records.length" class="styled-table">
+        <tbody>
+          <tr>
+            <td class="no-records" colspan="14">
+              <img src="https://storage.googleapis.com/a1aa/image/sWNmsaVzeHwXQKNt9cp8IpnJV6bnB5pBxBxxHAufoHbEiJvTA.jpg" alt="No records" />
+              <div>No records found</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

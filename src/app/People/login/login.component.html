@@ -1,0 +1,44 @@
+<div>
+  <div class="login-page">
+    <div class="quote-container">
+      <h2>Company Quotes</h2>
+      <p>"Innovation distinguishes between a leader and a follower." - Steve Jobs</p>
+      <p>"The only way to do great work is to love what you do." - Steve Jobs</p>
+    </div>
+    <div class="login-container">
+      <div class="user-image">
+        <img alt="User icon" src="/HRMS/assets/images/user.png" />
+      </div>
+      
+      <form (ngSubmit)="login()">
+        <input id="username" [(ngModel)]="user.username" name="username" placeholder="User name" required />
+    
+        <div class="password-input-container">
+          <input 
+            id="password" 
+            [(ngModel)]="user.password" 
+            name="password" 
+            placeholder="Password" 
+            [type]="passwordVisible ? 'text' : 'password'" 
+            required 
+            />
+          <i 
+            class="fa" 
+            [ngClass]="passwordVisible ? 'fa-eye' : 'fa-eye-slash'" 
+            (click)="togglePasswordVisibility()" 
+            aria-hidden="true">
+          </i>
+          
+        </div>
+    
+        <button type="submit">LOGIN</button>
+        <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
+    
+        <!-- Forgot Password Button -->
+        <div class="reset-password">
+          <button type="button" (click)="navigateToResetPassword()">Reset your password?</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

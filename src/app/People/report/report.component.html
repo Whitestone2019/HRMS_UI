@@ -1,0 +1,77 @@
+<div class="report-container" *ngIf="!showSingleReport">
+  <h1>Monthly Employee Report</h1>
+
+  <!-- Dropdown for selecting month -->
+  <div class="dropdown-container">
+    <label for="month-select">Select Month:</label>
+    <select id="month-select" (click)="$event.stopPropagation()" (change)="onMonthChange($event)">
+      <option *ngFor="let month of months" [value]="month.value" [selected]="month.value === selectedMonth">
+        {{ month.label }}
+      </option>
+    </select>
+  </div>
+
+  <table class="report-table">
+    <thead>
+      <tr>
+        <th>Employee Name</th>
+        <th>ID</th>
+        <th>Department</th>
+        <th>Days Present</th>
+        <th>Leaves Taken</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees">
+        <td>{{ employee.name }}</td>
+        <td>{{ employee.id }}</td>
+        <td>{{ employee.department }}</td>
+        <td>{{ employee.daysPresent }}</td>
+        <td>{{ employee.leavesTaken }}</td>
+        <td>
+          <button class="action-btn" (click)="viewEmployeeReport(employee)">View Report</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="button-container">
+    <button (click)="downloadReport()" class="download-btn">Download Report</button>
+    <button (click)="generateLeaveReport()" class="leave-report-btn">Employee Leave Report</button>
+  </div>
+</div>
+
+<div class="single-report-container" *ngIf="showSingleReport">
+  <button (click)="backToMainPage()" class="back-btn">Back</button>
+  <h2>Employee Report for Selected Month</h2>
+  <h3>Employee Name: {{ selectedEmployee.name }}</h3>
+
+  <table class="report-table">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Attendance Status</th>
+        <th>Check-In Time</th>
+        <th>Check-Out Time</th>
+        <th>Worked Hours</th>
+        <th>ID</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let record of employeeReportData">
+        <td>{{ record.attendanceDate }}</td>
+        <td>{{ record.status }}</td>
+        <td>{{ record.checkin }}</td>
+        <td>{{ record.checkout }}</td>
+        <td>{{ record.totalHoursWorked }}</td>
+        <td>{{ record.attendanceId }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="button-container">
+    <button (click)="downloadSingleEmployeeReport()" class="download-btn">Download Employee Report</button>
+    <button (click)="generateLeaveReport()" class="leave-report-btn">Employee Leave Report</button>
+  </div>
+</div>

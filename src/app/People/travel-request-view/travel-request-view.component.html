@@ -1,0 +1,127 @@
+<div class="travel-request-form">
+  <h2>Add Travel Request</h2>
+  <form #travelRequestForm="ngForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="employeeId">Employee ID <span class="required">*</span></label>
+        <input
+          type="text"
+          id="employeeId"
+          [(ngModel)]="travelRequest.employeeId"
+          name="employeeId"
+          required
+          readonly
+        />
+        <div class="error" *ngIf="errors.employeeId">{{ errors.employeeId }}</div>
+      </div>
+
+      <div class="form-group">
+        <label for="placevisit">Place of Visit <span class="required">*</span></label>
+        <input
+          type="text"
+          id="placevisit"
+          [(ngModel)]="travelRequest.placevisit"
+          name="placevisit"
+          required
+        />
+        <div class="error" *ngIf="errors.placevisit">{{ errors.placevisit }}</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="department">Employee Department <span class="required">*</span></label>
+        <select id="department" [(ngModel)]="travelRequest.department" (click)="$event.stopPropagation()" name="department" required>
+          <option value="" disabled selected>Select Department</option>
+          <option *ngFor="let dept of departments" [value]="dept">{{ dept }}</option>
+        </select>
+        <div class="error" *ngIf="errors.department">{{ errors.department }}</div>
+      </div>
+
+      <div class="form-group">
+        <label for="arrivalDate">Expected Date of Arrival <span class="required">*</span></label>
+        <input
+          type="date"
+          id="arrivalDate"
+          [(ngModel)]="travelRequest.arrivalDate"
+          name="arrivalDate"
+          (change)="calculateDuration()"
+          required
+        />
+        <div class="error" *ngIf="errors.arrivalDate">{{ errors.arrivalDate }}</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="departureDate">Expected Date of Departure <span class="required">*</span></label>
+        <input
+          type="date"
+          id="departureDate"
+          [(ngModel)]="travelRequest.departureDate"
+          name="departureDate"
+          (change)="calculateDuration()"
+          required
+        />
+        <div class="error" *ngIf="errors.departureDate">{{ errors.departureDate }}</div>
+      </div>
+
+      <div class="form-group">
+        <label for="expdurdays">Expected Duration in Days <span class="required">*</span></label>
+        <input
+          type="text"
+          id="expdurdays"
+          [(ngModel)]="travelRequest.expdurdays"
+          name="expdurdays"
+          readonly
+          required
+        />
+        <div class="error" *ngIf="errors.expdurdays">{{ errors.expdurdays }}</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="purpose">Purpose of Visit <span class="required">*</span></label>
+        <input
+          type="text"
+          id="purpose"
+          [(ngModel)]="travelRequest.purpose"
+          name="purpose"
+          required
+        />
+        <div class="error" *ngIf="errors.purpose">{{ errors.purpose }}</div>
+      </div>
+
+      <div class="form-group">
+        <label for="billable">Is Billable? <span class="required">*</span></label>
+        <select id="billable" [(ngModel)]="travelRequest.billable" (click)="$event.stopPropagation()" name="billable" required>
+          <option value="" disabled selected>Select</option>
+          <option [value]="true">Yes</option>
+          <option [value]="false">No</option>
+        </select>
+        <div class="error" *ngIf="errors.billable">{{ errors.billable }}</div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="custname">Customer Name <span class="required">*</span></label>
+        <input
+          type="text"
+          id="custname"
+          [(ngModel)]="travelRequest.custname"
+          name="custname"
+          required
+          style="width: 50%;"
+        />
+        <div class="error" *ngIf="errors.custname">{{ errors.custname }}</div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button (click)="submit()" class="btn btn-primary">Submit</button>
+      <button (click)="cancel()" class="btn btn-secondary">Cancel</button>
+    </div>
+  </form>
+</div>

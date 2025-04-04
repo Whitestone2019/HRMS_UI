@@ -1,0 +1,104 @@
+<div class="admin-menu">
+  <h3>DashBoard</h3>
+  <ul>
+    <li>
+      <a (click)="toggleSubMenu('Employee_Management')">Employee Management</a>
+      <ul *ngIf="isSubMenuOpen('Employee_Management')">
+        <li><a routerLink="/Employee_Management/addemp">Add Employee</a></li>
+        <li><a routerLink="/Employee_Management/empdir">Employee Directory</a></li>
+        <li><a routerLink="/Employee_Management/mngrol">Manage Roles & Permissions</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Attendance_Management')">Attendance Management</a>
+      <ul *ngIf="isSubMenuOpen('Attendance_Management')">
+        <li><a routerLink="/Attendance_Management/Mark_Attendance">Mark Attendance</a></li>
+        <li><a routerLink="/Attendance_Management/Attendance_Reports">Attendance Reports</a></li>
+        <li>
+          <a (click)="toggleSubMenu('Attendance_Management/Leave_Management')">Leave Management</a>
+          <ul *ngIf="isSubMenuOpen('Attendance_Management/Leave_Management')">
+            <li><a routerLink="/Attendance_Management/Leave_Management/Apply_Leave">Apply  Leave</a></li>
+            <li><a routerLink="/Attendance_Management/Leave_Management/Leave_Status">View Leave Status</a></li>
+          <li><a routerLink="/Attendance_Management/Leave_Management/Leave_History">Leave History</a></li>
+          </ul>
+      </li>
+        <li><a routerLink="/Attendance_Management/Timesheet_Submission">Timesheet Submission</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Payroll_Management')">Payroll Management</a>
+      <ul *ngIf="isSubMenuOpen('Payroll_Management')">
+        <li><a routerLink="/Payroll_Management/Payroll_Setup">Payroll Setup</a></li>
+        <li><a routerLink="/Payroll_Management/Salary_Processing">Salary Processing</a></li>
+        <li><a routerLink="/Payroll_Management/Payslip_Generation">Payslip Generation</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Performance_Management')">Performance Management</a>
+      <ul *ngIf="isSubMenuOpen('Performance_Management')">
+        <li><a routerLink="/Performance_Management/Set_Objectives_and_KPIs">Set Objectives & KPIs</a></li>
+        <li><a routerLink="/Performance_Management/Performance_Reviews">Performance Reviews</a></li>
+        <li><a routerLink="/Performance_Management/360-Degree_Feedback">360-Degree Feedback</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Recruitment_Management')">Recruitment Management</a>
+      <ul *ngIf="isSubMenuOpen('Recruitment_Management')">
+        <li><a routerLink="/Recruitment_Management/Job_Posting">Job Posting</a></li>
+        <li><a routerLink="/Recruitment_Management/Applicant_Tracking">Applicant Tracking</a></li>
+        <li><a routerLink="/Recruitment_Management/Interview_Scheduling">Interview Scheduling</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Training_and_Development')">Training & Development</a>
+      <ul *ngIf="isSubMenuOpen('Training_and_Development')">
+        <li><a routerLink="/Training_and_Development/Training_Programs">Training Programs</a></li>
+        <li><a routerLink="/Training_and_Development/Skill_Development">Skill Development</a></li>
+        <li><a routerLink="/Training_and_Development/Certifications">Certifications</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('TimesheetsProject_and_Management')">TimesheetsProject & Management</a>
+      <ul *ngIf="isSubMenuOpen('TimesheetsProject_and_Management')">
+        <li><a routerLink="/TimesheetsProject_and_Management/Project_Reports">Project Reports</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Benefits_Management')">Benefits Management</a>
+      <ul *ngIf="isSubMenuOpen('Benefits_Management')">
+        <li><a routerLink="/Benefits_Management/Health_Insurance">Health Insurance</a></li>
+        <li><a routerLink="/Benefits_Management/PF_and_Gratuity">PF & Gratuity</a></li>
+        <li><a routerLink="/Benefits_Management/Compensation_Statment">Compensation Statment</a></li>
+        <li><a routerLink="/Benefits_Management/Hike_Letter_History">Hike Letter/History</a></li>
+        <li><a routerLink="/Benefits_Management/View_Payslips">ViewPayslips</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Reports_and_Analytics')">Reports & Analytics</a>
+      <ul *ngIf="isSubMenuOpen('Reports_and_Analytics')">
+        <li><a routerLink="/Reports_and_Analytics/Custom_Reports">Custom Reports</a></li>
+        <li><a routerLink="/Reports_and_Analytics/HR_Analytics">HR Analytics</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Employee_Self_Service')">Employee Self-Service</a>
+      <ul *ngIf="isSubMenuOpen('Employee_Self_Service')">
+        <li><a routerLink="/Employee_Self_Service/Profile_Update">Profile Update</a></li>
+        <li><a routerLink="/Employee_Self_Service/Employee_Directory">Employee Directory</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Compliance_Management')">Compliance Management</a>
+      <ul *ngIf="isSubMenuOpen('Compliance_Management')">
+        <li><a routerLink="/Compliance_Management/Document_Management">Document Management</a></li>
+      </ul>
+    </li>
+    <li>
+      <a (click)="toggleSubMenu('Admin_and_Settings')">Admin & Settings</a>
+      <ul *ngIf="isSubMenuOpen('Admin_and_Settings')">
+        <li><a routerLink="/Admin_and_Settings/User_Management">User Management</a></li>
+        <li><a routerLink="/Admin_and_Settings/System_Configuration">System Configuration</a></li>
+      </ul>
+    </li>
+  </ul>
+</div>

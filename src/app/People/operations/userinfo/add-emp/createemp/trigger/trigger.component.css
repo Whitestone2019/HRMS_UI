@@ -1,0 +1,144 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f7fa;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.header h1 {
+    font-size: 18px;
+    margin: 0;
+}
+
+.header .back-button {
+    margin-right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.steps {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0;
+}
+
+.steps .step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 14px;
+    color: #999;
+}
+
+.steps .step.active {
+    color: #007bff;
+}
+
+.steps .step .circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.steps .step.active .circle {
+    background-color: #007bff;
+    color: #fff;
+}
+
+.content {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.content h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.content .radio-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.content .radio-group label {
+    margin-right: 20px;
+    font-size: 14px;
+}
+
+.content .radio-group input {
+    margin-right: 5px;
+}
+
+.content .note {
+    background-color: #fff8e1;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+}
+
+/* Basic Styles for Submit Button */
+.submit-btn {
+    background: linear-gradient(45deg, #6a11cb, #2575fc); /* Gradient Background */
+    color: white; /* Text Color */
+    border: none; /* Remove default border */
+    border-radius: 50px; /* Rounded, pill-shaped button */
+    padding: 8px 20px; /* Smaller padding for a smaller button */
+    font-size: 14px; /* Smaller font size */
+    font-weight: bold; /* Bold text */
+    cursor: pointer; /* Pointer cursor on hover */
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease; /* Smooth transitions */
+    display: inline-flex; /* Make it inline-block */
+    justify-content: center; /* Center text */
+    align-items: center; /* Vertically align text */
+    text-transform: uppercase; /* Make text uppercase */
+  
+    /* Position the button at the bottom-right corner */
+    position: fixed; /* Fixed position relative to the viewport */
+    right: 20px; /* Distance from the right edge */
+    bottom: 20px; /* Distance from the bottom edge */
+  }
+  
+  /* Button Hover Effect */
+  .submit-btn:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Add a shadow for depth */
+    background: linear-gradient(45deg, #2575fc, #6a11cb); /* Reverse gradient on hover */
+  }
+  
+  /* Button Focus Effect */
+  .submit-btn:focus {
+    outline: none; /* Remove default outline */
+    box-shadow: 0 0 0 4px rgba(37, 117, 252, 0.4); /* Highlight focus with a blue shadow */
+  }
+  
+  /* Disabled Button Style (if needed) */
+  .submit-btn:disabled {
+    background: #b0b0b0; /* Gray background when disabled */
+    cursor: not-allowed; /* Show not-allowed cursor */
+    box-shadow: none; /* Remove shadow when disabled */
+  }
+  

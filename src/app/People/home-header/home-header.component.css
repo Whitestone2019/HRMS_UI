@@ -1,0 +1,55 @@
+/* Header container */
+.header {
+  background-color: #fff;
+  padding: 10px 20px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #e0e0e0;
+  margin: 0; /* Remove extra space */
+  box-sizing: border-box; /* Ensures padding is considered within element's total width/height */
+}
+
+/* Logo image inside header */
+.header img {
+  height: 40px;
+  margin-right: 20px;
+}
+
+/* Navigation links */
+.header nav a {
+  margin: 0 10px;
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+}
+
+/* Active link styling */
+.header nav a.active {
+  color: #007bff;
+}
+
+/* Profile section */
+.header .profile {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+}
+
+/* Profile image inside the header */
+.header .profile img {
+  height: 30px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+/* Additional tweaks */
+body {
+  margin: 0;  /* Remove body margin to ensure no space around the whole layout */
+}
+
+/* Optional: if you want to reduce any padding/margin for links */
+.header nav {
+  margin: 0;
+  padding: 0;
+}

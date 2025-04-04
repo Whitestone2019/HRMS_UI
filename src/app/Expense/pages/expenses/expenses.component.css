@@ -1,0 +1,484 @@
+/* General page styling */
+.expenses-page {
+  padding: 20px;
+  background-color: #ffffff; /* White background for the page */
+  border-radius: 16px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+/* Page header */
+.page-header {
+  margin-bottom: 20px;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-content h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+.filter-dropdown {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  background: #ffffff;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.6);
+}
+
+.filter-dropdown option {
+  padding: 10px;
+}
+.filter-dropdown:focus 
+option:checked{
+background-color: #e0e0e0;
+}
+
+.filter-dropdown option:hover {
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+.filter-dropdown option[selected] {
+  background-color: #e0e0e0;
+}
+.filter-dropdown {
+  z-index: 1000;
+}
+.loading-spinner {
+  text-align: center;
+  font-size: 18px;
+  color: #333;
+  margin-top: 50px;
+}
+
+/* Primary button styling */
+.btn-primary {
+  background: #00008b;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 30px; /* Rounded corners with 3D effect */
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Shadow for 3D effect */
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background: #000074;
+  transform: translateY(-2px); /* Lift effect on hover */
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+}
+
+/* Expenses list styling */
+.expenses-list {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7); /* 3D effect with shadows */
+  padding: 20px;
+}
+
+.list-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr ; /* Updated for new design */
+  font-weight: bold;
+  background: linear-gradient(145deg, #00509e, #003d80); /* Gradient for a modern blue tone */
+  padding: 12px;
+  border-radius: 8px;
+  color: #ffffff;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.expense-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr ; /* Updated for new design */
+  padding: 9px 20px;
+  margin-top: 12px;
+  border-radius: 8px;
+  background: #e3e8e3;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1), -4px -4px 10px rgba(255, 255, 255, 0.6);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.expense-item:hover {
+  background: #f5faff;
+  transform: translateY(-5px);
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8);
+}
+
+/* Item details */
+.item-details {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Item details */
+.item-empid {
+  display: flex;
+  flex-direction: column;
+}
+
+.category {
+  font-weight: 500;
+  text-align: center;
+}
+
+.description {
+  font-size: 14px;
+  color: #636e72;
+  text-align: center;
+}
+
+/* Status badge styling */
+.status-badge {
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background: linear-gradient(145deg, #ffc107, #e0a800); /* Yellow for pending */
+  color: #333;
+}
+
+
+.status-badge.approved {
+  background: #0e9b06;
+  color: #e8f3df;
+}
+
+.status-badge.rejected {
+  background: #d92727;
+  color: white;
+}
+
+/* Item actions */
+.item-actions {
+  display: flex;
+  gap: 8px;
+}
+.btn-icon:active {
+  background: linear-gradient(145deg, #004d99, #003366); /* Darker gradient on active state */
+  transform: translateY(1px); /* Button press effect */
+}
+/* Buttons */
+.btn-icon {
+  padding: 0px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #0066cc, #004d99); /* Modern button gradient */
+  color: #ffffff;
+  font-weight: bold;
+  text-transform: uppercase;
+  transition: background 0.3s;
+}
+
+.btn-icon:hover {
+  background: linear-gradient(145deg, #005bb5, #004080); /* Slightly darker gradient on hover */
+  transform: translateY(-2px); /* Subtle lift effect on hover */
+}
+
+.btn-icon:active {
+  background: linear-gradient(145deg, #004d99, #003366); /* Darker gradient on active state */
+  transform: translateY(1px); /* Button press effect */
+}
+/* Reject reason column */
+.col-file, .item-reject-reason {
+  text-align: center;
+  width: 150px;
+}
+
+.item-reject-reason {
+  color: #888;
+}
+
+/* File column */
+.item-file a {
+  color: #00008b;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.item-file a:hover {
+  text-decoration: underline;
+  color: #0000cc; /* Hover color change */
+}
+
+.item-file a:active {
+  transform: translateY(2px); /* Simulate button press effect */
+}
+
+/* No expenses message */
+.no-expenses {
+  text-align: center;
+  padding: 50px 20px;
+  color: #636e72;
+}
+
+.no-expenses i {
+  margin-bottom: 15px;
+}
+
+.no-expenses p {
+  margin-bottom: 20px;
+}
+/* ... (your existing CSS) ... */
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.header-controls {
+  display: flex; /* Make header-controls a flex container */
+  align-items: center;
+}
+
+.header-controls > * {
+  margin-left: 8px; /* Consistent spacing between controls */
+}
+
+.header-controls > *:first-child {
+  margin-left: 0; /* Remove left margin for the first element */
+}
+
+/* Add the following styles for alignment */
+.header-content > div:first-child { /* Align the header text to the left */
+  flex: 1;
+}
+
+.header-content > div:last-child { /* Align the controls to the right */
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 150px;
+}
+
+
+.pagination-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center; 
+  margin-top: 20px;
+}
+
+.page-number {
+  margin: 0 10px; 
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.pagination-info {
+  text-align: center;
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+.arrow-button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  color: #00008b;
+}
+
+.arrow-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* ... (existing CSS) ... */
+
+.pending-employees {
+  margin-top: 20px;
+}
+
+.pending-employees h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 10px;
+}
+
+.employee-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.employee-link {
+  cursor: pointer;
+  padding: 8px 12px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.employee-link:hover {
+  background-color: #d0d0d0;
+}
+/* ... (existing CSS) ... */
+
+.view-all-button {
+  margin-top: 10px;
+  padding: 8px 12px;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-all-button:hover {
+  background-color: #3e8e41;
+}
+/* ... (existing CSS) ... */
+
+.back-button-container {
+  margin-top: 10px; /* Adjust margin as needed */
+  text-align: left;
+}
+
+.back-button {
+  background-color: #3498db; /* Blue background */
+  color: white;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold; /* Make the text bold */
+}
+
+.back-button:hover {
+  background-color: #2980b9; /* Darker blue on hover */
+}
+
+
+.pending-employees-section {
+  margin-top: 40px; /* Increased margin-top */
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pending-employees-section h3 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 20px;
+}
+
+.employee-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.employee-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  display: flex; 
+  flex-direction: column; 
+  align-items: center;
+}
+.employee-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.employee-id-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 15px; 
+}
+
+.employee-id {
+  font-size: 18px;
+  font-weight: 600;
+  margin-right: 10px;
+  transition: transform 0.2s ease; 
+}
+
+.employee-id:hover {
+  transform: translateY(-3px);
+  cursor: pointer;
+}
+
+.pending-badge {
+  font-size: 14px;
+  font-weight: 500;
+  color: #e3c208f3;
+  background: rgba(161, 87, 23, 0.1);
+  padding: 6px 12px;
+  border-radius: 12px;
+  margin-left: 10px;
+}
+
+.view-details-button {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #3498db, #2980b9);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.view-details-button:hover {
+  background-color: #2980b9;
+}
+
+.view-all-expenses-button {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(45deg, #0e198bea, #0e1092);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-top: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.view-all-expenses-button:hover {
+  background-color: #233442;
+}

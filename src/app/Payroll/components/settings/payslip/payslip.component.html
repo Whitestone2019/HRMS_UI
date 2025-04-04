@@ -1,0 +1,34 @@
+<div class="payslip-container">
+  <h2>Payslip Download</h2>
+
+  <!-- Employee ID Selection (Visible Only for Admin & HR) -->
+  <div *ngIf="isHRorAdmin" class="form-group">
+    <label>Select Employee</label>
+    <select [(ngModel)]="employeeId" (click)="$event.stopPropagation()">
+      <option value="" disabled selected>Select Employee</option>
+      <option *ngFor="let emp of employeeList" [value]="emp.employeeId">
+        {{ emp.employeeId }} - {{ emp.employeeName }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Employee ID Display (Non-Editable for Regular Employees) -->
+  <div *ngIf="!isHRorAdmin" class="form-group">
+    <label>Employee ID</label>
+    <input type="text" [value]="employeeId" readonly class="readonly-input">
+  </div>
+
+  <!-- Month Selection -->
+  <div class="form-group">
+    <label>Select Month</label>
+    <select [(ngModel)]="selectedMonth" (click)="$event.stopPropagation()">
+      <option *ngFor="let month of months" [value]="month">{{ month }}</option>
+    </select>
+  </div>
+
+  <!-- Buttons -->
+  <button (click)="downloadPayslip()">Download Payslip</button>
+
+  <button *ngIf="isHRorAdmin" (click)="sendPayslipByEmpId()">Send Payslip</button>
+  <button *ngIf="isHRorAdmin" (click)="sendPayslipToAll()">Send Payslips to All</button>
+</div>  
