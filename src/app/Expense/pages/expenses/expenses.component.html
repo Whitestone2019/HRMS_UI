@@ -3,43 +3,19 @@
         <div class="header-content">
             <h2>Expenses</h2>
             <div class="header-controls">
-                <select
-                    *ngIf="!isSpecificEmployeeView"
-                    (click)="$event.stopPropagation()"
-                    class="filter-dropdown"
-                    (change)="applyFilter()"
-                    [(ngModel)]="filterStatus"
-                    (ngModelChange)="applyFilter()"
-                >
+                <select *ngIf="!isSpecificEmployeeView" (click)="$event.stopPropagation()" class="filter-dropdown"
+                    (change)="applyFilter()" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
                     <option value="all">All Requests</option>
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
                     <option value="rejected">Rejected</option>
                 </select>
-                <input
-                    *ngIf="!showFullTable"
-                    type="text"
-                    placeholder="Search Pending Employee"
-                    [(ngModel)]="searchQuery"
-                    (ngModelChange)="applyFilter()"
-                    class="search-input"
-                />
-                <input
-                    *ngIf="showFullTable && !isSpecificEmployeeView"
-                    type="text"
-                    placeholder="Search by EmpID"
-                    [(ngModel)]="searchEmpId"
-                    (ngModelChange)="applyFilter()"
-                    class="search-input"
-                />
-                <input
-                    *ngIf="showFullTable && !isSpecificEmployeeView"
-                    type="text"
-                    placeholder="Search by EmpName"
-                    [(ngModel)]="searchEmpName"
-                    (ngModelChange)="applyFilter()"
-                    class="search-input"
-                />
+                <input *ngIf="!showFullTable" type="text" placeholder="Search Pending Employee"
+                    [(ngModel)]="searchQuery" (ngModelChange)="applyFilter()" class="search-input" />
+                <input *ngIf="showFullTable && !isSpecificEmployeeView" type="text" placeholder="Search by EmpID"
+                    [(ngModel)]="searchEmpId" (ngModelChange)="applyFilter()" class="search-input" />
+                <input *ngIf="showFullTable && !isSpecificEmployeeView" type="text" placeholder="Search by EmpName"
+                    [(ngModel)]="searchEmpName" (ngModelChange)="applyFilter()" class="search-input" />
                 <button *ngIf="!isSpecificEmployeeView" class="btn-primary" routerLink="/expences/dashboardexp/new">
                     <i class="fas fa-plus"></i> New Expense
                 </button>
@@ -48,7 +24,7 @@
     </div>
 
     <div *ngIf="!showFullTable" class="pending-employees-section">
-        <h3>Employees with Pending Expenses</h3>
+        <h3>Employees with {{filterStatus | titlecase}} Expenses</h3>
         <div class="employee-cards">
             <div *ngFor="let employee of pendingEmployees" class="employee-card">
                 <div class="employee-id-container">
@@ -117,7 +93,8 @@
             <i class="fas fa-chevron-left"></i>
         </button>
         <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
-        <button class="arrow-button" (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= filteredExpenses.length">
+        <button class="arrow-button" (click)="nextPage()"
+            [disabled]="currentPage * itemsPerPage >= filteredExpenses.length">
             <i class="fas fa-chevron-right"></i>
         </button>
     </div>

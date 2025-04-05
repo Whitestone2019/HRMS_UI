@@ -23,10 +23,11 @@ export class ExpenseFormComponent {
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   expenseForm: FormGroup;
   uploadedReceipt: string | ArrayBuffer | null = null; // For preview
- 
 
-  constructor(private fb: FormBuilder, private apiService: ApiService,private router: Router, private route: ActivatedRoute) {
+
+  constructor(private fb: FormBuilder, private apiService: ApiService, private router: Router, private route: ActivatedRoute) {
     this.expenseForm = this.fb.group({
+      expenseId: [null],
       date: ['', Validators.required],
       empid: ['', Validators.required],
       category: ['', Validators.required],
@@ -35,21 +36,26 @@ export class ExpenseFormComponent {
       description: ['', Validators.required],
       receipt: [null, Validators.required]
     });
+
   }
 
 
   ngOnInit() {
-    this.expenseForm.patchValue({empid: this.employeeId});
+    this.expenseForm.patchValue({ empid: this.employeeId });
 
     this.route.queryParams.subscribe(params => {
       if (params['expenseId']) {
         this.apiService.getExpenses().subscribe((expenses) => {
           const selectedExpense = expenses.find(e => e.expenseId === params['expenseId']);
           if (selectedExpense) {
-            alert("hiii");
+            let formattedDate = selectedExpense.date;
+            if (selectedExpense.date && !isNaN(Date.parse(selectedExpense.date))) {
+              formattedDate = new Date(selectedExpense.date).toISOString().split('T')[0]; // Get YYYY-MM-DD
+            }
+
             this.expenseForm.patchValue({
-              
-              date: selectedExpense.date,
+              expenseId: selectedExpense.expenseId,
+              date: formattedDate,
               category: selectedExpense.category,
               amount: selectedExpense.amount,
               currency: selectedExpense.currency,
@@ -57,17 +63,21 @@ export class ExpenseFormComponent {
               empid: selectedExpense.empId
 
             });
-  
+
             // Fetch and set the receipt URL
-            this.uploadedReceipt = this.apiService.getReceiptUrl(selectedExpense.expenseId);
+            this.apiService.getReceiptUrl(selectedExpense.expenseId).subscribe((blob: Blob) => {
+              const fileUrl = URL.createObjectURL(blob);
+              this.uploadedReceipt = fileUrl;
+            });
+
           }
         });
       }
     });
   }
-  
-  
- 
+
+
+
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input?.files?.[0]) {
@@ -89,8 +99,11 @@ export class ExpenseFormComponent {
   /**
    * Opens a new tab to display the uploaded receipt.
    */
+
+
   viewReceipt(): void {
     if (this.uploadedReceipt) {
+      // console.log('this.uploadedReceipt', this.uploadedReceipt);
       const receiptWindow = window.open('', '_blank');
       receiptWindow?.document.write(`
         <html>
@@ -107,11 +120,11 @@ export class ExpenseFormComponent {
    */
   onSubmit(): void {
     console.log('Form Valid:', this.expenseForm.valid);
-  console.log('Form Errors:', this.expenseForm.errors);
-  console.log('Form Value:', this.expenseForm.value);
+    console.log('Form Errors:', this.expenseForm.errors);
+    console.log('Form Value:', this.expenseForm.value);
     if (this.expenseForm.valid) {
       const formData = new FormData();
-  
+
       // Construct expenseDetails object
       const expenseDetails = {
         employeeName: this.username,
@@ -121,12 +134,15 @@ export class ExpenseFormComponent {
         amount: this.expenseForm.get('amount')?.value,
         currency: this.expenseForm.get('currency')?.value,
         description: this.expenseForm.get('description')?.value,
-        receipt: this.expenseForm.get('receipt')?.value
+        receipt: this.expenseForm.get('receipt')?.value,
+        expenseId: this.expenseForm.get('expenseId')?.value,
       };
-  
+
+      console.log('expenseDetails', expenseDetails);
+
       // Append expenseDetails as JSON string
       formData.append('expenseDetails', JSON.stringify(expenseDetails));
-  
+
       // Append receipt file if available
       const file = this.expenseForm.get('receipt')?.value;
       if (file instanceof File) {
@@ -135,9 +151,9 @@ export class ExpenseFormComponent {
         alert('Please upload a valid receipt file.');
         return;
       }
-  
+
       console.log('Submitting expense data:', formData);
-  
+
       // API call (do not manually set the Content-Type header)
       this.apiService.submitExpense(formData).subscribe({
         next: (response) => {
@@ -157,7 +173,7 @@ export class ExpenseFormComponent {
       alert('Please fill in all required fields.');
     }
   }
-  
+
 
   cancel() {
     this.router.navigate(['/expences/dashboardexp/exp']);
@@ -168,13 +184,13 @@ export class ExpenseFormComponent {
     if (input?.files && input.files.length > 0) {
       const file = input.files[0];
       const reader = new FileReader();
-  
+
       reader.onload = () => {
         this.uploadedReceipt = reader.result; // Store the base64 representation of the file
       };
-  
+
       reader.readAsDataURL(file); // Read the file for preview purposes
-  
+
       // Patch the file into the form
       this.expenseForm.patchValue({ receipt: file });
       this.expenseForm.get('receipt')?.updateValueAndValidity();
