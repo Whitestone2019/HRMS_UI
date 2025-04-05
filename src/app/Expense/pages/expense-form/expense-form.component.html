@@ -15,8 +15,8 @@
         <div class="form-group">
           <label for="empid">EmpID</label>
           <input type="text" id="empid" formControlName="empid">
-      </div>
-      
+        </div>
+
         <div class="form-group">
           <label for="category">Category</label>
           <select id="category" (click)="$event.stopPropagation()" formControlName="category">
@@ -28,7 +28,7 @@
             <option value="other">Other</option>
           </select>
         </div>
-  
+
 
         <div class="form-group">
           <label for="amount">Amount</label>
@@ -48,12 +48,12 @@
         </div>
       </div>
 
-     
-        <div class="form-footer">
-          <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
-          <button type="submit" class="btn-primary" [disabled]="!expenseForm.valid">Submit Expense</button>
-        </div>
-      
+
+      <div class="form-footer">
+        <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
+        <button type="submit" class="btn-primary" [disabled]="!expenseForm.valid">Submit Expense</button>
+      </div>
+
     </form>
   </div>
 
@@ -62,17 +62,11 @@
   <!-- Upload section on the right side -->
   <div class="upload-section">
     <h3>Upload Receipt</h3>
-    <input
-      type="file"
-      id="receipt"
-      accept="image/*"
-      [class.small]="uploadedReceipt"
-      (change)="onFileSelected($event)"
-    >
+    <input type="file" id="receipt" accept="image/*" [class.small]="uploadedReceipt" (change)="onFileSelected($event)">
     <div *ngIf="uploadedReceipt" class="receipt-preview">
       <h4>Uploaded Receipt:</h4>
       <img [src]="uploadedReceipt" alt="Receipt Preview" style="max-width: 100%; height: auto;">
     </div>
-    
+
   </div>
 </div>
