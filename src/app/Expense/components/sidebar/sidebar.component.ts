@@ -9,7 +9,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     <aside class="sidebar">
       <div class="logo">
     
-        <h1>Expense</h1>
+        <h1 style="font-weight: bold; color: white;">Expense</h1>
         
       </div>
       <nav>
@@ -49,10 +49,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   styles: [`
     .sidebar {
       width: 250px;
-      background-color: #00008B;
+      // background-color: #00008B;
+      background-color: hsl(239, 89%, 17%);
       color: white;
       padding: 20px 0;
       height: 100%;
+      margin-top:20%
     }
       
     .logo {

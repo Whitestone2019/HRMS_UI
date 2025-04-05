@@ -1,25 +1,27 @@
 <div class="approvals-page" *ngIf="!viewingDetails && !showAllExpenses">
   <div class="page-header">
     <h2>Approvals</h2>
+    <input type="text" [(ngModel)]="pendingEmployeeSearch" placeholder="Search Pending Employee" />
   </div>
   <div class="header-actions">
-    <div class="filter-container">
+    <!-- <div class="filter-container">
       <select (click)="$event.stopPropagation()" (change)="filterExpenses()" [(ngModel)]="filterStatus">
         <option value="all">All Requests</option>
         <option value="pending">Pending</option>
         <option value="approved">Approved</option>
         <option value="rejected">Rejected</option>
       </select>
-      <input type="text" [(ngModel)]="pendingEmployeeSearch" placeholder="Search Pending Employee" />
-    </div>
+    </div> -->
   </div>
   <div *ngIf="pendingEmployees.length > 0" class="pending-employees">
-    <h3>Employee Pending Approval</h3>
+    <!-- <h3>Employee Pending Approval</h3> -->
+
     <div class="employee-grid">
       <div *ngFor="let employee of filteredPendingEmployees" class="employee-card">
         <div class="employee-info">
-          <span class="employee-name">{{ getEmployeeInfo(employee)?.empName}} ({{ getEmployeeInfo(employee)?.empId }})</span>
-          <span class="employee-status">Pending</span>
+          <span class="employee-name">{{ getEmployeeInfo(employee)?.empName}} ({{ getEmployeeInfo(employee)?.empId
+            }})</span>
+          <!-- <span class="employee-status">Pending</span> -->
         </div>
         <button class="view-button" (click)="showEmployeeExpenses(employee)">
           <i class="fas fa-eye"></i> View Details
@@ -31,10 +33,30 @@
     <i class="fas fa-list"></i> View All Approvals
   </button>
 </div>
+<!--  -->
+<!--  -->
+<!--  -->
+<!--  -->
+<!--  -->
+<!--  -->
 <div class="approvals-page" *ngIf="viewingDetails && !showAllExpenses && !selectedExpense">
-  <div class="page-header">
-    <h2>Pending Expenses for {{ selectedEmployee }}</h2>
-    <button class="btn-icon back-btn" (click)="backToList()">Back</button>
+
+  <div class="page-header"
+    style="display: flex; align-items: center; justify-content: center; position: relative; height: 60px;">
+    <button class="btn-icon back-btn" (click)="backToList()" style="position: absolute; left: 10px;">Back</button>
+    <h2 style="margin: 0;">{{filterStatus|titlecase}} Expenses for {{ selectedEmployee }}
+    </h2>
+  </div>
+  <div class="header-actions">
+    <div class="filter-container">
+      <select (click)="$event.stopPropagation()" (change)="filterExpenses()" [(ngModel)]="filterStatus">
+        <option value="all">All Requests</option>
+        <option value="pending">Pending</option>
+        <option value="approved">Approved</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <input type="text" [(ngModel)]="employeeNameSearch" placeholder="Search Pending Employee" />
+    </div>
   </div>
   <div class="approvals-list">
     <div class="list-header">
@@ -46,7 +68,8 @@
       <div class="col-actions">Actions</div>
       <div class="col-file">Reject Reason</div>
     </div>
-    <div *ngFor="let expense of pendingExpenses" class="approval-item" (click)="viewExpenseDetails(expense, $event)">
+    <!-- pendingExpenses | filteredExpenses  -->
+    <div *ngFor="let expense of filteredExpenses" class="approval-item" (click)="viewExpenseDetails(expense, $event)">
       <div class="col-date">{{ expense.date | date: 'mediumDate' }}</div>
       <div class="col-employee">{{ expense.employeeName }}</div>
       <div class="col-type">{{ expense.category }}</div>
@@ -80,7 +103,8 @@
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
         </select>
-        <input type="text" [(ngModel)]="searchEmpName" (input)="filterExpenses()" placeholder="Search Employee Name" (keyup.enter)="filterExpenses()" />
+        <input type="text" [(ngModel)]="searchEmpName" (input)="filterExpenses()" placeholder="Search Employee Name"
+          (keyup.enter)="filterExpenses()" />
       </div>
     </div>
   </div>
@@ -120,7 +144,8 @@
       <i class="fas fa-chevron-left"></i>
     </button>
     <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
-    <button class="arrow-button" (click)="nextPage()" [disabled]="currentPage * itemsPerPage >= filteredExpenses.length">
+    <button class="arrow-button" (click)="nextPage()"
+      [disabled]="currentPage * itemsPerPage >= filteredExpenses.length">
       <i class="fas fa-chevron-right"></i>
     </button>
   </div>

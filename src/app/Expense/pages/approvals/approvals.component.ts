@@ -35,8 +35,10 @@ export class ApprovalsComponent implements OnInit {
   selectedEmployee: string = '';
   showAllExpenses: boolean = false;
   pendingEmployeeSearch: string = '';
-  pendingEmployeeObjects: any[] = []; 
-  constructor(private apiService: ApiService) {}
+  pendingEmployeeObjects: any[] = [];
+  employeeNameSearch: string = '';
+
+  constructor(private apiService: ApiService) { }
 
   ngOnInit() {
     this.loadExpenses();
@@ -52,10 +54,10 @@ export class ApprovalsComponent implements OnInit {
     this.selectedEmployee = "";
     this.filterStatus = "all";
     this.searchEmpName = "";
-    this.filteredExpenses = this.expenses; 
+    this.filteredExpenses = this.expenses;
     this.pagedExpenses = this.filteredExpenses.slice(0, this.itemsPerPage);
     this.currentPage = 1;
-}
+  }
   loadExpenses() {
     console.log('Loading expenses for employee:', this.employeeId);
     this.apiService.getApprovals(this.employeeId).subscribe({
@@ -92,35 +94,42 @@ export class ApprovalsComponent implements OnInit {
   }
   processPendingEmployees() {
     this.apiService.getPendingEmployees().subscribe({
-        next: (employeeInfo: any[]) => {
-            this.pendingEmployeeObjects = employeeInfo;
-            this.pendingEmployees = employeeInfo
-                .map(info => info.empName)
-                .filter(empName => {
-                    // Check if there are any pending expenses for this employee
-                    return this.expenses.some(expense =>
-                        expense.employeeName === empName &&
-                        expense.status.toLowerCase() === 'pending'
-                    );
-                });
-        },
-        error: (err) => {
-            console.error('Error fetching pending employees:', err);
-        },
+      next: (employeeInfo: any[]) => {
+        this.pendingEmployeeObjects = employeeInfo;
+        this.pendingEmployees = employeeInfo
+          .map(info => info.empName)
+          .filter(empName => {
+            // Check if there are any pending expenses for this employee
+            return this.expenses.some(expense =>
+              expense.employeeName === empName &&
+              expense.status.toLowerCase() === 'pending'
+            );
+          });
+      },
+      error: (err) => {
+        console.error('Error fetching pending employees:', err);
+      },
     });
-}
+  }
 
-getEmployeeInfo(employeeName: string): any {
-  return this.pendingEmployeeObjects.find(info => info.empName === employeeName);
-}
+  getEmployeeInfo(employeeName: string): any {
+    return this.pendingEmployeeObjects.find(info => info.empName === employeeName);
+  }
 
   get filteredPendingEmployees(): string[] {
+    console.log('employeeNameSearch', this.employeeNameSearch);
+    // console.log('Enter this...................', !this.pendingEmployeeSearch);
+    // console.log('this.pendingEmployees', this.pendingEmployees);
+
+
     if (!this.pendingEmployeeSearch) {
       return this.pendingEmployees;
     }
     const searchTerm = this.pendingEmployeeSearch.toLowerCase();
     return this.pendingEmployees.filter(employee => {
       const matchingInfo = this.pendingEmployeeObjects.find(info => info.empName === employee);
+      // console.log('matchingInfo', matchingInfo);
+
       if (matchingInfo) {
         return employee.toLowerCase().includes(searchTerm) || matchingInfo.empId.toLowerCase().includes(searchTerm);
       } else {
@@ -130,22 +139,23 @@ getEmployeeInfo(employeeName: string): any {
   }
   showEmployeeExpenses(employeeName: string) {
     this.pendingExpenses = this.expenses.filter(
-        (expense) =>
-            expense.employeeName === employeeName &&
-            expense.status.toLowerCase() === 'pending'
+      (expense) =>
+        expense.employeeName === employeeName &&
+        expense.status.toLowerCase() === 'pending'
     );
     this.viewingDetails = true;
     this.selectedEmployee = employeeName;
     this.showAllExpenses = false;
     // Added this line to reset viewingDetails when moving to employee list
     this.viewingDetails = true;
-}
+  }
 
   filterExpenses() {
     let filtered = [...this.expenses];
-
-    console.log('All Employee Names:', this.expenses.map((e) => e.empName));
-    console.log('Search Name:', this.searchEmpName);
+    console.log('Filtered : ', filtered);
+    console.log('Selected FilterStatus :', this.filterStatus);
+    // console.log('All Employee Names:', this.expenses.map((e) => e.employeeName));
+    // console.log('Search Name:', this.searchEmpName);
 
     if (this.expenses.length > 0) {
       console.log('Sample Record:', this.expenses[0]);
@@ -153,6 +163,11 @@ getEmployeeInfo(employeeName: string): any {
 
     if (this.filterStatus !== 'all') {
       filtered = filtered.filter((expense) => expense.status === this.filterStatus);
+
+      console.log(`\n✅ Filtered by Status = ${this.filterStatus}`);
+      filtered.forEach((exp, index) => {
+        console.log(`${index + 1}. Name: ${exp.employeeName}, Date: ${exp.date}, Amount: ${exp.amount}, Status: ${exp.status}`);
+      });
     }
     if (this.searchEmpName && this.searchEmpName.trim() !== '') {
       filtered = filtered.filter((expense) =>
@@ -281,12 +296,12 @@ getEmployeeInfo(employeeName: string): any {
   }
   backToList() {
     if (this.selectedExpense && this.viewingDetails) {
-        // Back from Expense Details
-        this.selectedExpense = null;
-        this.viewingDetails = true;
-        this.showRejectReason = false;
-        this.showApproveConfirmation = false;
-        return;
+      // Back from Expense Details
+      this.selectedExpense = null;
+      this.viewingDetails = true;
+      this.showRejectReason = false;
+      this.showApproveConfirmation = false;
+      return;
     }
 
     // Reset all state to initial values
@@ -296,5 +311,5 @@ getEmployeeInfo(employeeName: string): any {
     this.showApproveConfirmation = false;
     this.selectedEmployee = "";
     this.showAllExpenses = false;
-}
+  }
 }

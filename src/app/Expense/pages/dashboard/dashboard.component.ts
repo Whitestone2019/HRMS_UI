@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { SidebarComponent } from '../../components/sidebar/sidebar.component';
 import { RouterModule } from '@angular/router';
 import { ApiService } from '../../../api.service';
+import { HeaderComponent } from '../../components/header/header.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -53,7 +54,7 @@ export class DashboardComponentExp implements OnInit {
     }
   };
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService) { }
 
   ngOnInit(): void {
     this.getExpenseStats();

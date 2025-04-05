@@ -1,6 +1,6 @@
 .dashboard-container {
   display: flex; /* Enable side-by-side alignment */
-  height: 100vh; /* Full viewport height for sidebar */
+  /* height: 100vh; */
 }
 
 app-sidebar {
