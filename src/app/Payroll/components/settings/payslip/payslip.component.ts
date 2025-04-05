@@ -13,15 +13,16 @@ export class PayslipComponent implements OnInit {
   userRole: string = '';
   employeeList: any[] = [];
   months: string[] = []; 
-  isHRorAdmin: boolean = false; 
+  isAdmin: boolean = false; 
 
   constructor(private apiService: ApiService, private userService: UserService) {}
 
   ngOnInit(): void {
     this.userRole = this.userService.role || '';
     this.employeeId = localStorage.getItem('employeeId') || '';
-
+    this.isAdmin = this.userService.isAdmin();
     if (this.userService.isAdmin()) {
+      alert(this.isAdmin);
       this.loadAllEmployees();
     }
 

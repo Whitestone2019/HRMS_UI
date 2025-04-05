@@ -2,7 +2,7 @@
   <h2>Payslip Download</h2>
 
   <!-- Employee ID Selection (Visible Only for Admin & HR) -->
-  <div *ngIf="isHRorAdmin" class="form-group">
+  <div *ngIf="isAdmin" class="form-group">
     <label>Select Employee</label>
     <select [(ngModel)]="employeeId" (click)="$event.stopPropagation()">
       <option value="" disabled selected>Select Employee</option>
@@ -13,7 +13,7 @@
   </div>
 
   <!-- Employee ID Display (Non-Editable for Regular Employees) -->
-  <div *ngIf="!isHRorAdmin" class="form-group">
+  <div *ngIf="!isAdmin" class="form-group">
     <label>Employee ID</label>
     <input type="text" [value]="employeeId" readonly class="readonly-input">
   </div>
@@ -29,6 +29,6 @@
   <!-- Buttons -->
   <button (click)="downloadPayslip()">Download Payslip</button>
 
-  <button *ngIf="isHRorAdmin" (click)="sendPayslipByEmpId()">Send Payslip</button>
-  <button *ngIf="isHRorAdmin" (click)="sendPayslipToAll()">Send Payslips to All</button>
+  <button *ngIf="isAdmin" (click)="sendPayslipByEmpId()">Send Payslip</button>
+  <button *ngIf="isAdmin" (click)="sendPayslipToAll()">Send Payslips to All</button>
 </div>  
