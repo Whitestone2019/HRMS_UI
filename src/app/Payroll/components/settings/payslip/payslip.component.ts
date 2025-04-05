@@ -17,6 +17,7 @@ export class PayslipComponent implements OnInit {
 
   constructor(private apiService: ApiService, private userService: UserService) {}
 
+  
   ngOnInit(): void {
     this.userRole = this.userService.role || '';
     this.employeeId = localStorage.getItem('employeeId') || '';
