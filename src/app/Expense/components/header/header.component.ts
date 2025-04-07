@@ -74,7 +74,7 @@ import { UserService } from '../../../user.service';
         }
 
         .header .company-logo img.company-icon {
-          width: 100px; /* Adjusted logo size */
+          width: 150px; /* Adjusted logo size */
           height: auto;
           display: block;
         }

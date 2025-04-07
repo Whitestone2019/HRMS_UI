@@ -15,6 +15,9 @@ export class ApprovalsComponent implements OnInit {
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   expenses: any[] = [];
   filteredExpenses: any[] = [];
+  singlePersonList: any[] = [];
+  singlePersonFilteredExpenses: any[] = [];
+  singlePersonFilterStatus: string = 'all';
   filterStatus: string = 'all';
   viewingDetails: boolean = false;
   selectedExpense: any = null;
@@ -59,14 +62,12 @@ export class ApprovalsComponent implements OnInit {
     this.currentPage = 1;
   }
   loadExpenses() {
-    console.log('Loading expenses for employee:', this.employeeId);
+    console.log('Loading expenses for Employee_:', this.employeeId);
     this.apiService.getApprovals(this.employeeId).subscribe({
       next: (expenses: any[]) => {
         console.log('Fetched expenses:', expenses);
-
         this.expenses = expenses.map((expense) => {
-          console.log('Expense fields:', expense);
-
+          // console.log('Expense fields:', expense);
           return {
             ...expense,
             status: expense.status.trim().toLowerCase(),
@@ -77,6 +78,8 @@ export class ApprovalsComponent implements OnInit {
           };
         });
 
+        // ✅ Pending ones first
+        // ✅ Inside each group, newer dates come first
         this.expenses.sort((a, b) => {
           if (a.status === 'pending' && b.status !== 'pending') return -1;
           if (a.status !== 'pending' && b.status === 'pending') return 1;
@@ -86,6 +89,7 @@ export class ApprovalsComponent implements OnInit {
         this.filterExpenses();
         this.updatePagedExpenses();
         this.processPendingEmployees();
+
       },
       error: (err) => {
         console.error('Error fetching expenses:', err);
@@ -99,12 +103,24 @@ export class ApprovalsComponent implements OnInit {
         this.pendingEmployees = employeeInfo
           .map(info => info.empName)
           .filter(empName => {
-            // Check if there are any pending expenses for this employee
-            return this.expenses.some(expense =>
-              expense.employeeName === empName &&
-              expense.status.toLowerCase() === 'pending'
-            );
+            // console.log('🔍 Checking for employee:', empName);
+
+            const hasPending = this.expenses.some(expense => {
+              const nameMatch = expense.employeeName === empName;
+              const statusMatch = expense.status.toLowerCase() === 'pending';
+
+              // console.log(`➡️ Expense: { name: ${expense.employeeName}, status: ${expense.status} }`);
+              // console.log(`   - nameMatch: ${nameMatch}, statusMatch: ${statusMatch}`);
+              // console.log(`   - Overall Match: ${nameMatch && statusMatch}`);
+
+              return nameMatch && statusMatch;
+            });
+
+            // console.log(`✅ Result for ${empName}: ${hasPending}\n`);
+            return hasPending;
           });
+        // console.log('this.pendingEmployees', this.pendingEmployees);
+        // console.log('pendingEmployeeObjects', this.pendingEmployeeObjects);
       },
       error: (err) => {
         console.error('Error fetching pending employees:', err);
@@ -113,22 +129,21 @@ export class ApprovalsComponent implements OnInit {
   }
 
   getEmployeeInfo(employeeName: string): any {
+    // console.log('this.pendingEmployeeObjects', this.pendingEmployeeObjects);
     return this.pendingEmployeeObjects.find(info => info.empName === employeeName);
   }
 
   get filteredPendingEmployees(): string[] {
-    console.log('employeeNameSearch', this.employeeNameSearch);
+    // console.log('employeeNameSearch', this.employeeNameSearch);
     // console.log('Enter this...................', !this.pendingEmployeeSearch);
-    // console.log('this.pendingEmployees', this.pendingEmployees);
-
-
+    // console.log('filteredPendingEmployees this.pendingEmployees', this.pendingEmployees);
     if (!this.pendingEmployeeSearch) {
       return this.pendingEmployees;
     }
     const searchTerm = this.pendingEmployeeSearch.toLowerCase();
     return this.pendingEmployees.filter(employee => {
       const matchingInfo = this.pendingEmployeeObjects.find(info => info.empName === employee);
-      // console.log('matchingInfo', matchingInfo);
+      console.log('matchingInfo', matchingInfo);
 
       if (matchingInfo) {
         return employee.toLowerCase().includes(searchTerm) || matchingInfo.empId.toLowerCase().includes(searchTerm);
@@ -137,12 +152,15 @@ export class ApprovalsComponent implements OnInit {
       }
     });
   }
-  showEmployeeExpenses(employeeName: string) {
+
+  showEmployeeExpenses(employeeName: any) {
     this.pendingExpenses = this.expenses.filter(
       (expense) =>
         expense.employeeName === employeeName &&
         expense.status.toLowerCase() === 'pending'
     );
+    console.log('pendingExpenses', this.pendingExpenses);
+
     this.viewingDetails = true;
     this.selectedEmployee = employeeName;
     this.showAllExpenses = false;
@@ -152,19 +170,19 @@ export class ApprovalsComponent implements OnInit {
 
   filterExpenses() {
     let filtered = [...this.expenses];
-    console.log('Filtered : ', filtered);
-    console.log('Selected FilterStatus :', this.filterStatus);
+    // console.log('Filtered : ', filtered);
+    // console.log('Selected FilterStatus :', this.filterStatus);
     // console.log('All Employee Names:', this.expenses.map((e) => e.employeeName));
     // console.log('Search Name:', this.searchEmpName);
 
     if (this.expenses.length > 0) {
-      console.log('Sample Record:', this.expenses[0]);
+      // console.log('Expenses Record: ', this.expenses);
     }
 
     if (this.filterStatus !== 'all') {
       filtered = filtered.filter((expense) => expense.status === this.filterStatus);
 
-      console.log(`\n✅ Filtered by Status = ${this.filterStatus}`);
+      // console.log(`\n✅ Filtered by Status = ${this.filterStatus}`);
       filtered.forEach((exp, index) => {
         console.log(`${index + 1}. Name: ${exp.employeeName}, Date: ${exp.date}, Amount: ${exp.amount}, Status: ${exp.status}`);
       });
@@ -177,13 +195,14 @@ export class ApprovalsComponent implements OnInit {
       );
     }
 
+    // ✅ Pending ones first
+    // ✅ Inside each group, newer dates come first
     filtered.sort((a, b) => {
       if (a.status === 'pending' && b.status !== 'pending') return -1;
       if (a.status !== 'pending' && b.status === 'pending') return 1;
       return b.date.getTime() - a.date.getTime();
     });
     this.filteredExpenses = filtered;
-    console.log('Filtered Expenses:', this.filteredExpenses);
     this.currentPage = 1;
     this.updatePagedExpenses();
     this.calculatePaginationDetails();
@@ -312,4 +331,68 @@ export class ApprovalsComponent implements OnInit {
     this.selectedEmployee = "";
     this.showAllExpenses = false;
   }
+
+
+
+
+  // Show Each Person List
+  filterSingleEmpList(employeeName: any) {
+    this.singlePersonList = this.expenses.filter(
+      (expense) =>
+        expense.employeeName === employeeName
+    );
+
+    this.viewingDetails = true;
+    this.selectedEmployee = employeeName;
+    this.showAllExpenses = false;
+    // Added this line to reset viewingDetails when moving to employee list
+    this.viewingDetails = true;
+    this.singlePersonFilteredExpenses = this.singlePersonList
+    console.log("filterSingleEmpList ````````````");
+    console.log('✅ Matched Expenses:', this.singlePersonFilteredExpenses);
+
+  }
+
+  filterSingleEmpExpenses() {
+    let filtered = [...this.singlePersonList];
+    // console.log('Filtered : ', filtered);
+    console.log('Selected singlePersonFilterStatus :', this.singlePersonFilterStatus);
+    // console.log('All Employee Names:', this.singlePersonList.map((e) => e.employeeName));
+    // console.log('Search Name:', this.searchEmpName);
+
+    if (this.singlePersonList.length > 0) {
+      console.log('Single Emp Expenses Record: ', this.singlePersonList);
+    }
+
+    if (this.singlePersonFilterStatus !== 'all') {
+      filtered = filtered.filter((expense) => expense.status === this.singlePersonFilterStatus);
+
+      // console.log(`\n✅ Filtered by Status = ${this.singlePersonFilterStatus}`);
+      filtered.forEach((exp, index) => {
+        console.log(`${index + 1}. Name: ${exp.employeeName}, Date: ${exp.date}, Amount: ${exp.amount}, Status: ${exp.status}`);
+      });
+    }
+    if (this.searchEmpName && this.searchEmpName.trim() !== '') {
+      filtered = filtered.filter((expense) =>
+        expense.employeeName
+          ?.toLowerCase()
+          .includes(this.searchEmpName.trim().toLowerCase())
+      );
+    }
+
+    // ✅ Pending ones first
+    // ✅ Inside each group, newer dates come first
+    filtered.sort((a, b) => {
+      if (a.status === 'pending' && b.status !== 'pending') return -1;
+      if (a.status !== 'pending' && b.status === 'pending') return 1;
+      return b.date.getTime() - a.date.getTime();
+    });
+    this.singlePersonFilteredExpenses = filtered;
+    this.currentPage = 1;
+    this.updatePagedExpenses();
+    this.calculatePaginationDetails();
+  }
+
+
+
 }
