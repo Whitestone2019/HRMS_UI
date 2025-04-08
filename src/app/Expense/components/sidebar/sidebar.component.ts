@@ -1,16 +1,17 @@
-import { Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { UserService } from '../../../user.service';
+import { NgIf } from '@angular/common';
+
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [RouterLink, RouterLinkActive],
+  imports: [RouterLink, RouterLinkActive, NgIf],
   template: `
     <aside class="sidebar">
       <div class="logo">
-    
-        <h1>Expense</h1>
-        
+        <h1 style="font-weight: bold; color: white;">Expense</h1>    
       </div>
       <nav>
         <a routerLink="/expences/dashboardexp/dashboard" routerLinkActive="active">
@@ -21,11 +22,11 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           <i class="fas fa-receipt"></i>
           Expenses
         </a>
-        <a routerLink="/expences/dashboardexp/approval" routerLinkActive="active">
+        <a *ngIf="true" routerLink="/expences/dashboardexp/approval" routerLinkActive="active">
           <i class="fas fa-check-double"></i>
           Approvals
         </a>
-        <a routerLink="/expences/dashboardexp/reports" routerLinkActive="active">
+         <a routerLink="/expences/dashboardexp/reports" routerLinkActive="active">
           <i class="fas fa-chart-bar"></i>
           Reports
         </a>
@@ -37,24 +38,23 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
           <i class="fas fa-money-bill"></i>
           Advances
         </a>
-        <a routerLink="/expences/dashboardexp//payment-status" routerLinkActive="active">
-        <i class="fa-solid fa-arrows-rotate"></i>
+        <a routerLink="/expences/dashboardexp/payment-status" routerLinkActive="active">
+          <i class="fa-solid fa-arrows-rotate"></i>
           Payment status
         </a>
-        
-
       </nav>
     </aside>
   `,
   styles: [`
     .sidebar {
       width: 250px;
-      background-color: #00008B;
+      background-color: hsl(239, 89%, 17%);
       color: white;
       padding: 20px 0;
       height: 100%;
+      // margin-top: 20%;
+      margin-top: 0;
     }
-      
     .logo {
       padding: 0 20px;
       margin-bottom: 30px;
@@ -74,7 +74,7 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
       transition: all 0.3s ease;
     }
     nav a:hover, nav a.active {
-      background-color: #636e72;
+      background-color: #1c75f6;
       color: white;
     }
     nav a i {
@@ -83,4 +83,20 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
     }
   `]
 })
-export class SidebarComponent { }
+
+export class SidebarComponent implements OnInit {
+  isAdmin = false;
+
+  constructor(
+    private userService: UserService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+  ngOnInit(): void {
+    this.isAdmin = this.userService.isAdmin();
+    console.log('this.isAdmin ', this.isAdmin);
+
+    // Force Angular to detect changes
+    this.cdr.detectChanges();
+  }
+}
