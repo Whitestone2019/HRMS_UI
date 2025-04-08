@@ -1,7 +1,7 @@
 <div class="advance-container">
     <div *ngIf="showContent">
         <div *ngIf="showPaymentStatusList" class="pending-employees-section">
-            <h2 style="text-align: center;">Payment status</h2>
+            <h2 style="text-align: center;">Payment Status</h2>
             <div class="overall-approvals-list">
                 <div class="overall-list-header">
                     <span class="overall-list-field">Name</span>
@@ -33,27 +33,27 @@
         </div>
 
         <div *ngIf="!showPaymentStatusList" class="table-container">
-            <h2 style="text-align: center;">Payment status</h2>
+            <button (click)="goBack()" class="back-button">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+            <h2 style="text-align: center;">Payment Status</h2>
+
             <!-- Progress Bar Section -->
             <div class="progress-container">
 
                 <!-- Step Labels -->
                 <div class="step-labels">
                     <div *ngFor="let step of steps; let i = index" class="step-label"
-                        [ngStyle]="{ left: getStepPosition(i, steps.length) }">
+                        [ngStyle]="{ left: getStepPosition(i, steps.length) }"
+                        (click)="paymentStatusAPI(getEmployeeInfo(selectedEmployeePaymentStatus)?.expenseId,i)">
                         {{ step }}
                     </div>
                 </div>
 
                 <!-- Step Progress Bar -->
                 <div class="progress-track">
-                    <!-- Fill progress based on employee status -->
-                    <!-- <div class="progress-fill"
-                        [ngStyle]="{ width: getProgressWidth(getEmployeeInfo(employee)?.paymentStatus) }">
-                    </div> -->
-
                     <div class="progress-fill"
-                        [style.width]="animatedWidths[getEmployeeInfo(selectedEmployeePaymentStatus)?.empId] || '0%'">
+                        [style.width]="animatedWidths[getEmployeeInfo(selectedEmployeePaymentStatus)?.paymentStatus] || '0%'">
                     </div>
                     <!-- Dots -->
                     <div *ngFor="let step of steps; let i = index" class="step-dot"
@@ -63,37 +63,43 @@
                 </div>
 
             </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Name</div>
-                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.employeeName}}</div>
-            </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Employee Id</div>
-                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.empId}}</div>
-            </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Amount</div>
-                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.amount}}</div>
-            </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Category</div>
-                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.category}}</div>
-            </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Description</div>
-                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.description}}</div>
-            </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Date</div>
-                <div class="naming-data">{{ getEmployeeInfo(selectedEmployeePaymentStatus)?.date | date: 'MMM d, y' }}
+
+            <div style="display: flex; flex-direction: row;">
+                <div style="width: 60%;">
+                    <div class="single-item-container">
+                        <div class="namimg-field">Date</div>
+                        <div class="naming-data">
+                            {{ getEmployeeInfo(selectedEmployeePaymentStatus)?.date | date: 'MMM d,y'}}
+                        </div>
+                    </div>
+                    <div class="single-item-container">
+                        <div class="namimg-field">Name</div>
+                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.employeeName}}</div>
+                    </div>
+                    <div class="single-item-container">
+                        <div class="namimg-field">Employee Id</div>
+                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.empId}}</div>
+                    </div>
+                    <div class="single-item-container">
+                        <div class="namimg-field">Amount</div>
+                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.amount}}</div>
+                    </div>
+                    <div class="single-item-container">
+                        <div class="namimg-field">Category</div>
+                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.category}}</div>
+                    </div>
+                    <div class="single-item-container">
+                        <div class="namimg-field">Description</div>
+                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.description}}</div>
+                    </div>
+
+                </div>
+                <div style="flex-direction: column; width: 40%;">
+                    <h5 style="text-align: center;">Receipt</h5>
+                    <img [src]="uploadedReceipt" alt="Receipt Preview" style="max-width: 100%; height: auto;">
                 </div>
             </div>
-            <div class="single-item-container">
-                <div class="namimg-field">Receipt</div>
-                <div class="naming-data">
-                    {{ getEmployeeInfo(selectedEmployeePaymentStatus)?.recipt }}
-                </div>
-            </div>
+
 
 
             <!-- <div class="list-header">

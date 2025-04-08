@@ -36,7 +36,7 @@ export class PaymentStatusComponent {
   searchEmployeeName: string = '';
   showPaymentStatusList: boolean = true;
   pendingEmployees: any[] = [];
-  selectedEmployeePaymentStatus: any[] = [];
+  selectedEmployeePaymentStatus: any;
   selectedEmployee: string | null = null;
   showAdvanceDetails: boolean = false;
   showAddNewButton: boolean = false;
@@ -64,17 +64,27 @@ export class PaymentStatusComponent {
 
   animatedWidths: { [empId: string]: string } = {};
 
+
+
   steps = ['Initiated', 'In Progress', 'Finished']; // Can be any number of steps
   currentStep = 1; // Set this to 1, 2, or 3 dynamically
 
+
+  uploadedReceipt: string | ArrayBuffer | null = null;
   receiptImageUrl: string | null = null;
 
-  loadReceiptImage(filePath: string) {
-    this.http.get(filePath, { responseType: 'blob' }).subscribe(blob => {
-      this.receiptImageUrl = URL.createObjectURL(blob);
-    }, error => {
-      console.error('Error loading receipt image:', error);
-    });
+  viewReceipt(): void {
+    if (this.uploadedReceipt) {
+      const receiptWindow = window.open('', '_blank');
+      receiptWindow?.document.write(`
+        <html>
+          <body>
+            <h2>Receipt Preview</h2>
+            <img src="${this.uploadedReceipt}" alt="Receipt" style="max-width: 100%; height: auto;">
+          </body>
+        </html>
+      `);
+    }
   }
 
   getProgressWidth(status: number): string {
@@ -94,6 +104,8 @@ export class PaymentStatusComponent {
 
   ngOnInit(): void {
     this.empId = localStorage.getItem('employeeId') || '';
+    // console.log('this.empId', this.empId);
+
     if (!this.empId) {
       console.error('Error: Employee ID is missing.');
       this.error = 'Failed to load advances. Employee ID is missing.';
@@ -115,11 +127,6 @@ export class PaymentStatusComponent {
         this.animatedWidths[expense.empId] = width;
       });
     }, 100);
-
-    const receiptPath = this.getEmployeeInfo(this.selectedEmployeePaymentStatus)?.recipt;
-    if (receiptPath) {
-      this.loadReceiptImage(receiptPath);
-    }
   }
 
   toggleForm() {
@@ -162,14 +169,14 @@ export class PaymentStatusComponent {
               employeeId: expense.empId,
               employeeName: expense.employeeName,
               rejectreason: expense.rejectreason,
-              paymentStatus: Math.floor(Math.random() * 3) + 1
+              // paymentStatus: Math.floor(Math.random() * 3) + 1
             };
           })
-          .filter((expense) => expense.status === 'approved') // ✅ Filter only 'pending'
+          .filter((expense) => expense.status === 'approved') // ✅ Filter only 'approved'
 
           .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
 
-        console.log('Filtered pending expenses:', this.approvedExpenses);
+        console.log('Filtered Approved Expenses:', this.approvedExpenses);
       },
       error: (err) => {
         console.error('Error fetching expenses:', err);
@@ -209,7 +216,7 @@ export class PaymentStatusComponent {
           rejectreason: advance.rejectreason || 'N/A',
         }));
         this.isLoading = false;
-        console.log('Advances fetched:', this.advances);
+        // console.log('Advances fetched:', this.advances);
         this.filterAdvances();
         this.fetchPendingEmployees();
       },
@@ -251,8 +258,14 @@ export class PaymentStatusComponent {
   }
 
   showEmpPaymentStatus(employee: any) {
-    console.log("employee", employee);
+    console.log('employee', employee);
 
+    if (employee?.expenseId) {
+      this.apiService.getReceiptUrl(employee?.expenseId).subscribe((blob: Blob) => {
+        const fileUrl = URL.createObjectURL(blob);
+        this.uploadedReceipt = fileUrl;
+      });
+    }
     this.selectedEmployeePaymentStatus = employee
     this.selectedEmployee = employee.empId;
     this.showPaymentStatusList = false;
@@ -273,7 +286,7 @@ export class PaymentStatusComponent {
 
   filterAdvances() {
     let filtered: Advance[] = [...this.advances];
-    console.log('filter_Advances fun :', filtered);
+    // console.log('filter_Advances fun :', filtered);
 
     if (this.filterStatus !== 'all') {
       filtered = filtered.filter(
@@ -430,5 +443,22 @@ export class PaymentStatusComponent {
       alert('Please fill in all required fields.');
       console.log('Form is invalid. Current values:', advanceForm.value);
     }
+  }
+
+
+  paymentStatusAPI(expenseId: string, paymentStatus: number) {
+    console.log('paymentStatus : ', paymentStatus);
+    this.apiService
+      .updatePaymentStatus(expenseId, paymentStatus)
+      .subscribe({
+        next: (response: any) => {
+          alert('Payment Status updated successfully!');
+          this.fetchAdvances();
+        },
+        error: (error: any) => {
+          alert('Error updating Payment Status.');
+          console.error('Error from API:', error);
+        },
+      });
   }
 }  
