@@ -138,8 +138,6 @@ export class ExpenseFormComponent {
         expenseId: this.expenseForm.get('expenseId')?.value,
       };
 
-      console.log('expenseDetails', expenseDetails);
-
       // Append expenseDetails as JSON string
       formData.append('expenseDetails', JSON.stringify(expenseDetails));
 

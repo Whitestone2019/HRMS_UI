@@ -1,12 +1,12 @@
-
 <!-- src/app/Expense/pages/dashboard/dashboard.component.html -->
 <div class="dashboard-container">
-    <!-- Sidebar Component -->
-    <app-sidebar></app-sidebar>
-  
-    <!-- Main Content for Routed Views -->
-    <div class="main-content">
-      <router-outlet></router-outlet>
-    </div>  
+  <!-- Sidebar Component -->
+  <app-sidebar></app-sidebar>
+
+  <app-header></app-header>
+
+  <!-- Main Content for Routed Views -->
+  <div class="main-content" style="margin-top: 5%;">
+    <router-outlet></router-outlet>
   </div>
-  
+</div>

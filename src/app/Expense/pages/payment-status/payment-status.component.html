@@ -1,55 +1,102 @@
 <div class="advance-container">
     <div *ngIf="showContent">
-        <div *ngIf="showPendingEmployees" class="pending-employees-section">
-            <h2>Payment status</h2>
-            <div class="header-actions">
-                <div class="filter-container">
-                    <select (change)="filterAdvances()" (click)="$event.stopPropagation()" [(ngModel)]="filterStatus">
-                        <option value="all">All Requests</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <input type="text" [(ngModel)]="searchEmployeeName" (input)="filterAdvances()"
-                        placeholder="Search Pending Employee" />
-                    <button class="add-advance-btn" (click)="toggleForm()">+ Add New Advance</button>
+        <div *ngIf="showPaymentStatusList" class="pending-employees-section">
+            <h2 style="text-align: center;">Payment status</h2>
+            <div class="overall-approvals-list">
+                <div class="overall-list-header">
+                    <span class="overall-list-field">Name</span>
+                    <span class="overall-list-field">Employee ID</span>
+                    <span class="overall-list-field">Payment Status</span>
                 </div>
             </div>
-            <h3>Employees with Pending Advances</h3>
-            <div class="employee-cards">
-                <div *ngFor="let employee of pendingEmployees" class="employee-card">
-                    <div class="employee-id-container">
-                        <div class="employee-id">
-                            {{ getEmployeeInfo(employee)?.employeeName }} ({{ getEmployeeInfo(employee)?.empId }})
-                        </div>
-                        <div class="pending-badge">Pending</div>
+            <div class="overall-approvals-list" style="background: white; flex-direction: column;">
+
+                <div *ngFor="let employee of approvedExpenses" class="overall-values-header"
+                    (click)="showEmpPaymentStatus(employee)">
+
+                    <!-- Employee Details -->
+                    <div class="overall-list-field" style="color: black;">
+                        {{ getEmployeeInfo(employee)?.employeeName }}
                     </div>
-                    <button (click)="showEmployeePending(employee)" class="view-details-button">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
+                    <div class="overall-list-field" style="color: black;">
+                        {{ getEmployeeInfo(employee)?.empId }}
+                    </div>
+
+                    <div class="overall-list-field" style="color: black;">
+                        {{ getEmployeeInfo(employee)?.paymentStatus ==1 ?
+                        'In Progress':getEmployeeInfo(employee)?.paymentStatus ==2? 'Initiated':'Finished' }}
+                    </div>
                 </div>
             </div>
-            <button (click)="showAllAdvances()" class="view-all-expenses-button">
-                <i class="fas fa-list"></i> View All Advances
-            </button>
+
+
         </div>
 
-        <div *ngIf="!showPendingEmployees" class="table-container">
-            <h2>Advances</h2>
-            <div *ngIf="isViewAllAdvances" class="header-actions">
-                <div class="filter-container">
-                    <select (change)="filterAdvances()" (click)="$event.stopPropagation()" [(ngModel)]="filterStatus">
-                        <option value="all">All Requests</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <input type="text" [(ngModel)]="searchEmployeeName" (input)="filterAdvances()"
-                        placeholder="Search Employee Name" />
-                    <button class="add-advance-btn" (click)="toggleForm()">+ Add New Advance</button>
+        <div *ngIf="!showPaymentStatusList" class="table-container">
+            <h2 style="text-align: center;">Payment status</h2>
+            <!-- Progress Bar Section -->
+            <div class="progress-container">
+
+                <!-- Step Labels -->
+                <div class="step-labels">
+                    <div *ngFor="let step of steps; let i = index" class="step-label"
+                        [ngStyle]="{ left: getStepPosition(i, steps.length) }">
+                        {{ step }}
+                    </div>
+                </div>
+
+                <!-- Step Progress Bar -->
+                <div class="progress-track">
+                    <!-- Fill progress based on employee status -->
+                    <!-- <div class="progress-fill"
+                        [ngStyle]="{ width: getProgressWidth(getEmployeeInfo(employee)?.paymentStatus) }">
+                    </div> -->
+
+                    <div class="progress-fill"
+                        [style.width]="animatedWidths[getEmployeeInfo(selectedEmployeePaymentStatus)?.empId] || '0%'">
+                    </div>
+                    <!-- Dots -->
+                    <div *ngFor="let step of steps; let i = index" class="step-dot"
+                        [class.active]="i < getEmployeeInfo(selectedEmployeePaymentStatus)?.paymentStatus"
+                        [ngStyle]="{ left: getStepPosition(i, steps.length) }">
+                    </div>
+                </div>
+
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Name</div>
+                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.employeeName}}</div>
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Employee Id</div>
+                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.empId}}</div>
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Amount</div>
+                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.amount}}</div>
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Category</div>
+                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.category}}</div>
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Description</div>
+                <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.description}}</div>
+            </div>
+            <div class="single-item-container">
+                <div class="namimg-field">Date</div>
+                <div class="naming-data">{{ getEmployeeInfo(selectedEmployeePaymentStatus)?.date | date: 'MMM d, y' }}
                 </div>
             </div>
-            <div class="list-header">
+            <div class="single-item-container">
+                <div class="namimg-field">Receipt</div>
+                <div class="naming-data">
+                    {{ getEmployeeInfo(selectedEmployeePaymentStatus)?.recipt }}
+                </div>
+            </div>
+
+
+            <!-- <div class="list-header">
                 <div class="header-empid">Empid</div>
                 <div class="header-name">Name</div>
                 <div class="header-date">Date</div>
@@ -58,9 +105,9 @@
                 <div class="headesr-status">Status</div>
                 <div class="col-file">RejectReason</div>
                 <div class="header-actions">Actions</div>
-            </div>
+            </div> -->
 
-            <div *ngFor="let advance of pagedAdvances" class="advance-item">
+            <!-- <div *ngFor="let advance of pagedAdvances" class="advance-item">
                 <div class="item-empid">
                     <span class="empid">{{ advance.empId }}</span>
                 </div>
@@ -91,13 +138,14 @@
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
-            </div>
+            </div> -->
 
-            <div *ngIf="advances.length === 0" class="no-requests">
+            <!-- <div *ngIf="advances.length === 0" class="no-requests">
                 <i class="fas fa-receipt fa-3x"></i>
                 <p>No advance requests added yet.</p>
-            </div>
-            <div class="pagination-controls">
+            </div> -->
+
+            <!-- <div class="pagination-controls">
                 <button class="arrow-button" (click)="previousPage()" [disabled]="currentPage === 1">
                     <i class="fas fa-chevron-left"></i>
                 </button>
@@ -106,15 +154,15 @@
                     [disabled]="currentPage * itemsPerPage >= filteredAdvances.length">
                     <i class="fas fa-chevron-right"></i>
                 </button>
-            </div>
+            </div> -->
 
-            <div *ngIf="currentPage === 1" class="pagination-info">
+            <!-- <div *ngIf="currentPage === 1" class="pagination-info">
                 Total Records: {{ totalRecords }}, Total Pages: {{ totalPages }}
-            </div>
+            </div> -->
 
-            <button (click)="goBack()" class="back-button">
+            <!-- <button (click)="goBack()" class="back-button">
                 <i class="fas fa-arrow-left"></i> Back
-            </button>
+            </button> -->
         </div>
     </div>
 
@@ -135,8 +183,8 @@
 
                 <div class="form-group">
                     <label for="paidThrough">Paid Through:</label>
-                    <select id="paidThrough" (click)="$event.stopPropagation()"
-                        [(ngModel)]="newAdvance.paidThrough" name="paidThrough" required>
+                    <select id="paidThrough" (click)="$event.stopPropagation()" [(ngModel)]="newAdvance.paidThrough"
+                        name="paidThrough" required>
                         <option value="" disabled selected>Select Payment Method</option>
                         <option value="Cash">Cash</option>
                         <option value="Bank Transfer">Bank Transfer</option>
