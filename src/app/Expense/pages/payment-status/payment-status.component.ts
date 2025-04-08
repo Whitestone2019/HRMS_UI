@@ -4,6 +4,7 @@ import { FormGroup, FormsModule } from '@angular/forms';
 import { Advance } from '../../shared/models/advance.model';
 import { ApiService } from '../../../api.service';
 import { Router } from '@angular/router';
+import { HttpClient } from '@angular/common/http';
 
 interface EmployeePending {
   empId: string;
@@ -33,13 +34,13 @@ export class PaymentStatusComponent {
   filteredAdvances: Advance[] = [];
   filterStatus: string = 'all';
   searchEmployeeName: string = '';
-  showPendingEmployees: boolean = true;
+  showPaymentStatusList: boolean = true;
   pendingEmployees: any[] = [];
+  selectedEmployeePaymentStatus: any[] = [];
   selectedEmployee: string | null = null;
   showAdvanceDetails: boolean = false;
   showAddNewButton: boolean = false;
   showContent: boolean = true; // Initially show content
-  isViewAllAdvances: boolean = false; // Initialize to false
   newAdvance = {
     advanceDate: '',
     amount: '',
@@ -61,18 +62,65 @@ export class PaymentStatusComponent {
   totalPages: number = 0;
   totalRecords: number = 0;
 
-  steps = [1, 2, 3];
+  animatedWidths: { [empId: string]: string } = {};
+
+  steps = ['Initiated', 'In Progress', 'Finished']; // Can be any number of steps
   currentStep = 1; // Set this to 1, 2, or 3 dynamically
 
-  getProgressWidth(): string {
-    const widths = ['0%', '50%', '100%'];
-    return widths[this.currentStep - 1] || '0%';
+  receiptImageUrl: string | null = null;
+
+  loadReceiptImage(filePath: string) {
+    this.http.get(filePath, { responseType: 'blob' }).subscribe(blob => {
+      this.receiptImageUrl = URL.createObjectURL(blob);
+    }, error => {
+      console.error('Error loading receipt image:', error);
+    });
+  }
+
+  getProgressWidth(status: number): string {
+    if (!status || status < 1) return '0%';
+    const percent = ((status - 1) / (this.steps.length - 1)) * 100;
+    return `${percent}%`;
   }
 
 
+  getStepPosition(index: number, totalSteps: number): string {
+    if (totalSteps <= 1) return '0%';
+    const percent = (index / (totalSteps - 1)) * 100;
+    return `${percent}%`;
+  }
 
+  constructor(private apiService: ApiService, private router: Router, private http: HttpClient) { }
 
-  constructor(private apiService: ApiService, private router: Router) { }
+  ngOnInit(): void {
+    this.empId = localStorage.getItem('employeeId') || '';
+    if (!this.empId) {
+      console.error('Error: Employee ID is missing.');
+      this.error = 'Failed to load advances. Employee ID is missing.';
+      return;
+    }
+
+    this.fetchEmployeeDetails(this.empId);
+
+    this.fetchAdvances();
+
+    this.loadExpenses();
+
+    setTimeout(() => this.currentStep = 2, 1000);
+    setTimeout(() => this.currentStep = 3, 4000);
+
+    setTimeout(() => {
+      this.approvedExpenses.forEach(expense => {
+        const width = this.getProgressWidth(expense.paymentStatus);
+        this.animatedWidths[expense.empId] = width;
+      });
+    }, 100);
+
+    const receiptPath = this.getEmployeeInfo(this.selectedEmployeePaymentStatus)?.recipt;
+    if (receiptPath) {
+      this.loadReceiptImage(receiptPath);
+    }
+  }
 
   toggleForm() {
     this.showForm = !this.showForm;
@@ -97,26 +145,6 @@ export class PaymentStatusComponent {
       }
     });
   }
-
-  ngOnInit(): void {
-    this.empId = localStorage.getItem('employeeId') || '';
-    if (!this.empId) {
-      console.error('Error: Employee ID is missing.');
-      this.error = 'Failed to load advances. Employee ID is missing.';
-      return;
-    }
-
-    this.fetchEmployeeDetails(this.empId);
-
-    this.fetchAdvances();
-
-    this.loadExpenses();
-
-    setTimeout(() => this.currentStep = 2, 1000);
-    setTimeout(() => this.currentStep = 3, 4000);
-
-  }
-
 
   loadExpenses() {
     console.log('Loading expenses for Employee_:', this.employeeId);
@@ -222,30 +250,21 @@ export class PaymentStatusComponent {
     return this.approvedExpenses.find(emp => emp.empId === employee.empId);
   }
 
-  showEmployeePending(employee: any) {
+  showEmpPaymentStatus(employee: any) {
+    console.log("employee", employee);
+
+    this.selectedEmployeePaymentStatus = employee
     this.selectedEmployee = employee.empId;
-    this.showPendingEmployees = false;
+    this.showPaymentStatusList = false;
     this.filterStatus = 'pending';
     this.filterAdvances();
     this.showAdvanceDetails = true;
     this.showAddNewButton = true;
-    this.isViewAllAdvances = false;
-  }
-
-  showAllAdvances() {
-    this.selectedEmployee = null;
-    this.showPendingEmployees = false;
-    this.filterStatus = 'all';
-    this.filterAdvances();
-    this.showAdvanceDetails = true;
-    this.showAddNewButton = true;
-    this.isViewAllAdvances = true;
-
   }
 
   goBack() {
     this.selectedEmployee = null;
-    this.showPendingEmployees = true;
+    this.showPaymentStatusList = true;
     this.filterStatus = 'all';
     this.filterAdvances();
     this.showAdvanceDetails = false;

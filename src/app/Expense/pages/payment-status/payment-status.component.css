@@ -442,15 +442,50 @@ table {
 /*  */
 /* payment status */
 /*  */
+
 .progress-container {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   margin: 40px 0;
+  /* width: 300px; */
+  /* Ensure fixed width for consistency */
+  justify-content: center;
+  
+}
+
+.step-labels {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-bottom: 8px;
+  position: relative;
+  height: 20px;
+}
+
+.step-label {
+  position: absolute;
+  transform: translateX(-50%);
+  font-size: 12px;
+  color: #555;
+  top: -20px;
+}
+
+.step-label:nth-child(1) {
+  left: 0%;
+}
+
+.step-label:nth-child(2) {
+  left: 50%;
+}
+
+.step-label:nth-child(3) {
+  left: 100%;
 }
 
 .progress-track {
   position: relative;
-  width: 300px;
+  width: 100%;
   height: 6px;
   background-color: #e0e0e0;
   border-radius: 4px;
@@ -459,9 +494,9 @@ table {
 .progress-fill {
   position: absolute;
   height: 100%;
-  background-color: #007bff;
+  background-color: #4caf50;
   border-radius: 4px;
-  transition: width 2s ease-in-out; /* 👈 Slow transition */
+  transition: width 2s ease-in-out;
   z-index: 1;
 }
 
@@ -475,16 +510,27 @@ table {
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
+  /* transition: background-color 0.6s ease; */
 }
 
-.step-dot:nth-child(2) { left: 0%; }
-.step-dot:nth-child(3) { left: 50%; }
-.step-dot:nth-child(4) { left: 100%; }
+.step-dot:nth-child(2) {
+  left: 0%;
+}
+
+.step-dot:nth-child(3) {
+  left: 50%;
+}
+
+.step-dot:nth-child(4) {
+  left: 100%;
+}
 
 .step-dot.active {
-  background-color: #007bff;
-  border-color: #007bff;
+  background-color: #4caf50;
 }
+
+
+
 
 
 
@@ -549,4 +595,27 @@ table {
   transform: translateY(-5px);
   /* Lifting effect */
   box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8);
+}
+
+
+
+
+
+.single-item-container {
+  display: flex;
+  width: 100%;
+  margin: 3% 0;
+}
+
+.namimg-field {
+  font-size: large;
+  font-weight: bold;
+  width: 30%;
+  color: black;
+}
+
+.naming-data {
+  font-size: medium;
+  /* font-weight: ; */
+  color: black;
 }
