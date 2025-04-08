@@ -853,4 +853,11 @@ export class ApiService {
     });
   }
 
+  updatePaymentStatus(expenseId: string, payment_status: number): Observable<any> {
+    return this.http.put<any>(
+      `${this.apiUrl}/update/expenses/${expenseId}/payment-status`, {
+      paymentStatus: payment_status
+    });
+  }
+
 }
