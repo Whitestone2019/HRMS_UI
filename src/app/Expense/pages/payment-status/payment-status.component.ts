@@ -23,6 +23,8 @@ interface PendingEmployeesMap {
   styleUrl: './payment-status.component.css'
 })
 export class PaymentStatusComponent {
+  employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
+  approvedExpenses: any[] = [];
   employeeName: string = localStorage.getItem('employeeName') || 'Unknown';
   empId: string = localStorage.getItem('empId') || 'Unknown';
   advanceForm: FormGroup | undefined;
@@ -59,6 +61,17 @@ export class PaymentStatusComponent {
   totalPages: number = 0;
   totalRecords: number = 0;
 
+  steps = [1, 2, 3];
+  currentStep = 1; // Set this to 1, 2, or 3 dynamically
+
+  getProgressWidth(): string {
+    const widths = ['0%', '50%', '100%'];
+    return widths[this.currentStep - 1] || '0%';
+  }
+
+
+
+
   constructor(private apiService: ApiService, private router: Router) { }
 
   toggleForm() {
@@ -69,6 +82,8 @@ export class PaymentStatusComponent {
   }
 
   fetchEmployeeDetails(empId: string) {
+    console.log('empId', empId);
+
     this.apiService.getEmployeeDetails(empId).subscribe({
       next: (response: any) => {
         if (response.employeeName) {
@@ -82,6 +97,7 @@ export class PaymentStatusComponent {
       }
     });
   }
+
   ngOnInit(): void {
     this.empId = localStorage.getItem('employeeId') || '';
     if (!this.empId) {
@@ -93,12 +109,51 @@ export class PaymentStatusComponent {
     this.fetchEmployeeDetails(this.empId);
 
     this.fetchAdvances();
+
+    this.loadExpenses();
+
+    setTimeout(() => this.currentStep = 2, 1000);
+    setTimeout(() => this.currentStep = 3, 4000);
+
+  }
+
+
+  loadExpenses() {
+    console.log('Loading expenses for Employee_:', this.employeeId);
+
+    this.apiService.getApprovals(this.employeeId).subscribe({
+      next: (expenses: any[]) => {
+        console.log('Fetched expenses:', expenses);
+
+        this.approvedExpenses = expenses
+          .map((expense) => {
+            return {
+              ...expense,
+              status: expense.status.trim().toLowerCase(),
+              date: new Date(expense.date),
+              employeeId: expense.empId,
+              employeeName: expense.employeeName,
+              rejectreason: expense.rejectreason,
+              paymentStatus: Math.floor(Math.random() * 3) + 1
+            };
+          })
+          .filter((expense) => expense.status === 'approved') // ✅ Filter only 'pending'
+
+          .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
+
+        console.log('Filtered pending expenses:', this.approvedExpenses);
+      },
+      error: (err) => {
+        console.error('Error fetching expenses:', err);
+      },
+    });
   }
 
   getStatusClass(status: string | undefined): string {
     if (!status) return ''; // If status is undefined, return an empty string
     return status.toLowerCase();
   }
+
   fetchAdvances() {
     console.log('fetchAdvances() called');
     this.isLoading = true;
@@ -137,6 +192,7 @@ export class PaymentStatusComponent {
       },
     });
   }
+
   fetchPendingEmployees() {
     const pending = this.advances.filter(
       (advance) => advance.status && advance.status.toLowerCase() === 'pending'
@@ -163,8 +219,9 @@ export class PaymentStatusComponent {
   }
 
   getEmployeeInfo(employee: any): any {
-    return this.pendingEmployees.find(emp => emp.empId === employee.empId);
+    return this.approvedExpenses.find(emp => emp.empId === employee.empId);
   }
+
   showEmployeePending(employee: any) {
     this.selectedEmployee = employee.empId;
     this.showPendingEmployees = false;

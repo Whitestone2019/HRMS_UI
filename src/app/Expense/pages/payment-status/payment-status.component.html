@@ -2,7 +2,8 @@
     <div *ngIf="showContent">
         <div *ngIf="showPendingEmployees" class="pending-employees-section">
             <h2>Payment status</h2>
-            <div class="header-actions">
+
+            <!-- <div class="header-actions">
                 <div class="filter-container">
                     <select (change)="filterAdvances()" (click)="$event.stopPropagation()" [(ngModel)]="filterStatus">
                         <option value="all">All Requests</option>
@@ -14,21 +15,48 @@
                         placeholder="Search Pending Employee" />
                     <button class="add-advance-btn" (click)="toggleForm()">+ Add New Advance</button>
                 </div>
-            </div>
-            <h3>Employees with Pending Advances</h3>
-            <div class="employee-cards">
-                <div *ngFor="let employee of pendingEmployees" class="employee-card">
+            </div> -->
+            <h3>Employees Advances Status</h3>
+            <!-- <div class="employee-cards">
+                <div *ngFor="let employee of approvedExpenses" class="employee-card">
                     <div class="employee-id-container">
                         <div class="employee-id">
                             {{ getEmployeeInfo(employee)?.employeeName }} ({{ getEmployeeInfo(employee)?.empId }})
                         </div>
-                        <div class="pending-badge">Pending</div>
                     </div>
                     <button (click)="showEmployeePending(employee)" class="view-details-button">
                         <i class="fas fa-eye"></i> View Details
                     </button>
                 </div>
+            </div> -->
+            <div class="overall-approvals-list">
+                <div class="overall-list-header">
+                    <span class="overall-list-field">Name</span>
+                    <span class="overall-list-field">Employee ID</span>
+                    <span class="overall-list-field">Payment Status</span>
+                </div>
             </div>
+            <div class="overall-approvals-list" style="background: white; flex-direction: column;">
+
+                <div *ngFor="let employee of approvedExpenses" class="overall-values-header"
+                    (click)="showEmployeePending(employee)">
+                    <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.employeeName }}
+                    </div>
+                    <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empId
+                        }}</div>
+                    <div class="progress-container">
+                        <div class="progress-track">
+                            <div class="progress-fill" [ngStyle]="{ width: getProgressWidth() }"></div>
+                            <div class="step-dot" *ngFor="let step of steps; let i = index"
+                                [class.active]="i < currentStep">
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
             <button (click)="showAllAdvances()" class="view-all-expenses-button">
                 <i class="fas fa-list"></i> View All Advances
             </button>
@@ -135,8 +163,8 @@
 
                 <div class="form-group">
                     <label for="paidThrough">Paid Through:</label>
-                    <select id="paidThrough" (click)="$event.stopPropagation()"
-                        [(ngModel)]="newAdvance.paidThrough" name="paidThrough" required>
+                    <select id="paidThrough" (click)="$event.stopPropagation()" [(ngModel)]="newAdvance.paidThrough"
+                        name="paidThrough" required>
                         <option value="" disabled selected>Select Payment Method</option>
                         <option value="Cash">Cash</option>
                         <option value="Bank Transfer">Bank Transfer</option>
