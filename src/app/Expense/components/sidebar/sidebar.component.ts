@@ -22,7 +22,7 @@ import { NgIf } from '@angular/common';
           <i class="fas fa-receipt"></i>
           Expenses
         </a>
-        <a *ngIf="true" routerLink="/expences/dashboardexp/approval" routerLinkActive="active">
+        <a *ngIf="isAdmin" routerLink="/expences/dashboardexp/approval" routerLinkActive="active">
           <i class="fas fa-check-double"></i>
           Approvals
         </a>
@@ -93,7 +93,6 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.userService.isAdmin();
-    console.log('this.isAdmin ', this.isAdmin);
 
     // Force Angular to detect changes
     this.cdr.detectChanges();

@@ -29,7 +29,7 @@ export class ExpenseFormComponent {
     this.expenseForm = this.fb.group({
       expenseId: [null],
       date: ['', Validators.required],
-      empid: ['', Validators.required],
+      empid: [{ value: '', disabled: true }, Validators.required],
       category: ['', Validators.required],
       amount: ['', [Validators.required, Validators.min(0)]],
       currency: ['USD', Validators.required],
