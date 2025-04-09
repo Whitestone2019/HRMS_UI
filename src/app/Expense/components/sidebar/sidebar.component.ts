@@ -52,7 +52,6 @@ import { NgIf } from '@angular/common';
       color: white;
       padding: 20px 0;
       height: 100%;
-      // margin-top: 20%;
       margin-top: 0;
     }
     .logo {
