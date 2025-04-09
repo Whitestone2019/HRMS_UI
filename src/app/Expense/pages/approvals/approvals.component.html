@@ -35,15 +35,15 @@
         <span class="overall-list-field">Employee ID</span>
       </div>
     </div>
-    <div class="overall-approvals-list" style="background: white;">
-      <div *ngFor="let employee of filteredPendingEmployees" class="overall-values-header"
-        (click)="filterSingleEmpList(employee)">
-        <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empName}}</div>
-        <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empId
-          }}</div>
-      </div>
+    <!-- <div class="overall-approvals-list" style="background: white;"> -->
+    <div *ngFor="let employee of filteredPendingEmployees" class="overall-values-header"
+      (click)="filterSingleEmpList(employee)">
+      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empName}}</div>
+      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empId
+        }}</div>
     </div>
-    <div *ngIf=" filteredPendingEmployees.length===0" class="no-items">
+    <!-- </div> -->
+    <div *ngIf="filteredPendingEmployees.length===0" class="no-items">
       <p>No pending approval requests found for this employee.</p>
     </div>
   </div>
@@ -66,8 +66,6 @@
   </div>
   <div class="header-actions">
     <div class="filter-container">
-      <!-- filterExpenses -->
-      <!-- filterStatus -->
       <select (click)="$event.stopPropagation()" (change)="filterSingleEmpExpenses()"
         [(ngModel)]="singlePersonFilterStatus">
         <option value="all">All Requests</option>
@@ -75,7 +73,6 @@
         <option value="approved">Approved</option>
         <option value="rejected">Rejected</option>
       </select>
-      <!-- <input type="text" [(ngModel)]="employeeNameSearch" placeholder="Search Pending Employee" /> -->
     </div>
   </div>
   <div class="approvals-list">
@@ -108,7 +105,7 @@
       <div class="col-file">{{ expense.rejectreason }}</div>
     </div>
     <div *ngIf="singlePersonFilteredExpenses.length === 0" class="no-items">
-      <p>No pending approval requests found for this employee.</p>
+      <p>No {{singlePersonFilterStatus}} approval requests found for this employee.</p>
     </div>
   </div>
 </div>

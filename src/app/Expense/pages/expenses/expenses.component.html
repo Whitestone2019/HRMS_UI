@@ -1,10 +1,17 @@
 <div class="expenses-page">
     <div class="page-header">
         <div class="header-content">
-            <h2>Expenses</h2>
+            <div *ngIf="showFullTable" class="back-button-container">
+                <button (click)="showInitialView()" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+            </div>
+            <div>
+                <h2>Expenses</h2>
+            </div>
             <div class="header-controls">
-                <select *ngIf="!isSpecificEmployeeView" (click)="$event.stopPropagation()" class="filter-dropdown"
-                    (change)="applyFilter()" [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
+                <select (click)="$event.stopPropagation()" class="filter-dropdown" (change)="applyFilter()"
+                    [(ngModel)]="filterStatus" (ngModelChange)="applyFilter()">
                     <option value="all">All Requests</option>
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
@@ -22,6 +29,12 @@
             </div>
         </div>
     </div>
+
+    <!-- [ngStyle]="{ 
+        display: 'flex', 
+        width: '80%', 
+        'justify-content': showFullTable ? 'center' : 'flex-start' 
+      }" -->
 
     <div *ngIf="!showFullTable" class="pending-employees-section">
         <h3>Employees with {{filterStatus | titlecase}} Expenses</h3>
@@ -102,9 +115,4 @@
         Total Records: {{ totalRecords }}, Total Pages: {{ totalPages }}
     </div>
 
-    <div *ngIf="showFullTable" class="back-button-container">
-        <button (click)="showInitialView()" class="back-button">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
-    </div>
 </div>

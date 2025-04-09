@@ -611,8 +611,11 @@ export class ApiService {
 
 
   getApprovals(employeeId: any): Observable<any[]> {
-
     return this.http.get<any>(`${this.apiUrl}/app/expensesbyid/${employeeId}`);
+  }
+
+  getAllApprovals(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/app/expensesbyid/all`);
   }
 
   updateExpense(expenseId: string, formData: FormData): Observable<any> {
