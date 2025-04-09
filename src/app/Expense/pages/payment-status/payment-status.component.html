@@ -16,15 +16,15 @@
 
                     <!-- Employee Details -->
                     <div class="overall-list-field" style="color: black;">
-                        {{ getEmployeeInfo(employee)?.employeeName }}
+                        {{ employee?.employeeName }}
                     </div>
                     <div class="overall-list-field" style="color: black;">
-                        {{ getEmployeeInfo(employee)?.empId }}
+                        {{ employee?.empId }}
                     </div>
 
                     <div class="overall-list-field" style="color: black;">
-                        {{ getEmployeeInfo(employee)?.paymentStatus ==1 ?
-                        'In Progress':getEmployeeInfo(employee)?.paymentStatus ==2? 'Initiated':'Finished' }}
+                        {{employee.paymentStatus === 1 ?
+                        'In Progress':employee.paymentStatus=== 2? 'Finished':'Initiated' }}
                     </div>
                 </div>
             </div>
@@ -40,29 +40,42 @@
 
             <!-- Progress Bar Section -->
             <div class="progress-container">
-
                 <!-- Step Labels -->
                 <div class="step-labels">
                     <div *ngFor="let step of steps; let i = index" class="step-label"
-                        [ngStyle]="{ left: getStepPosition(i, steps.length) }"
-                        (click)="paymentStatusAPI(getEmployeeInfo(selectedEmployeePaymentStatus)?.expenseId,i)">
+                        [ngStyle]="{ left: (i * 50) + '%' }"
+                        (click)="paymentStatusAPI(selectedEmployeePaymentStatus?.expenseId, i)">
                         {{ step }}
                     </div>
                 </div>
 
                 <!-- Step Progress Bar -->
                 <div class="progress-track">
-                    <div class="progress-fill"
-                        [style.width]="animatedWidths[getEmployeeInfo(selectedEmployeePaymentStatus)?.paymentStatus] || '0%'">
+                    <!-- Segment 1: 0 → 1 -->
+                    <div class="progress-segment" [ngStyle]="{
+                           width: segment1Width,
+                           background: paymentStatus >= 1 ? 'linear-gradient(to right, orange, yellow)' : 'transparent'
+                         }">
                     </div>
+
+                    <!-- Segment 2: 1 → 2 -->
+                    <div class="progress-segment" [ngStyle]="{
+                           width: segment2Width,
+                           left: '50%',
+                           background: paymentStatus >= 2 ? 'linear-gradient(to right, yellow, green)' : 'transparent'
+                         }">
+                    </div>
+
                     <!-- Dots -->
-                    <div *ngFor="let step of steps; let i = index" class="step-dot"
-                        [class.active]="i < getEmployeeInfo(selectedEmployeePaymentStatus)?.paymentStatus"
-                        [ngStyle]="{ left: getStepPosition(i, steps.length) }">
+                    <div *ngFor="let step of steps; let i = index" class="step-dot" [ngStyle]="{
+                           left: (i * 50) + '%',
+                           backgroundColor: getStepColor(i, paymentStatus)
+                         }">
                     </div>
                 </div>
 
             </div>
+
 
             <div style="display: flex; flex-direction: row;">
                 <div style="width: 60%;">

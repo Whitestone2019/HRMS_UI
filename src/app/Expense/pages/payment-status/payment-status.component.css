@@ -449,29 +449,22 @@ table {
   align-items: center;
   width: 80%;
   margin: 40px auto;
-  /* Ensure fixed width for consistency */
-
 }
 
 .step-labels {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 8px;
   position: relative;
-  height: 20px;
+  width: 100%;
+  height: 30px;
 }
 
 .step-label {
   position: absolute;
+  top: -20px;
   transform: translateX(-50%);
   font-size: 12px;
   color: #555;
-  top: -20px;
   cursor: pointer;
-  /* 👈 Pointer cursor */
   transition: color 0.3s ease;
-  /* 👈 Smooth color transition */
 }
 
 .step-label:hover {
@@ -497,9 +490,6 @@ table {
   height: 6px;
   background-color: #e0e0e0;
   border-radius: 4px;
-  justify-content: center;
-  align-self: center;
-  align-content: center;
 }
 
 .progress-fill {
@@ -514,14 +504,13 @@ table {
 .step-dot {
   width: 16px;
   height: 16px;
-  background-color: #e0e0e0;
   border: 2px solid #ccc;
   border-radius: 50%;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 2;
-  /* transition: background-color 0.6s ease; */
+  transition: background-color 0.3s ease;
 }
 
 .step-dot:nth-child(2) {
@@ -539,6 +528,25 @@ table {
 .step-dot.active {
   background-color: #4caf50;
 }
+
+.progress-segment {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  border-radius: 4px;
+  z-index: 1;
+  transition: width 0.5s ease-in-out;
+}
+
+.progress-segment:nth-child(2) {
+  left: 50%;
+}
+
+
+
+
+
 
 
 

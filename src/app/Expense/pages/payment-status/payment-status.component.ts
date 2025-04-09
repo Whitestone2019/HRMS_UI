@@ -87,18 +87,38 @@ export class PaymentStatusComponent {
     }
   }
 
-  getProgressWidth(status: number): string {
-    if (!status || status < 1) return '0%';
-    const percent = ((status - 1) / (this.steps.length - 1)) * 100;
-    return `${percent}%`;
+  getProgressWidth(status: number | undefined): string {
+    if (status === undefined || status === 0) return '0%';
+    if (status === 1) return '50%';
+    if (status >= 2) return '100%';
+    return '0%';
+  }
+
+  getStepColor(dotIndex: number, status: number | null | undefined): string {
+    if (status == null || dotIndex > status) return '#e0e0e0'; // default gray for future steps
+
+    // Step is active — return color based on index
+    switch (dotIndex) {
+      case 0: return 'orange';
+      case 1: return 'yellow';
+      case 2: return 'green';
+      default: return '#e0e0e0';
+    }
+  }
+
+  get paymentStatus(): number {
+    return this.selectedEmployeePaymentStatus?.paymentStatus ?? 0;
+  }
+
+  get segment1Width(): string {
+    return this.paymentStatus >= 1 ? '50%' : '0%';
+  }
+
+  get segment2Width(): string {
+    return this.paymentStatus >= 2 ? '50%' : '0%';
   }
 
 
-  getStepPosition(index: number, totalSteps: number): string {
-    if (totalSteps <= 1) return '0%';
-    const percent = (index / (totalSteps - 1)) * 100;
-    return `${percent}%`;
-  }
 
   constructor(private apiService: ApiService, private router: Router, private http: HttpClient) { }
 
@@ -176,7 +196,9 @@ export class PaymentStatusComponent {
 
           .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
 
-        console.log('Filtered Approved Expenses:', this.approvedExpenses);
+        console.log('Filtered Approved Expenses:', this.approvedExpenses.map((data) => {
+          console.log('NAME : ', data.employeeName, 'Payment Status :', data.paymentStatus);
+        }));
       },
       error: (err) => {
         console.error('Error fetching expenses:', err);
@@ -454,6 +476,8 @@ export class PaymentStatusComponent {
         next: (response: any) => {
           alert('Payment Status updated successfully!');
           this.fetchAdvances();
+          this.loadExpenses();
+          this.selectedEmployeePaymentStatus.paymentStatus = paymentStatus;
         },
         error: (error: any) => {
           alert('Error updating Payment Status.');
