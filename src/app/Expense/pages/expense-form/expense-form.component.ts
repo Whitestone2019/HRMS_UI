@@ -103,7 +103,6 @@ export class ExpenseFormComponent {
 
   viewReceipt(): void {
     if (this.uploadedReceipt) {
-      // console.log('this.uploadedReceipt', this.uploadedReceipt);
       const receiptWindow = window.open('', '_blank');
       receiptWindow?.document.write(`
         <html>

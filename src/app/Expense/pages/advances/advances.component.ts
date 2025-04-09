@@ -126,7 +126,7 @@ export class AdvanceComponent {
           rejectreason: advance.rejectreason || 'N/A',
         }));
         this.isLoading = false;
-        console.log('Advances fetched:', this.advances);
+        // console.log('Advances fetched:', this.advances);
         this.filterAdvances();
         this.fetchPendingEmployees();
       },
