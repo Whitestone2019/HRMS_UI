@@ -63,9 +63,9 @@ export class ApprovalsComponent implements OnInit {
   }
   loadExpenses() {
     console.log('Loading expenses for Employee_:', this.employeeId);
-    this.apiService.getApprovals(this.employeeId).subscribe({
+    this.apiService.getExpensesByReportingManager(this.employeeId).subscribe({
       next: (expenses: any[]) => {
-        console.log('Fetched expenses:', expenses);
+        console.log('Fetched Expenses By Reporting Manager :', expenses);
         this.expenses = expenses.map((expense) => {
           // console.log('Expense fields:', expense);
           return {

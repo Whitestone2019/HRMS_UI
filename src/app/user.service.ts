@@ -11,10 +11,10 @@ export class UserService {
   private _activeMenuKey = 'activeMenu'; // Key for active menu in localStorage
   private _sessionTimeout = 30 * 60 * 1000; // 30 minutes in milliseconds
 
-  private adminRoles: string[] = ['HR', 'CEO', 'CTO']; // Admin roles
-  private employeeRoles: string[] = ['PM','TL','AS', 'SAS']; // Employee roles
+  private adminRoles: string[] = ['HR', 'CEO', 'CTO', 'TL','PM']; // Admin roles
+  private employeeRoles: string[] = ['AS', 'SAS']; // Employee roles
 
-  constructor() {}
+  constructor() { }
 
   // Set the username
   set username(name: string) {
@@ -44,7 +44,7 @@ export class UserService {
     localStorage.setItem(this._roleKey, safeRole);
     this.updateLastActivity();
   }
-  
+
 
   // Get user role
   get role(): string {
@@ -52,7 +52,7 @@ export class UserService {
   }
 
   // Update the last activity timestamp
-   updateLastActivity() {
+  updateLastActivity() {
     localStorage.setItem(this._lastActivityKey, Date.now().toString());
   }
 

@@ -130,6 +130,8 @@ export class PaymentStatusComponent {
   loadExpenses() {
 
     const processExpenses = (expenses: any[]) => {
+      console.log('expenses', expenses);
+
       if (!expenses || expenses.length === 0) {
         console.warn('No expenses found.');
       }
@@ -145,7 +147,6 @@ export class PaymentStatusComponent {
             rejectreason: expense.rejectreason,
           };
         })
-        .filter((expense) => expense.status === 'approved') // ✅ Filter only 'approved'
         .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
 
       this.employeePaymentStatus.map((data) => {
@@ -162,13 +163,13 @@ export class PaymentStatusComponent {
 
     if (this.isAdmin) {
       console.log('Calling API: getExpenses()');
-      this.apiService.getAllApprovals().subscribe({
+      this.apiService.getAllApprovedExpenses().subscribe({
         next: processExpenses,
         error: handleError,
       });
     } else {
       console.log('Calling API: getExpensesEmp()');
-      this.apiService.getApprovals(this.employeeId).subscribe({
+      this.apiService.getApprovedExpensesByEmpId(this.employeeId).subscribe({
         next: processExpenses,
         error: handleError,
       });

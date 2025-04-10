@@ -171,10 +171,10 @@ processPendingEmployees() {
   }
   
   applyFilter() {
-    console.log('Filter Status:', this.filterStatus);
-    console.log('All Expenses:', this.expenses);
-    console.log('Search EmpId:', this.searchEmpId);
-    console.log('Search EmpName:', this.searchEmpName); 
+    // console.log('Filter Status:', this.filterStatus);
+    // console.log('All Expenses:', this.expenses);
+    // console.log('Search EmpId:', this.searchEmpId);
+    // console.log('Search EmpName:', this.searchEmpName); 
 
     let filtered = [...this.expenses];
     if (this.showFullTable && !this.isSpecificEmployeeView) {

@@ -609,14 +609,26 @@ export class ApiService {
     });
   }
 
-
   getApprovals(employeeId: any): Observable<any[]> {
     return this.http.get<any>(`${this.apiUrl}/app/expensesbyid/${employeeId}`);
+  }
+
+  getExpensesByReportingManager(employeeId: any): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/app/expensesbyreportingmanager/${employeeId}`);
   }
 
   getAllApprovals(): Observable<any[]> {
     return this.http.get<any>(`${this.apiUrl}/app/expensesbyid/all`);
   }
+
+  getApprovedExpensesByEmpId(employeeId: any): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/app/approvedexpenses/${employeeId}`);
+  }
+
+  getAllApprovedExpenses(): Observable<any[]> {
+    return this.http.get<any>(`${this.apiUrl}/app/approvedexpenses/all`);
+  }
+
 
   updateExpense(expenseId: string, formData: FormData): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/update/expenses/${expenseId}`, {});
