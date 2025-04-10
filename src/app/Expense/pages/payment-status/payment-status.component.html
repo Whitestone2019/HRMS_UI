@@ -11,7 +11,7 @@
             </div>
             <div class="overall-approvals-list" style="background: white; flex-direction: column;">
 
-                <div *ngFor="let employee of approvedExpenses" class="overall-values-header"
+                <div *ngFor="let employee of employeePaymentStatus" class="overall-values-header"
                     (click)="showEmpPaymentStatus(employee)">
 
                     <!-- Employee Details -->
@@ -22,29 +22,33 @@
                         {{ employee?.empId }}
                     </div>
 
+                    <!-- [ngStyle]="{ 
+                        color: employee.paymentStatus === 1 ?
+                        'yellow':employee.paymentStatus=== 2? 'green':'orange'
+                                }" -->
+
                     <div class="overall-list-field" style="color: black;">
                         {{employee.paymentStatus === 1 ?
                         'In Progress':employee.paymentStatus=== 2? 'Finished':'Initiated' }}
                     </div>
                 </div>
             </div>
-
-
         </div>
 
         <div *ngIf="!showPaymentStatusList" class="table-container">
-            <button (click)="goBack()" class="back-button">
-                <i class="fas fa-arrow-left"></i> Back
-            </button>
-            <h2 style="text-align: center;">Payment Status</h2>
-
+            <div style="flex-direction: row; display: flex; align-items: center;">
+                <button (click)="goBack()" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back
+                </button>
+                <h2 style="text-align: center; margin: auto;font-size: 24px;">Payment Status</h2>
+            </div>
             <!-- Progress Bar Section -->
             <div class="progress-container">
                 <!-- Step Labels -->
                 <div class="step-labels">
                     <div *ngFor="let step of steps; let i = index" class="step-label"
-                        [ngStyle]="{ left: (i * 50) + '%' }"
-                        (click)="paymentStatusAPI(selectedEmployeePaymentStatus?.expenseId, i)">
+                        [ngStyle]="{ left: (i * 50) + '%' }" [class.clickable]="isAdmin"
+                        (click)="isAdmin && paymentStatusAPI(selectedEmployeePaymentStatus?.expenseId, i)">
                         {{ step }}
                     </div>
                 </div>
@@ -76,34 +80,33 @@
 
             </div>
 
-
             <div style="display: flex; flex-direction: row;">
                 <div style="width: 60%;">
                     <div class="single-item-container">
                         <div class="namimg-field">Date</div>
                         <div class="naming-data">
-                            {{ getEmployeeInfo(selectedEmployeePaymentStatus)?.date | date: 'MMM d,y'}}
+                            {{ selectedEmployeePaymentStatus?.date | date: 'MMM d,y'}}
                         </div>
                     </div>
                     <div class="single-item-container">
                         <div class="namimg-field">Name</div>
-                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.employeeName}}</div>
+                        <div class="naming-data">{{selectedEmployeePaymentStatus?.employeeName}}</div>
                     </div>
                     <div class="single-item-container">
                         <div class="namimg-field">Employee Id</div>
-                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.empId}}</div>
+                        <div class="naming-data">{{selectedEmployeePaymentStatus?.empId}}</div>
                     </div>
                     <div class="single-item-container">
                         <div class="namimg-field">Amount</div>
-                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.amount}}</div>
+                        <div class="naming-data">{{selectedEmployeePaymentStatus?.amount}}</div>
                     </div>
                     <div class="single-item-container">
                         <div class="namimg-field">Category</div>
-                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.category}}</div>
+                        <div class="naming-data">{{selectedEmployeePaymentStatus?.category}}</div>
                     </div>
                     <div class="single-item-container">
                         <div class="namimg-field">Description</div>
-                        <div class="naming-data">{{getEmployeeInfo(selectedEmployeePaymentStatus)?.description}}</div>
+                        <div class="naming-data">{{selectedEmployeePaymentStatus?.description}}</div>
                     </div>
 
                 </div>
@@ -113,115 +116,6 @@
                 </div>
             </div>
 
-
-
-            <!-- <div class="list-header">
-                <div class="header-empid">Empid</div>
-                <div class="header-name">Name</div>
-                <div class="header-date">Date</div>
-                <div class="header-amount">Amount</div>
-                <div class="header-merchant">Category/Description</div>
-                <div class="headesr-status">Status</div>
-                <div class="col-file">RejectReason</div>
-                <div class="header-actions">Actions</div>
-            </div> -->
-
-            <!-- <div *ngFor="let advance of pagedAdvances" class="advance-item">
-                <div class="item-empid">
-                    <span class="empid">{{ advance.empId }}</span>
-                </div>
-                <div class="item-employeename">
-                    <span class="name">{{ advance.employeeName }}</span>
-                </div>
-                <div class="item-date">
-                    {{ advance.advanceDate | date: 'mediumDate' }}
-                </div>
-                <div class="item-amount">
-                    {{ advance.amount | number: '1.2-2' }}
-                </div>
-                <div class="item-details">
-                    <span class="category">{{ advance.paidThrough }}</span>
-                    <span class="description">{{ advance.applyToTrip }}</span>
-                </div>
-                <div class="item-status">
-                    <span class="status-badge" [ngClass]="getStatusClass(advance.status)">
-                        {{ advance.status | titlecase }}
-                    </span>
-                </div>
-                <div class="col-file">{{ advance.rejectreason || 'N/A' }}</div>
-                <div class="item-actions">
-                    <button class="btn-icon" (click)="onEdit(advance)" title="Edit">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon" (click)="onDelete(advances.indexOf(advance))" title="Delete">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </div>
-            </div> -->
-
-            <!-- <div *ngIf="advances.length === 0" class="no-requests">
-                <i class="fas fa-receipt fa-3x"></i>
-                <p>No advance requests added yet.</p>
-            </div> -->
-
-            <!-- <div class="pagination-controls">
-                <button class="arrow-button" (click)="previousPage()" [disabled]="currentPage === 1">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <span class="page-number">{{ currentPage }} / {{ totalPages }}</span>
-                <button class="arrow-button" (click)="nextPage()"
-                    [disabled]="currentPage * itemsPerPage >= filteredAdvances.length">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div> -->
-
-            <!-- <div *ngIf="currentPage === 1" class="pagination-info">
-                Total Records: {{ totalRecords }}, Total Pages: {{ totalPages }}
-            </div> -->
-
-            <!-- <button (click)="goBack()" class="back-button">
-                <i class="fas fa-arrow-left"></i> Back
-            </button> -->
-        </div>
-    </div>
-
-    <div class="overlay" *ngIf="showForm">
-        <div class="popup-box">
-            <h3>{{ editingIndex !== undefined ? 'Edit' : 'Add' }} Advance Request</h3>
-            <form #advanceForm="ngForm" (ngSubmit)="submitAdvance(advanceForm)">
-                <div class="form-group">
-                    <label for="advanceDate">Date:</label>
-                    <input id="advanceDate" type="date" [(ngModel)]="newAdvance.advanceDate" name="advanceDate"
-                        required />
-                </div>
-
-                <div class="form-group">
-                    <label for="amount">Amount:</label>
-                    <input id="amount" type="number" [(ngModel)]="newAdvance.amount" name="amount" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="paidThrough">Paid Through:</label>
-                    <select id="paidThrough" (click)="$event.stopPropagation()" [(ngModel)]="newAdvance.paidThrough"
-                        name="paidThrough" required>
-                        <option value="" disabled selected>Select Payment Method</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
-                        <option value="Credit Card">Credit Card</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="applyToTrip">Apply to Trip:</label>
-                    <input id="applyToTrip" type="text" [(ngModel)]="newAdvance.applyToTrip" name="applyToTrip"
-                        placeholder="Trip ID or Details (optional)" />
-                </div>
-                <div class="buttons">
-                    <button type="submit" class="submit-btn" [disabled]="!advanceForm.valid">
-                        {{ editingIndex !== undefined ? 'Update' : 'Submit' }}
-                    </button>
-                    <button type="button" class="cancel-btn" (click)="toggleForm()">Cancel</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

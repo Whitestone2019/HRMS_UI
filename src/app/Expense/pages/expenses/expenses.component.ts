@@ -99,7 +99,7 @@ export class ExpensesComponent implements OnInit {
       this.error = 'Failed to load expenses. Please try again later.';
       this.isLoading = false;
     };
-// alert("Exp"+this.userRole);
+    // alert("Exp"+this.userRole);
     if (this.isAdmin) {
       console.log('Calling API: getExpenses()');
       this.apiService.getExpenses().subscribe({
@@ -171,10 +171,10 @@ processPendingEmployees() {
   }
   
   applyFilter() {
-    console.log('Filter Status:', this.filterStatus);
-    console.log('All Expenses:', this.expenses);
-    console.log('Search EmpId:', this.searchEmpId);
-    console.log('Search EmpName:', this.searchEmpName); 
+    // console.log('Filter Status:', this.filterStatus);
+    // console.log('All Expenses:', this.expenses);
+    // console.log('Search EmpId:', this.searchEmpId);
+    // console.log('Search EmpName:', this.searchEmpName); 
 
     let filtered = [...this.expenses];
     if (this.showFullTable && !this.isSpecificEmployeeView) {

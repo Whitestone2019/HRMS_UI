@@ -1,7 +1,8 @@
 /* General page styling */
 .expenses-page {
   padding: 20px;
-  background-color: #ffffff; /* White background for the page */
+  background-color: #ffffff;
+  /* White background for the page */
   border-radius: 16px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
@@ -37,21 +38,24 @@
 .filter-dropdown option {
   padding: 10px;
 }
-.filter-dropdown:focus 
-option:checked{
-background-color: #e0e0e0;
+
+.filter-dropdown:focus option:checked {
+  background-color: #e0e0e0;
 }
 
 .filter-dropdown option:hover {
   background-color: #f0f0f0;
   cursor: pointer;
 }
+
 .filter-dropdown option[selected] {
   background-color: #e0e0e0;
 }
+
 .filter-dropdown {
   z-index: 1000;
 }
+
 .loading-spinner {
   text-align: center;
   font-size: 18px;
@@ -65,34 +69,41 @@ background-color: #e0e0e0;
   color: white;
   border: none;
   padding: 8px 16px;
-  border-radius: 30px; /* Rounded corners with 3D effect */
+  border-radius: 30px;
+  /* Rounded corners with 3D effect */
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Shadow for 3D effect */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  /* Shadow for 3D effect */
   transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
   background: #000074;
-  transform: translateY(-2px); /* Lift effect on hover */
-  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3); /* Stronger shadow on hover */
+  transform: translateY(-2px);
+  /* Lift effect on hover */
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3);
+  /* Stronger shadow on hover */
 }
 
 /* Expenses list styling */
 .expenses-list {
   background: white;
   border-radius: 12px;
-  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7); /* 3D effect with shadows */
+  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7);
+  /* 3D effect with shadows */
   padding: 20px;
 }
 
 .list-header {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr ; /* Updated for new design */
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
+  /* Updated for new design */
   font-weight: bold;
-  background: linear-gradient(145deg, #00509e, #003d80); /* Gradient for a modern blue tone */
+  background: linear-gradient(145deg, #00509e, #003d80);
+  /* Gradient for a modern blue tone */
   padding: 12px;
   border-radius: 8px;
   color: #ffffff;
@@ -103,7 +114,8 @@ background-color: #e0e0e0;
 
 .expense-item {
   display: grid;
-  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr ; /* Updated for new design */
+  grid-template-columns: 1fr 1fr 2fr 1fr 1fr 1fr 1fr;
+  /* Updated for new design */
   padding: 9px 20px;
   margin-top: 12px;
   border-radius: 8px;
@@ -151,7 +163,8 @@ background-color: #e0e0e0;
 }
 
 .status-badge.pending {
-  background: linear-gradient(145deg, #ffc107, #e0a800); /* Yellow for pending */
+  background: linear-gradient(145deg, #ffc107, #e0a800);
+  /* Yellow for pending */
   color: #333;
 }
 
@@ -171,17 +184,22 @@ background-color: #e0e0e0;
   display: flex;
   gap: 8px;
 }
+
 .btn-icon:active {
-  background: linear-gradient(145deg, #004d99, #003366); /* Darker gradient on active state */
-  transform: translateY(1px); /* Button press effect */
+  background: linear-gradient(145deg, #004d99, #003366);
+  /* Darker gradient on active state */
+  transform: translateY(1px);
+  /* Button press effect */
 }
+
 /* Buttons */
 .btn-icon {
   padding: 0px 12px;
   border: none;
   cursor: pointer;
   border-radius: 8px;
-  background: linear-gradient(145deg, #0066cc, #004d99); /* Modern button gradient */
+  background: linear-gradient(145deg, #0066cc, #004d99);
+  /* Modern button gradient */
   color: #ffffff;
   font-weight: bold;
   text-transform: uppercase;
@@ -189,16 +207,22 @@ background-color: #e0e0e0;
 }
 
 .btn-icon:hover {
-  background: linear-gradient(145deg, #005bb5, #004080); /* Slightly darker gradient on hover */
-  transform: translateY(-2px); /* Subtle lift effect on hover */
+  background: linear-gradient(145deg, #005bb5, #004080);
+  /* Slightly darker gradient on hover */
+  transform: translateY(-2px);
+  /* Subtle lift effect on hover */
 }
 
 .btn-icon:active {
-  background: linear-gradient(145deg, #004d99, #003366); /* Darker gradient on active state */
-  transform: translateY(1px); /* Button press effect */
+  background: linear-gradient(145deg, #004d99, #003366);
+  /* Darker gradient on active state */
+  transform: translateY(1px);
+  /* Button press effect */
 }
+
 /* Reject reason column */
-.col-file, .item-reject-reason {
+.col-file,
+.item-reject-reason {
   text-align: center;
   width: 150px;
 }
@@ -217,11 +241,13 @@ background-color: #e0e0e0;
 
 .item-file a:hover {
   text-decoration: underline;
-  color: #0000cc; /* Hover color change */
+  color: #0000cc;
+  /* Hover color change */
 }
 
 .item-file a:active {
-  transform: translateY(2px); /* Simulate button press effect */
+  transform: translateY(2px);
+  /* Simulate button press effect */
 }
 
 /* No expenses message */
@@ -238,36 +264,37 @@ background-color: #e0e0e0;
 .no-expenses p {
   margin-bottom: 20px;
 }
-/* ... (your existing CSS) ... */
-.header-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
 
 .header-controls {
-  display: flex; /* Make header-controls a flex container */
+  display: flex;
+  /* Make header-controls a flex container */
   align-items: center;
 }
 
-.header-controls > * {
-  margin-left: 8px; /* Consistent spacing between controls */
+.header-controls>* {
+  margin-left: 8px;
+  /* Consistent spacing between controls */
 }
 
-.header-controls > *:first-child {
-  margin-left: 0; /* Remove left margin for the first element */
+.header-controls>*:first-child {
+  margin-left: 0;
+  /* Remove left margin for the first element */
 }
 
 /* Add the following styles for alignment */
-.header-content > div:first-child { /* Align the header text to the left */
-  flex: 1;
-}
 
-.header-content > div:last-child { /* Align the controls to the right */
+/* Align the header text to the left */
+/* .header-content>div:first-child {
+  flex: 1;
+} */
+
+/* Align the controls to the right */
+/* .header-content>div:last-child {
+  flex: 1;
   display: flex;
   align-items: center;
-}
+  background-color: #0e9b06;
+} */
 
 .search-input {
   padding: 8px;
@@ -280,12 +307,12 @@ background-color: #e0e0e0;
 .pagination-controls {
   display: flex;
   justify-content: center;
-  align-items: center; 
+  align-items: center;
   margin-top: 20px;
 }
 
 .page-number {
-  margin: 0 10px; 
+  margin: 0 10px;
   font-size: 16px;
   font-weight: bold;
 }
@@ -296,6 +323,7 @@ background-color: #e0e0e0;
   font-size: 14px;
   color: #555;
 }
+
 .arrow-button {
   background: none;
   border: none;
@@ -341,6 +369,7 @@ background-color: #e0e0e0;
 .employee-link:hover {
   background-color: #d0d0d0;
 }
+
 /* ... (existing CSS) ... */
 
 .view-all-button {
@@ -356,30 +385,36 @@ background-color: #e0e0e0;
 .view-all-button:hover {
   background-color: #3e8e41;
 }
+
 /* ... (existing CSS) ... */
 
 .back-button-container {
-  margin-top: 10px; /* Adjust margin as needed */
-  text-align: left;
+  margin-top: 10px;
+  /* Adjust margin as needed */
+  /* text-align: left; */
 }
 
 .back-button {
-  background-color: #3498db; /* Blue background */
+  background-color: #3498db;
+  /* Blue background */
   color: white;
   padding: 8px 12px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-weight: bold; /* Make the text bold */
+  font-weight: bold;
+  /* Make the text bold */
 }
 
 .back-button:hover {
-  background-color: #2980b9; /* Darker blue on hover */
+  background-color: #2980b9;
+  /* Darker blue on hover */
 }
 
 
 .pending-employees-section {
-  margin-top: 40px; /* Increased margin-top */
+  margin-top: 40px;
+  /* Increased margin-top */
   background-color: #f8f9fa;
   padding: 20px;
   border-radius: 8px;
@@ -405,10 +440,11 @@ background-color: #e0e0e0;
   padding: 20px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex; 
-  flex-direction: column; 
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
+
 .employee-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
@@ -418,14 +454,14 @@ background-color: #e0e0e0;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 15px; 
+  margin-bottom: 15px;
 }
 
 .employee-id {
   font-size: 18px;
   font-weight: 600;
   margin-right: 10px;
-  transition: transform 0.2s ease; 
+  transition: transform 0.2s ease;
 }
 
 .employee-id:hover {
@@ -479,6 +515,7 @@ background-color: #e0e0e0;
   justify-content: center;
   gap: 8px;
 }
+
 .view-all-expenses-button:hover {
   background-color: #233442;
 }
