@@ -27,8 +27,8 @@
       <img src="/HRMS/assets/images/menu-button.png" alt="Menu Button" class="menu-icon" (click)="toggleMenu($event)" />
 
       <div class="dropdown-menu" [class.show]="isMenuVisible">
-        <a *ngIf="isAdmin" routerLink="/dashboard/overview" (click)="closeMenu()">People</a>
-        <a *ngIf="isAdmin" routerLink="/expences/dashboardexp" (click)="closeMenu()">Expense</a>
+        <a routerLink="/dashboard/overview" (click)="closeMenu()">People</a>
+        <a routerLink="/expences/dashboardexp" (click)="closeMenu()">Expense</a>
         <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>
       </div>
     </div>

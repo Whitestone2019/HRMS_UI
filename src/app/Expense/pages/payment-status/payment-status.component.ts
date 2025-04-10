@@ -4,16 +4,16 @@ import { FormGroup, FormsModule } from '@angular/forms';
 import { Advance } from '../../shared/models/advance.model';
 import { ApiService } from '../../../api.service';
 import { Router } from '@angular/router';
-import { HttpClient } from '@angular/common/http';
+import { UserService } from '../../../user.service';
 
-interface EmployeePending {
+interface EmployeePaymentStatus {
   empId: string;
   employeeName: string;
   advances: Advance[];
 }
 
-interface PendingEmployeesMap {
-  [empId: string]: EmployeePending;
+interface PaymentStatusEmployeesMap {
+  [empId: string]: EmployeePaymentStatus;
 }
 
 @Component({
@@ -24,8 +24,9 @@ interface PendingEmployeesMap {
   styleUrl: './payment-status.component.css'
 })
 export class PaymentStatusComponent {
+  isAdmin: boolean = false;
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
-  approvedExpenses: any[] = [];
+  employeePaymentStatus: any[] = [];
   employeeName: string = localStorage.getItem('employeeName') || 'Unknown';
   empId: string = localStorage.getItem('empId') || 'Unknown';
   advanceForm: FormGroup | undefined;
@@ -35,11 +36,8 @@ export class PaymentStatusComponent {
   filterStatus: string = 'all';
   searchEmployeeName: string = '';
   showPaymentStatusList: boolean = true;
-  pendingEmployees: any[] = [];
   selectedEmployeePaymentStatus: any;
   selectedEmployee: string | null = null;
-  showAdvanceDetails: boolean = false;
-  showAddNewButton: boolean = false;
   showContent: boolean = true; // Initially show content
   newAdvance = {
     advanceDate: '',
@@ -51,7 +49,6 @@ export class PaymentStatusComponent {
   editingIndex: number | undefined;
   isLoading: boolean | undefined;
   userRole: any;
-  userService: any;
   error: string | undefined;
   advance: any;
   advanceId: any;
@@ -64,28 +61,12 @@ export class PaymentStatusComponent {
 
   animatedWidths: { [empId: string]: string } = {};
 
-
-
   steps = ['Initiated', 'In Progress', 'Finished']; // Can be any number of steps
   currentStep = 1; // Set this to 1, 2, or 3 dynamically
 
 
   uploadedReceipt: string | ArrayBuffer | null = null;
   receiptImageUrl: string | null = null;
-
-  viewReceipt(): void {
-    if (this.uploadedReceipt) {
-      const receiptWindow = window.open('', '_blank');
-      receiptWindow?.document.write(`
-        <html>
-          <body>
-            <h2>Receipt Preview</h2>
-            <img src="${this.uploadedReceipt}" alt="Receipt" style="max-width: 100%; height: auto;">
-          </body>
-        </html>
-      `);
-    }
-  }
 
   getProgressWidth(status: number | undefined): string {
     if (status === undefined || status === 0) return '0%';
@@ -120,168 +101,82 @@ export class PaymentStatusComponent {
 
 
 
-  constructor(private apiService: ApiService, private router: Router, private http: HttpClient) { }
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private userService: UserService,) { }
 
   ngOnInit(): void {
     this.empId = localStorage.getItem('employeeId') || '';
-    // console.log('this.empId', this.empId);
+    this.isAdmin = this.userService.isAdmin();
 
     if (!this.empId) {
       console.error('Error: Employee ID is missing.');
-      this.error = 'Failed to load advances. Employee ID is missing.';
+      this.error = 'Failed to load payment status. Employee ID is missing.';
       return;
     }
 
-    this.fetchEmployeeDetails(this.empId);
-
-    this.fetchAdvances();
-
     this.loadExpenses();
 
-    setTimeout(() => this.currentStep = 2, 1000);
-    setTimeout(() => this.currentStep = 3, 4000);
 
     setTimeout(() => {
-      this.approvedExpenses.forEach(expense => {
+      this.employeePaymentStatus.forEach(expense => {
         const width = this.getProgressWidth(expense.paymentStatus);
         this.animatedWidths[expense.empId] = width;
       });
     }, 100);
   }
 
-  toggleForm() {
-    this.showForm = !this.showForm;
-    if (!this.showForm) {
-      this.resetForm();
-    }
-  }
-
-  fetchEmployeeDetails(empId: string) {
-    console.log('empId', empId);
-
-    this.apiService.getEmployeeDetails(empId).subscribe({
-      next: (response: any) => {
-        if (response.employeeName) {
-          this.employeeName = response.employeeName;
-        } else {
-          console.error('Employee name not found in response:', response);
-        }
-      },
-      error: (err) => {
-        console.error('Error fetching employee details:', err);
-      }
-    });
-  }
-
   loadExpenses() {
-    console.log('Loading expenses for Employee_:', this.employeeId);
 
-    this.apiService.getApprovals(this.employeeId).subscribe({
-      next: (expenses: any[]) => {
-        console.log('Fetched expenses:', expenses);
+    const processExpenses = (expenses: any[]) => {
+      console.log('expenses', expenses);
 
-        this.approvedExpenses = expenses
-          .map((expense) => {
-            return {
-              ...expense,
-              status: expense.status.trim().toLowerCase(),
-              date: new Date(expense.date),
-              employeeId: expense.empId,
-              employeeName: expense.employeeName,
-              rejectreason: expense.rejectreason,
-              // paymentStatus: Math.floor(Math.random() * 3) + 1
-            };
-          })
-          .filter((expense) => expense.status === 'approved') // ✅ Filter only 'approved'
-
-          .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
-
-        console.log('Filtered Approved Expenses:', this.approvedExpenses.map((data) => {
-          console.log('NAME : ', data.employeeName, 'Payment Status :', data.paymentStatus);
-        }));
-      },
-      error: (err) => {
-        console.error('Error fetching expenses:', err);
-      },
-    });
-  }
-
-  getStatusClass(status: string | undefined): string {
-    if (!status) return ''; // If status is undefined, return an empty string
-    return status.toLowerCase();
-  }
-
-  fetchAdvances() {
-    console.log('fetchAdvances() called');
-    this.isLoading = true;
-
-    if (!this.empId) {
-      console.error('Error: Employee ID is required to fetch advances.');
-      this.error = 'Failed to load advances. Employee ID is missing.';
-      this.isLoading = false;
-      return;
-    }
-
-    this.apiService.getAdvance(this.empId).subscribe({
-      next: (advances: Advance[]) => {
-        this.advances = advances.map((advance) => ({
-          id: advance.id, // Add id
-          expenseId: advance.expenseId, // Add expenseId
-          advanceId: advance.advanceId,
-          empId: advance.empId, // Use empId from API
-          employeeName: advance.employeeName,
-          advanceDate: advance.advanceDate,
-          amount: advance.amount,
-          paidThrough: advance.paidThrough,
-          applyToTrip: advance.applyToTrip || '', // Provide default value
-          status: advance.status || '', // Provide default value
-          rejectreason: advance.rejectreason || 'N/A',
-        }));
-        this.isLoading = false;
-        // console.log('Advances fetched:', this.advances);
-        this.filterAdvances();
-        this.fetchPendingEmployees();
-      },
-      error: (err) => {
-        console.error('Error fetching advances:', err);
-        this.error = 'Failed to load advances. Please try again later.';
-        this.isLoading = false;
-      },
-    });
-  }
-
-  fetchPendingEmployees() {
-    const pending = this.advances.filter(
-      (advance) => advance.status && advance.status.toLowerCase() === 'pending'
-    );
-
-    const grouped = pending.reduce((acc: PendingEmployeesMap, advance) => {
-      if (advance.empId) {
-        if (!acc[advance.empId]) {
-          acc[advance.empId] = {
-            empId: advance.empId,
-            employeeName: advance.employeeName ?? 'Unknown',
-            advances: [],
-          };
-        }
-        acc[advance.empId].advances.push(advance);
-      } else {
-        console.warn('Advance with undefined empId:', advance);
+      if (!expenses || expenses.length === 0) {
+        console.warn('No expenses found.');
       }
-      return acc;
-    }, {});
-    this.pendingEmployees = Object.values(grouped).filter(employee => {
-      return this.filteredAdvances.some(advance => advance.empId === employee.empId && advance.status && advance.status.toLowerCase() === 'pending');
-    });
-  }
 
-  getEmployeeInfo(employee: any): any {
-    return this.approvedExpenses.find(emp => emp.empId === employee.empId);
+      this.employeePaymentStatus = expenses
+        .map((expense) => {
+          return {
+            ...expense,
+            status: expense.status.trim().toLowerCase(),
+            date: new Date(expense.date),
+            employeeId: expense.empId,
+            employeeName: expense.employeeName,
+            rejectreason: expense.rejectreason,
+          };
+        })
+        .sort((a, b) => b.date.getTime() - a.date.getTime()); // ✅ Newest first
+
+      this.employeePaymentStatus.map((data) => {
+        console.log('NAME :', data.employeeName, '\t Status :', data.status, '\t Payment Status ', data.paymentStatus);
+      })
+
+    };
+
+    const handleError = (err: any) => {
+      console.error('Error fetching expenses:', err);
+      this.error = 'Failed to load expenses. Please try again later.';
+      this.isLoading = false;
+    };
+
+    if (this.isAdmin) {
+      console.log('Calling API: getExpenses()');
+      this.apiService.getAllApprovedExpenses().subscribe({
+        next: processExpenses,
+        error: handleError,
+      });
+    } else {
+      console.log('Calling API: getExpensesEmp()');
+      this.apiService.getApprovedExpensesByEmpId(this.employeeId).subscribe({
+        next: processExpenses,
+        error: handleError,
+      });
+    }
   }
 
   showEmpPaymentStatus(employee: any) {
-    console.log('employee', employee);
-
     if (employee?.expenseId) {
       this.apiService.getReceiptUrl(employee?.expenseId).subscribe((blob: Blob) => {
         const fileUrl = URL.createObjectURL(blob);
@@ -291,47 +186,11 @@ export class PaymentStatusComponent {
     this.selectedEmployeePaymentStatus = employee
     this.selectedEmployee = employee.empId;
     this.showPaymentStatusList = false;
-    this.filterStatus = 'pending';
-    this.filterAdvances();
-    this.showAdvanceDetails = true;
-    this.showAddNewButton = true;
   }
 
   goBack() {
     this.selectedEmployee = null;
     this.showPaymentStatusList = true;
-    this.filterStatus = 'all';
-    this.filterAdvances();
-    this.showAdvanceDetails = false;
-    this.showAddNewButton = false;
-  }
-
-  filterAdvances() {
-    let filtered: Advance[] = [...this.advances];
-    // console.log('filter_Advances fun :', filtered);
-
-    if (this.filterStatus !== 'all') {
-      filtered = filtered.filter(
-        (advance) =>
-          advance.status &&
-          typeof advance.status === 'string' &&
-          advance.status.trim().toLowerCase() === this.filterStatus
-      );
-    }
-
-    if (this.searchEmployeeName && this.searchEmployeeName.trim() !== '') {
-      const searchTerm = this.searchEmployeeName.trim().toLowerCase();
-      filtered = filtered.filter((advance) =>
-      (advance.employeeName?.toLowerCase().includes(searchTerm) ||
-        advance.empId?.toLowerCase().includes(searchTerm))
-      );
-    }
-
-    this.filteredAdvances = filtered;
-    this.currentPage = 1;
-    this.updatePagedAdvances();
-    this.calculatePaginationDetails();
-    this.fetchPendingEmployees();
   }
 
   updatePagedAdvances() {
@@ -339,6 +198,7 @@ export class PaymentStatusComponent {
     const endIndex = startIndex + this.itemsPerPage;
     this.pagedAdvances = this.filteredAdvances.slice(startIndex, endIndex);
   }
+
   nextPage() {
     if (this.currentPage * this.itemsPerPage < this.filteredAdvances.length) {
       this.currentPage++;
@@ -366,116 +226,12 @@ export class PaymentStatusComponent {
     return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
   }
 
-
-  resetForm() {
-    this.newAdvance = {
-      advanceDate: '',
-      amount: '',
-      paidThrough: '',
-      applyToTrip: '',
-      status: ''
-    };
-  }
-
-  onEdit(advance: Advance) {
-    const advanceId = advance.advanceId;
-    if (!advanceId) {
-      alert('Advance ID is missing!');
-      return;
-    }
-
-    this.showForm = true;
-    this.editingIndex = this.advances.findIndex(a => a.advanceId === advanceId);
-
-    this.apiService.getAdvanceById3(String(advanceId)).subscribe({
-      next: (response: any) => {
-        const advanceDetails = response.data;
-
-        this.newAdvance = {
-          advanceDate: advanceDetails.advanceDate,
-          amount: advanceDetails.amount,
-          paidThrough: advanceDetails.paidThrough,
-          applyToTrip: advanceDetails.applyToTrip,
-          status: advanceDetails.status
-        };
-        ;
-        console.log('Advance details loaded:', this.newAdvance);
-      },
-      error: (err: any) => {
-        console.error('Error fetching advance details:', err);
-        alert('Failed to load advance details. Please try again later.');
-      }
-    });
-  }
-
-  onDelete(index: number) {
-    const confirmDelete = confirm('Are you sure you want to delete this advance?');
-    if (confirmDelete) {
-      this.advances.splice(index, 1); // Remove the advance from the array
-    }
-  }
-
-  submitAdvance(advanceForm: any): void {
-    console.log('Form submission triggered.');
-    if (advanceForm.valid) {
-      const advanceDetails = {
-        ...advanceForm.value,
-        employeeName: this.employeeName,
-        empId: this.empId,
-      };
-
-      console.log('Advance details to submit:', advanceDetails);
-
-      if (this.editingIndex !== undefined) {
-        // Updating existing advance
-        this.apiService
-          .updateAdvance1(this.advances[this.editingIndex].advanceId, advanceDetails)
-          .subscribe({
-            next: (response: any) => {
-              alert('Advance updated successfully!');
-              this.fetchAdvances();
-              this.resetForm();
-              this.showForm = false;
-            },
-            error: (error: any) => {
-              alert('Error updating advance.');
-              console.error('Error from API:', error);
-            },
-          });
-      } else {
-        // Adding new advance
-        const formData = new FormData();
-        formData.append('advancesDetails', JSON.stringify(advanceDetails));
-        //console.log('FormData to submit:', Array.from(formData.entries()));
-
-        this.apiService.submitAdvance(formData).subscribe({
-          next: (response: any) => {
-            alert('Advance submitted successfully!');
-            this.fetchAdvances();
-            this.resetForm();
-            this.showForm = false;
-          },
-          error: (error: any) => {
-            alert('Error submitting advance.');
-            console.error('Error from API:', error);
-          },
-        });
-      }
-    } else {
-      alert('Please fill in all required fields.');
-      console.log('Form is invalid. Current values:', advanceForm.value);
-    }
-  }
-
-
   paymentStatusAPI(expenseId: string, paymentStatus: number) {
-    console.log('paymentStatus : ', paymentStatus);
     this.apiService
       .updatePaymentStatus(expenseId, paymentStatus)
       .subscribe({
         next: (response: any) => {
           alert('Payment Status updated successfully!');
-          this.fetchAdvances();
           this.loadExpenses();
           this.selectedEmployeePaymentStatus.paymentStatus = paymentStatus;
         },

@@ -35,6 +35,7 @@ export class HeaderComponent implements OnInit {
     event.stopPropagation(); // Prevents the click event from propagating to the document
     this.isMenuVisible = !this.isMenuVisible;
   }
+  
   closeMenu(): void {
     this.isMenuVisible = false;
   }

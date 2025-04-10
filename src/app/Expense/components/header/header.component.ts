@@ -30,9 +30,9 @@ import { UserService } from '../../../user.service';
           <div class="dropdown-menu" [class.show]="isMenuVisible">
           <a *ngIf="isMenuItemVisible('People')" routerLink="/dashboard/overview" (click)="closeMenu()">People</a>
           <a *ngIf="isMenuItemVisible('Expense')" routerLink="/expences/dashboardexp"  (click)="closeMenu()">Expense</a>
-          <a *ngIf="isMenuItemVisible('Payroll')" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>        
+          <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>        
           </div>      
-        </div>
+        </div> 
       
 
         <!-- Logout button -->
@@ -242,11 +242,13 @@ import { UserService } from '../../../user.service';
 export class HeaderComponent {
   isMenuVisible = false;
   userRole: string = '';
+  isAdmin: boolean = false;
 
   constructor(private router: Router, private userService: UserService) { }
 
   ngOnInit(): void {
     this.userRole = this.userService.role;
+    this.isAdmin = this.userService.isAdmin();
 
     if (!this.userRole.trim()) {
       this.router.navigate(['/dashboard/addcandidate']);
