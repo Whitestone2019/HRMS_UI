@@ -10,9 +10,6 @@ import { UserService } from '../../../../user.service';
   template: `
     <header class="header">
       <div class="header-left">
-        <button class="menu-toggle">
-          <i class="fas fa-bars"></i>
-        </button>
         <div class="organization-select">
           <select>
             <option>Whitestone</option>
@@ -22,16 +19,7 @@ import { UserService } from '../../../../user.service';
 
       <div class="header-right">
         <div class="header-actions">
-          <button class="action-btn">
-            <i class="fas fa-bell"></i>
-            <span class="notification-badge">3</span>
-          </button>
-          <button class="action-btn">
-            <i class="fas fa-question-circle"></i>
-          </button>
-          <button class="action-btn">
-            <i class="fas fa-cog"></i>
-          </button>
+         
         </div>
         <div class="user-actions">
         <div class="right">
@@ -50,11 +38,10 @@ import { UserService } from '../../../../user.service';
           </div>
         </div>
       </div>
-        <div class="user-profile">
-          <img src="assets/user-avatar.png" alt="User" class="avatar">
-          <div class="user-info">
-        </div>
-        </div>
+       <!-- Logout button -->
+        <button class="logout-button" (click)="logout()">
+          <i class="fas fa-sign-out-alt"></i> Logout
+        </button>
       </div>
     </header>
   `,
@@ -205,6 +192,28 @@ import { UserService } from '../../../../user.service';
 .menu-button-dropdown .dropdown-menu a:hover {
   background-color: #279cf6;
 }
+    /* Logout button styling */
+        .logout-button {
+          display: flex;
+          align-items: center;
+          padding: 8px 16px;
+          background-color: #1a88fd;
+          color: white;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          font-size: 14px;
+          gap: 8px; /* Space between icon and text */
+          transition: background-color 0.3s ease;
+        }
+
+        .logout-button i {
+          font-size: 16px;
+        }
+
+        .logout-button:hover {
+          background-color: #318def;
+        }
 /* Mobile Responsive Design */
 @media (max-width: 768px) {
   .header .right {

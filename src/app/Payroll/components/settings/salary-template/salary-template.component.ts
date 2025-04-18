@@ -486,7 +486,7 @@ export class SalaryTemplateComponent {
     } else if (component.type === 'fixed') {
       return component.amount || 0;
     }
-    alert(component.type);
+   // alert(component.type);
     return 0;
   }
 

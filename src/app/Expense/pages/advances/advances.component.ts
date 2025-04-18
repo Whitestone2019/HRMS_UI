@@ -64,6 +64,7 @@ export class AdvanceComponent {
   toggleForm() {
     this.showForm = !this.showForm;
     if (!this.showForm) {
+      this.editingIndex = undefined;
       this.resetForm();
     }
   }
@@ -193,6 +194,7 @@ getEmployeeInfo(employee: any): any {
     this.filterAdvances();
     this.showAdvanceDetails = false;
     this.showAddNewButton = false;
+    this.editingIndex = undefined;
   }
 
   filterAdvances() {
@@ -266,6 +268,7 @@ parseDate(dateString: string): string {
   }
 
   onEdit(advance: Advance) {
+    
     const advanceId = advance.advanceId;
     if (!advanceId) {
       alert('Advance ID is missing!');
@@ -274,7 +277,7 @@ parseDate(dateString: string): string {
 
     this.showForm = true;
     this.editingIndex = this.advances.findIndex(a => a.advanceId === advanceId);
-
+    alert("Update"+this.editingIndex);
     this.apiService.getAdvanceById3(String(advanceId)).subscribe({
       next: (response: any) => {
         const advanceDetails = response.data;
@@ -296,12 +299,27 @@ parseDate(dateString: string): string {
     });
   }
 
-  onDelete(index: number) {
+  onDeleteAdvance(index: number): void {
     const confirmDelete = confirm('Are you sure you want to delete this advance?');
+  
     if (confirmDelete) {
-      this.advances.splice(index, 1); // Remove the advance from the array
+      const deletedItem = this.advances[index];
+  
+      // Call the API to delete from the backend
+      this.apiService.deleteAdvance(deletedItem.advanceId).subscribe(
+        () => {
+          // On successful backend deletion, remove from the local array
+          this.advances.splice(index, 1);
+          console.log('Advance deleted successfully:', deletedItem);
+        },
+        error => {
+          console.error('Error deleting advance from server:', error);
+          alert('Failed to delete advance. Please try again.');
+        }
+      );
     }
   }
+  
 
   submitAdvance(advanceForm: any): void {
     console.log('Form submission triggered.');
@@ -316,27 +334,22 @@ parseDate(dateString: string): string {
   
       if (this.editingIndex !== undefined) {
         // Updating existing advance
-        this.apiService
-          .updateAdvance1(this.advances[this.editingIndex].advanceId, advanceDetails)
-          .subscribe({
-            next: (response: any) => {
-              alert('Advance updated successfully!');
-              this.fetchAdvances();
-              this.resetForm();
-              this.showForm = false;
-            },
-            error: (error: any) => {
-              alert('Error updating advance.');
-              console.error('Error from API:', error);
-            },
-          });
+        const advanceId = this.advances[this.editingIndex].advanceId;
+        this.apiService.updateAdvance1(advanceId, advanceDetails).subscribe({
+          next: (response: any) => {
+            alert('Advance updated successfully!');
+            this.fetchAdvances();
+            this.resetForm();
+            this.showForm = false;
+          },
+          error: (error: any) => {
+            alert('Error updating advance.');
+            console.error('Error from API:', error);
+          },
+        });
       } else {
         // Adding new advance
-        const formData = new FormData();
-        formData.append('advancesDetails', JSON.stringify(advanceDetails));
-        //console.log('FormData to submit:', Array.from(formData.entries()));
-  
-        this.apiService.submitAdvance(formData).subscribe({
+        this.apiService.submitAdvance(advanceDetails).subscribe({
           next: (response: any) => {
             alert('Advance submitted successfully!');
             this.fetchAdvances();
@@ -354,4 +367,5 @@ parseDate(dateString: string): string {
       console.log('Form is invalid. Current values:', advanceForm.value);
     }
   }
+  
 }  

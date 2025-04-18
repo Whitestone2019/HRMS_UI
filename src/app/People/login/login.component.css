@@ -1,4 +1,4 @@
-/* General styles for the login page */
+/* General layout for the full login page */
 .login-page {
   display: flex;
   justify-content: center;
@@ -8,14 +8,14 @@
   font-family: 'Arial', sans-serif;
 }
 
-/* Quote container styling */
+/* Quotes section */
 .quote-container {
   flex: 1;
   padding: 50px;
-  background-color: rgba(255, 255, 255, 0.8); /* Slightly transparent white */
+  background-color: rgba(255, 255, 255, 0.8);
   border-right: 2px solid #ddd;
-  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1); /* Subtle shadow for quote container */
-  border-radius: 10px; /* Rounded corners */
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
 }
 
 .quote-container h2 {
@@ -31,66 +31,39 @@
   color: #555;
 }
 
-/* Login container with background image and gradient overlay */
+/* Login section */
 .login-container {
-  background: url('/HRMS/assets/images/WHITESTONE.png') no-repeat center top;
-  background-size: cover; /* Ensures the image covers the container */
-  
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-end; /* Content moves to the bottom */
+  justify-content: flex-end;
   padding: 30px 60px;
-  background-color: rgba(255, 255, 255, 0.9); /* Adds a translucent white layer */
+  background-color: rgba(255, 255, 255, 0.9);
   max-width: 400px;
-  min-height: 600px; /* Container minimum height */
+  min-height: 600px;
   margin: 0 auto;
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); /* Subtle shadow effect for the container */
-  
-  /* 3D effect */
-  perspective: 800px; /* Gives the container a 3D space */
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
   position: relative;
 }
 
-
-.login-container::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: inherit; /* Inherit the background from the container */
-  border-radius: 10px; /* Rounded corners */
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 30px rgba(0, 0, 0, 0.3); /* Black shadow effect */
-  transform: translateZ(-50px) scale(1.1); /* Moves the background image further into the "depth" and slightly enlarges it */
-  z-index: -1; /* Puts the background below the content */
-
+/* Logo Image */
+.login-logo {
+  width: 300px;
+  margin-top: 40px;
+  margin-bottom: 20px;
 }
 
-/* Adjust the image size */
-.login-container {
-  background-size: 100% auto; /* Adjust the image size */
-  background-position: center 0%; /* Ensures the image is centered properly */
-}
-
-.login-container > * {
-  position: relative; /* Ensures content appears above the background */
-}
-
-
-
-
+/* User Icon */
 .user-image img {
   width: 100px;
   height: 100px;
   border-radius: 50%;
-  margin-bottom: 250px;
+  margin-bottom: 50px;
 }
 
-/* Styling for input fields and buttons */
+/* Input Fields */
 input {
   display: block;
   margin-bottom: 12px;
@@ -110,6 +83,7 @@ input:focus {
   outline: none;
 }
 
+/* Buttons */
 button {
   padding: 12px 25px;
   background-color: #4CAF50;
@@ -127,7 +101,7 @@ button:hover {
   background-color: #45a049;
 }
 
-
+/* Reset Password Section */
 .reset-password {
   margin-top: 20px;
   text-align: center;
@@ -148,31 +122,31 @@ button:hover {
   text-decoration: none;
 }
 
+/* Password eye icon setup */
 .password-input-container {
-  position: relative; /* Ensures the icon is positioned relative to this container */
-  width: 100%; /* Matches input field width */
+  position: relative;
+  width: 100%;
 }
 
 .password-input-container input {
-  width: 100%; /* Ensures the input spans the container */
-  padding-right: 40px; /* Creates space for the icon */
+  width: 100%;
+  padding-right: 40px;
 }
 
 .password-input-container i {
-  position: absolute; /* Positions the icon relative to the container */
-  top: 50%; /* Centers vertically */
-  right: 10px; /* Aligns the icon to the right */
-  transform: translateY(-50%); /* Centers icon vertically */
-  cursor: pointer; /* Indicates interactivity */
-  font-size: 18px; /* Adjust icon size as needed */
-  color: #ccc; /* Default icon color */
-  transition: color 0.3s ease; /* Smooth color transition */
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  cursor: pointer;
+  font-size: 18px;
+  color: #ccc;
+  transition: color 0.3s ease;
 }
 
 .password-input-container i:hover {
-  color: #007bff; /* Highlight on hover */
+  color: #007bff;
 }
-
 
 /* Responsive design */
 @media (max-width: 768px) {
@@ -186,5 +160,14 @@ button:hover {
     width: 100%;
     text-align: center;
     padding: 20px;
+  }
+
+  .login-logo {
+    width: 100px;
+  }
+
+  .user-image img {
+    width: 80px;
+    height: 80px;
   }
 }

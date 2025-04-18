@@ -3,6 +3,8 @@ import { Component, HostListener, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from './user.service';
 import { environment } from '../environments/environment';
+import { LoaderService } from './shared/services/loader.service';
+import { LoaderComponent } from './shared/loader/loader.component';
 
 @Component({
   selector: 'app-root',
@@ -22,7 +24,7 @@ export class AppComponent implements OnInit {
     throw new Error('Method not implemented.');
   }
 
-  constructor(private userService: UserService, private router: Router) {}
+  constructor(private userService: UserService, private router: Router,public loaderService: LoaderService) {}
 
   ngOnInit() {
     this.checkSessionValidity();

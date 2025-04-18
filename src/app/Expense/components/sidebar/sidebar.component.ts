@@ -11,8 +11,9 @@ import { NgIf } from '@angular/common';
   template: `
     <aside class="sidebar">
       <div class="logo">
-        <h1 style="font-weight: bold; color: white;">Expense</h1>    
+        <h1 style="font-weight: bold; color: white;"></h1>    
       </div>
+      <div></div>
       <nav>
         <a routerLink="/expences/dashboardexp/dashboard" routerLinkActive="active">
           <i class="fas fa-home"></i>
@@ -29,10 +30,6 @@ import { NgIf } from '@angular/common';
          <a routerLink="/expences/dashboardexp/reports" routerLinkActive="active">
           <i class="fas fa-chart-bar"></i>
           Reports
-        </a>
-        <a routerLink="/trips" routerLinkActive="active">
-          <i class="fas fa-plane"></i>
-          Trips
         </a>
         <a routerLink="/expences/dashboardexp/advances" routerLinkActive="active">
           <i class="fas fa-money-bill"></i>
@@ -85,6 +82,7 @@ import { NgIf } from '@angular/common';
 
 export class SidebarComponent implements OnInit {
   isAdmin = false;
+  
 
   constructor(
     private userService: UserService,
@@ -93,6 +91,7 @@ export class SidebarComponent implements OnInit {
 
   ngOnInit(): void {
     this.isAdmin = this.userService.isAdmin();
+    this.isAdmin=this.userService.isManager();
 
     // Force Angular to detect changes
     this.cdr.detectChanges();

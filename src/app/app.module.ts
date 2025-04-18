@@ -58,6 +58,7 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
 import { PayslipComponent } from './Payroll/components/settings/payslip/payslip.component';
 import { ApiKeyInterceptor } from './interceptors/api-key.interceptor';
+import { LoaderComponent } from './shared/loader/loader.component';
 //import { HeaderComponent } from './Payroll/components/layout/header/header.component';
 
 
@@ -102,7 +103,8 @@ import { ApiKeyInterceptor } from './interceptors/api-key.interceptor';
     UserinfoComponent,
     AddEmpComponent,
     AlertDialogComponent,
-    PayslipComponent
+    PayslipComponent,
+    LoaderComponent
   
   ],
   imports: [
