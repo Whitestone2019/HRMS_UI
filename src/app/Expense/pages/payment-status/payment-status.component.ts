@@ -25,6 +25,7 @@ interface PaymentStatusEmployeesMap {
 })
 export class PaymentStatusComponent {
   isAdmin: boolean = false;
+  isManager: boolean = false;
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   employeePaymentStatus: any[] = [];
   employeeName: string = localStorage.getItem('employeeName') || 'Unknown';
@@ -109,6 +110,7 @@ export class PaymentStatusComponent {
   ngOnInit(): void {
     this.empId = localStorage.getItem('employeeId') || '';
     this.isAdmin = this.userService.isAdmin();
+    this.isManager = this.userService.isManager();
 
     if (!this.empId) {
       console.error('Error: Employee ID is missing.');

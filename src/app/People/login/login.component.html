@@ -1,18 +1,28 @@
 <div>
   <div class="login-page">
+    
+    <!-- Quote Section -->
     <div class="quote-container">
       <h2>Company Quotes</h2>
       <p>"Innovation distinguishes between a leader and a follower." - Steve Jobs</p>
       <p>"The only way to do great work is to love what you do." - Steve Jobs</p>
     </div>
+
+    <!-- Login Section -->
     <div class="login-container">
+      
+      <!-- Logo -->
+      <img src="/HRMS/assets/images/WHITESTONELOGIN.png" alt="Logo" class="login-logo" />
+      
+      <!-- User Image -->
       <div class="user-image">
         <img alt="User icon" src="/HRMS/assets/images/user.png" />
       </div>
-      
+
+      <!-- Login Form -->
       <form (ngSubmit)="login()">
         <input id="username" [(ngModel)]="user.username" name="username" placeholder="User name" required />
-    
+
         <div class="password-input-container">
           <input 
             id="password" 
@@ -21,20 +31,18 @@
             placeholder="Password" 
             [type]="passwordVisible ? 'text' : 'password'" 
             required 
-            />
+          />
           <i 
             class="fa" 
             [ngClass]="passwordVisible ? 'fa-eye' : 'fa-eye-slash'" 
             (click)="togglePasswordVisibility()" 
             aria-hidden="true">
           </i>
-          
         </div>
-    
+
         <button type="submit">LOGIN</button>
         <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
-    
-        <!-- Forgot Password Button -->
+
         <div class="reset-password">
           <button type="button" (click)="navigateToResetPassword()">Reset your password?</button>
         </div>

@@ -32,7 +32,7 @@ export class ExpenseFormComponent {
       empid: [{ value: '', disabled: true }, Validators.required],
       category: ['', Validators.required],
       amount: ['', [Validators.required, Validators.min(0)]],
-      currency: ['USD', Validators.required],
+      currency: ['INR', Validators.required],
       description: ['', Validators.required],
       receipt: [null, Validators.required]
     });
@@ -68,7 +68,15 @@ export class ExpenseFormComponent {
             this.apiService.getReceiptUrl(selectedExpense.expenseId).subscribe((blob: Blob) => {
               const fileUrl = URL.createObjectURL(blob);
               this.uploadedReceipt = fileUrl;
+            alert("fileUrl>>"+fileUrl);
+              // Convert Blob to File and patch it into the form
+              const fileName = 'receipt.pdf'; // Or extract from headers if available
+              const file = new File([blob], fileName, { type: blob.type });
+            
+              this.expenseForm.patchValue({ receipt: file });
+              this.expenseForm.get('receipt')?.updateValueAndValidity();
             });
+            
 
           }
         });
@@ -143,6 +151,7 @@ export class ExpenseFormComponent {
       // Append receipt file if available
       const file = this.expenseForm.get('receipt')?.value;
       if (file instanceof File) {
+        alert("receipt"+file);
         formData.append('receipt', file);
       } else {
         alert('Please upload a valid receipt file.');

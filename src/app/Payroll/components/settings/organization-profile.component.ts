@@ -190,22 +190,22 @@ export class OrganizationProfileComponent implements OnInit {
       // Update existing organization
       this.apiService.updateProfile(this.profile.id, requestBody).subscribe(
         (response) => {
-          alert('Profile updated successfully: ' + JSON.stringify(response));
+         // alert('Profile updated successfully: ' + JSON.stringify(response));
           this.fetchOrganizations(); // Refresh the list after updating
         },
         (error) => {
-          alert('Error updating profile: ' + error);
+         // alert('Error updating profile: ' + error);
         }
       );
     } else {
       // Create new organization
       this.apiService.saveProfile(requestBody).subscribe(
         (response) => {
-          alert('Profile saved successfully: ' + JSON.stringify(response));
+         // alert('Profile saved successfully: ' + JSON.stringify(response));
           this.fetchOrganizations(); // Refresh the list after saving
         },
         (error) => {
-          alert('Error saving profile: ' + error);
+         // alert('Error saving profile: ' + error);
         }
       );
     }
@@ -221,11 +221,11 @@ export class OrganizationProfileComponent implements OnInit {
     if (confirm('Are you sure you want to delete this organization?')) {
       this.apiService.deleteProfile(id).subscribe(
         (response) => {
-          alert('Organization deleted successfully');
+         // alert('Organization deleted successfully');
           this.fetchOrganizations(); // Refresh the list after deletion
         },
         (error) => {
-          alert('Error deleting organization: ' + error);
+        //  alert('Error deleting organization: ' + error);
         }
       );
     }
