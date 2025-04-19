@@ -941,6 +941,8 @@ export class ApiService {
   }
 
 
+
+
   saveOrUpdateEmployeeSalary(employeeSalary: any): Observable<any> {
     const url = `${this.apiUrl}/employeesalarydetail`;
     this.loaderService.show();
@@ -1116,6 +1118,72 @@ export class ApiService {
     );
   }
   
+  updatePaymentStatus(expenseId: string, requestBody: { paymentStatus: number, requesterEmpId: string }): Observable<any> {
+    this.loaderService.show();
+    return this.http
+      .put<any>(
+        `${this.apiUrl}/update/expenses/${expenseId}/payment-status`,
+        requestBody,
+        {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }
+      )
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
+  
+  getAllApprovedAdvances(): Observable<any[]> {
+    this.loaderService.show();
+    return this.http
+      .get<any[]>(`${this.apiUrl}/app/approvedadvances/all`, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      })
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
+
+  // Fetch approved advances for a specific employee
+  getApprovedAdvancesByEmpId(empId: string): Observable<any[]> {
+    this.loaderService.show();
+    return this.http
+      .get<any[]>(`${this.apiUrl}/app/approvedadvances/${empId}`, {
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      })
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
+
+  // Fetch advance receipt as a Blob
+  getAdvanceReceiptUrl(advanceId: string): Observable<Blob> {
+    this.loaderService.show();
+    return this.http
+      .get(`${this.apiUrl}/advances/${advanceId}/receipt`, {
+        responseType: 'blob',
+        headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+      })
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
+
+  // Update advance payment status
+  updateAdvancePaymentStatus(advanceId: string, requestBody: { paymentStatus: number, requesterEmpId: string }): Observable<any> {
+    this.loaderService.show();
+    return this.http
+      .put<any>(
+        `${this.apiUrl}/rej/advance/${advanceId}`,
+        requestBody,
+        {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }
+      )
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
@@ -1131,15 +1199,6 @@ export class ApiService {
     });
   }
 
-  updatePaymentStatus(expenseId: string, payment_status: number): Observable<any> {
-    this.loaderService.show();
   
-    return this.http.put<any>(
-      `${this.apiUrl}/update/expenses/${expenseId}/payment-status`,
-      { paymentStatus: payment_status }
-    ).pipe(
-      finalize(() => this.loaderService.hide()) // ✅ hide loader when done
-    );
-  }
 
 }

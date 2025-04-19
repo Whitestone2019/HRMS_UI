@@ -1,121 +1,123 @@
 <div class="advance-container">
     <div *ngIf="showContent">
-        <div *ngIf="showPaymentStatusList" class="pending-employees-section">
-            <h2 style="text-align: center;">Payment Status</h2>
-            <div class="overall-approvals-list">
-                <div class="overall-list-header">
-                    <span class="overall-list-field">Name</span>
-                    <span class="overall-list-field">Employee ID</span>
-                    <span class="overall-list-field">Payment Status</span>
-                </div>
-            </div>
-            <div class="overall-approvals-list" style="background: white; flex-direction: column;">
-
-                <div *ngFor="let employee of employeePaymentStatus" class="overall-values-header"
-                    (click)="showEmpPaymentStatus(employee)">
-
-                    <!-- Employee Details -->
-                    <div class="overall-list-field" style="color: black;">
-                        {{ employee?.employeeName }}
-                    </div>
-                    <div class="overall-list-field" style="color: black;">
-                        {{ employee?.empId }}
-                    </div>
-
-                    <!-- [ngStyle]="{ 
-                        color: employee.paymentStatus === 1 ?
-                        'yellow':employee.paymentStatus=== 2? 'green':'orange'
-                                }" -->
-
-                    <div class="overall-list-field" style="color: black;">
-                        {{employee.paymentStatus === 1 ?
-                        'In Progress':employee.paymentStatus=== 2? 'Finished':'Initiated' }}
-                    </div>
-                </div>
-            </div>
+      <!-- List View -->
+      <div *ngIf="showPaymentStatusList" class="pending-employees-section">
+        <h2 style="text-align: center;">Payment Status</h2>
+        <div class="overall-approvals-list">
+          <div class="overall-list-header">
+            <span class="overall-list-field">Name</span>
+            <span class="overall-list-field">Employee ID</span>
+            <span class="overall-list-field">Type</span>
+            <span class="overall-list-field">Payment Status</span>
+          </div>
         </div>
-
-        <div *ngIf="!showPaymentStatusList" class="table-container">
-            <div style="flex-direction: row; display: flex; align-items: center;">
-                <button (click)="goBack()" class="back-button">
-                    <i class="fas fa-arrow-left"></i> Back
-                </button>
-                <h2 style="text-align: center; margin: auto;font-size: 24px;">Payment Status</h2>
+        <div class="overall-approvals-list" style="background: white; flex-direction: column;">
+          <div *ngFor="let item of employeePaymentStatus" class="overall-values-header"
+               (click)="showEmpPaymentStatus(item)">
+            <div class="overall-list-field" style="color: black;">
+              {{ item?.employeeName }}
             </div>
-            <!-- Progress Bar Section -->
-            <div class="progress-container">
-                <!-- Step Labels -->
-                <div class="step-labels">
-                    <div *ngFor="let step of steps; let i = index" class="step-label"
-                        [ngStyle]="{ left: (i * 50) + '%' }" [class.clickable]="isAdmin"
-                        (click)="isAdmin && paymentStatusAPI(selectedEmployeePaymentStatus?.expenseId, i)">
-                        {{ step }}
-                    </div>
-                </div>
-
-                <!-- Step Progress Bar -->
-                <div class="progress-track">
-                    <!-- Segment 1: 0 → 1 -->
-                    <div class="progress-segment" [ngStyle]="{
-                           width: segment1Width,
-                           background: paymentStatus >= 1 ? 'linear-gradient(to right, orange, yellow)' : 'transparent'
-                         }">
-                    </div>
-
-                    <!-- Segment 2: 1 → 2 -->
-                    <div class="progress-segment" [ngStyle]="{
-                           width: segment2Width,
-                           left: '50%',
-                           background: paymentStatus >= 2 ? 'linear-gradient(to right, yellow, green)' : 'transparent'
-                         }">
-                    </div>
-
-                    <!-- Dots -->
-                    <div *ngFor="let step of steps; let i = index" class="step-dot" [ngStyle]="{
-                           left: (i * 50) + '%',
-                           backgroundColor: getStepColor(i, paymentStatus)
-                         }">
-                    </div>
-                </div>
-
+            <div class="overall-list-field" style="color: black;">
+              {{ item?.empId }}
             </div>
-
-            <div style="display: flex; flex-direction: row;">
-                <div style="width: 60%;">
-                    <div class="single-item-container">
-                        <div class="namimg-field">Date</div>
-                        <div class="naming-data">
-                            {{ selectedEmployeePaymentStatus?.date | date: 'MMM d,y'}}
-                        </div>
-                    </div>
-                    <div class="single-item-container">
-                        <div class="namimg-field">Name</div>
-                        <div class="naming-data">{{selectedEmployeePaymentStatus?.employeeName}}</div>
-                    </div>
-                    <div class="single-item-container">
-                        <div class="namimg-field">Employee Id</div>
-                        <div class="naming-data">{{selectedEmployeePaymentStatus?.empId}}</div>
-                    </div>
-                    <div class="single-item-container">
-                        <div class="namimg-field">Amount</div>
-                        <div class="naming-data">{{selectedEmployeePaymentStatus?.amount}}</div>
-                    </div>
-                    <div class="single-item-container">
-                        <div class="namimg-field">Category</div>
-                        <div class="naming-data">{{selectedEmployeePaymentStatus?.category}}</div>
-                    </div>
-                    <div class="single-item-container">
-                        <div class="namimg-field">Description</div>
-                        <div class="naming-data">{{selectedEmployeePaymentStatus?.description}}</div>
-                    </div>
-
-                </div>
-                <div style="flex-direction: column; width: 40%;">
-                    <h5 style="text-align: center;">Receipt</h5>
-                    <img [src]="uploadedReceipt" alt="Receipt Preview" style="max-width: 100%; height: auto;">
-                </div>
+            <div class="overall-list-field" style="color: black;">
+              {{ item.type | titlecase }}
             </div>
-
+            <div class="overall-list-field" style="color: black;">
+              {{ item.paymentStatus === 1 ? 'In Progress' : item.paymentStatus === 2 ? 'Finished' : 'Initiated' }}
+            </div>
+          </div>
         </div>
+      </div>
+  
+      <!-- Detailed View -->
+      <div *ngIf="!showPaymentStatusList" class="table-container">
+        <div style="flex-direction: row; display: flex; align-items: center;">
+          <button (click)="goBack()" class="back-button">
+            <i class="fas fa-arrow-left"></i> Back
+          </button>
+          <h2 style="text-align: center; margin: auto; font-size: 24px;">{{ selectedEmployeePaymentStatus?.type | titlecase }} Payment Status</h2>
+        </div>
+  
+        <!-- Progress Bar Section -->
+        <div class="progress-container">
+          <div class="step-labels">
+            <div *ngFor="let step of steps; let i = index" class="step-label"
+                 [ngStyle]="{ left: (i * 50) + '%' }" [class.clickable]="isAdmin"
+                 (click)="isAdmin && selectedEmployeePaymentStatus && paymentStatusAPI(selectedEmployeePaymentStatus, i)">
+              {{ step }}
+            </div>
+          </div>
+          <div class="progress-track">
+            <div class="progress-segment" [ngStyle]="{
+                   width: segment1Width,
+                   background: paymentStatus >= 1 ? 'linear-gradient(to right, orange, yellow)' : 'transparent'
+                 }">
+            </div>
+            <div class="progress-segment" [ngStyle]="{
+                   width: segment2Width,
+                   left: '50%',
+                   background: paymentStatus >= 2 ? 'linear-gradient(to right, yellow, green)' : 'transparent'
+                 }">
+            </div>
+            <div *ngFor="let step of steps; let i = index" class="step-dot" [ngStyle]="{
+                   left: (i * 50) + '%',
+                   backgroundColor: getStepColor(i, paymentStatus)
+                 }">
+            </div>
+          </div>
+        </div>
+  
+        <div style="display: flex; flex-direction: row;">
+          <div style="width: 60%;">
+            <div class="single-item-container">
+              <div class="namimg-field">Date</div>
+              <div class="naming-data">
+                {{ selectedEmployeePaymentStatus?.date | date: 'MMM d, y' }}
+              </div>
+            </div>
+            <div class="single-item-container">
+              <div class="namimg-field">Name</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.employeeName }}</div>
+            </div>
+            <div class="single-item-container">
+              <div class="namimg-field">Employee Id</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.empId }}</div>
+            </div>
+            <div class="single-item-container">
+              <div class="namimg-field">Amount</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.amount }}</div>
+            </div>
+            <div class="single-item-container" *ngIf="selectedEmployeePaymentStatus?.type === 'expense'">
+              <div class="namimg-field">Category</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.category }}</div>
+            </div>
+            <div class="single-item-container" *ngIf="selectedEmployeePaymentStatus?.type === 'advance'">
+              <div class="namimg-field">Paid Through</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.paidThrough }}</div>
+            </div>
+            <div class="single-item-container" *ngIf="selectedEmployeePaymentStatus?.type === 'advance'">
+              <div class="namimg-field">Apply to Trip</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.applyToTrip }}</div>
+            </div>
+            <div class="single-item-container">
+              <div class="namimg-field">Description</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.description }}</div>
+            </div>
+            <div class="single-item-container" *ngIf="selectedEmployeePaymentStatus?.rejectreason">
+              <div class="namimg-field">Reject Reason</div>
+              <div class="naming-data">{{ selectedEmployeePaymentStatus?.rejectreason }}</div>
+            </div>
+          </div>
+          <div style="flex-direction: column; width: 40%;">
+            <h5 style="text-align: center;">Receipt</h5>
+            <img [src]="uploadedReceipt" alt="Receipt Preview" style="max-width: 100%; height: auto;"
+                 *ngIf="uploadedReceipt; else noReceipt">
+            <ng-template #noReceipt>
+              <p>No receipt available.</p>
+            </ng-template>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
+  </div>
