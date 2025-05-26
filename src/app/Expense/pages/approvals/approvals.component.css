@@ -6,7 +6,182 @@
   background: linear-gradient(145deg, #f0f0f3, #d9d9d9);
   border-radius: 10px;
   box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.2), -8px -8px 16px rgba(255, 255, 255, 0.6);
-  /* Stronger shadow */
+}
+
+/* Details Header */
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(145deg, #00509e, #103358);
+  padding: 15px 25px;
+  color: #ffffff;
+  border-radius: 8px;
+}
+
+/* Details Content */
+.details-content {
+  padding: 20px;
+}
+
+/* Two-Column Grid for Details and Receipt */
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Two equal columns */
+  gap: 20px; /* Space between columns */
+  margin-bottom: 20px; /* Space below the grid */
+}
+
+/* First Column: Expense/Advance Details */
+.details-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; /* Space between detail items */
+}
+
+/* Second Column: Receipt Preview */
+.receipt-preview {
+  text-align: center; /* Center receipt content */
+  width: 100%; /* Full width of the column */
+  padding: 10px;
+}
+
+.receipt-preview h4 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.receipt-preview img {
+  max-width: 80%; /* Responsive image */
+  height: auto;
+  border-radius: 6px; /* Slight rounding for image */
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.receipt-preview p {
+  font-size: 14px;
+  color: #555;
+  margin-top: 10px;
+}
+
+textarea {
+  width: 400px;  /* Set desired width */
+  height: 200px; /* Make height equal to width for a square */
+  border: 1px solid #ccc;
+  border-radius: 0; /* Remove rounded corners if any */
+  padding: 10px;
+  resize: none; /* Optional: disable resize for cleaner look */
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .reason textarea#reason {
+    max-width: 100%; /* Full width on mobile */
+    height: 120px; /* Slightly shorter height for mobile */
+    font-size: 13px; /* Smaller font size */
+  }
+}
+
+/* .reject-reason textarea {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  background: #ffffff;
+  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -4px -4px 8px rgba(255, 255, 255, 0.7);
+} */
+
+/* Approve Confirmation */
+.approve-confirmation {
+  padding: 20px;
+  background: linear-gradient(145deg, #28a745, #218838);
+  color: white;
+  border-radius: 12px;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
+  margin-top: 20px;
+}
+
+.approve-confirmation p {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.approve-confirmation button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: linear-gradient(145deg, #0066cc, #004d99);
+  color: #ffffff;
+  font-weight: bold;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.approve-confirmation button:hover {
+  background: linear-gradient(145deg, #00509e, #003d80);
+}
+
+/* Details Actions */
+.details-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.btn-approve {
+  background: linear-gradient(145deg, #28a745, #218838);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-approve:hover {
+  background: linear-gradient(145deg, #218838, #056c1d);
+  transform: translateY(-2px);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn-reject {
+  background: linear-gradient(145deg, #dc3545, #b02a37);
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 50px;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reject:hover {
+  background: linear-gradient(145deg, #b02a37, #dc3545);
+  transform: translateY(-2px);
+  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .details-grid {
+    grid-template-columns: 1fr; /* Stack columns on small screens */
+  }
+
+  .receipt-preview {
+    margin: 20px auto; /* Center on mobile */
+  }
+
+  .details-page {
+    width: 95%; /* Full width on mobile */
+    margin: 10px auto;
+  }
 }
 
 /* Container styling for filter section */
@@ -14,9 +189,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  /* Space between elements */
   margin-bottom: 15px;
-  /* Adds space below */
 }
 
 /* Styling for search input */
@@ -26,7 +199,6 @@
   border-radius: 5px;
   font-size: 14px;
   width: 200px;
-  /* Adjust width as needed */
 }
 
 /* Styling for select dropdown */
@@ -51,7 +223,6 @@
 .filter-container button:hover {
   background-color: #0056b3;
 }
-
 
 /* Form Elements in Details Page */
 .details-page form {
@@ -104,12 +275,10 @@
   font-size: 14px;
   margin-top: 10px;
   color: #d9534f;
-  /* Red for error messages */
 }
 
 .details-page .form-message.success {
   color: #5bc0de;
-  /* Blue for success messages */
 }
 
 /* General Container */
@@ -125,7 +294,6 @@
 .page-header {
   display: flex;
   justify-content: space-between;
-  /* margin-bottom: 20px; */
 }
 
 .page-header h2 {
@@ -251,11 +419,10 @@
 /* Approvals List */
 .approvals-list .list-header {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  /* Updated to 7 columns */
+  grid-template-columns:0.8fr 1fr 1fr 1.5fr 0.8fr 1.6fr 0.8fr 1.6fr;
   font-weight: bold;
+  text-align: center;
   background: linear-gradient(145deg, #00509e, #003d80);
-  /* Gradient for a modern blue tone */
   padding: 12px;
   border-radius: 8px;
   color: #ffffff;
@@ -266,15 +433,14 @@
 
 .approvals-list .list-header .col-reason {
   grid-column: span 2;
-  /* Move Reject Reason to the second line */
   margin-top: 10px;
 }
 
 .approval-item {
   display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  /* Updated to 7 columns */
+  grid-template-columns: 0.8fr 1fr 1fr 1.5fr 0.8fr 1.6fr 0.8fr 1.6fr;
   padding: 15px 20px;
+  text-align: center;
   margin-top: 12px;
   border-radius: 8px;
   background: #e3e8e3;
@@ -284,15 +450,12 @@
 
 .approval-item:hover {
   background: #f5faff;
-  /* Gentle hover effect */
   transform: translateY(-5px);
-  /* Lifting effect */
   box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8);
 }
 
 .approval-item .col-reason {
   grid-column: span 2;
-  /* Align the reject reason to the second line */
   margin-top: 10px;
 }
 
@@ -303,61 +466,10 @@
   cursor: pointer;
   border-radius: 8px;
   background: linear-gradient(145deg, #0066cc, #004d99);
-  /* Modern button gradient */
   color: #ffffff;
   font-weight: bold;
   text-transform: uppercase;
   transition: background 0.3s;
-}
-
-.btn-approve {
-  background: linear-gradient(145deg, #28a745, #218838);
-  /* Gradient green */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 50px;
-  /* Rounded button shape */
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  /* Soft shadow for 3D effect */
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  /* Smooth transition for hover effects */
-}
-
-.btn-approve:hover {
-  background: linear-gradient(145deg, #218838, #056c1d);
-  /* Reverse gradient on hover */
-  transform: translateY(-2px);
-  /* Slight lift on hover */
-  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
-  /* Stronger shadow on hover */
-}
-
-.btn-reject {
-  background: linear-gradient(145deg, #ff0606, #e78585);
-  /* Gradient red */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 50px;
-  /* Rounded button shape */
-  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
-  /* Soft shadow for 3D effect */
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  /* Smooth transition for hover effects */
-}
-
-.btn-reject:hover {
-  background: linear-gradient(145deg, #f50808, #ff0606);
-  /* Reverse gradient on hover */
-  transform: translateY(-2px);
-  /* Slight lift on hover */
-  box-shadow: 2px 5px 10px rgba(0, 0, 0, 0.2);
-  /* Stronger shadow on hover */
 }
 
 .status-badge {
@@ -366,66 +478,50 @@
   font-weight: bold;
   color: white;
   text-transform: uppercase;
+
   font-size: 12px;
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1), -2px -2px 4px rgba(255, 255, 255, 0.6);
 }
 
-.status-badge.approved {
-  background: linear-gradient(145deg, #28a745, #218838);
-  /* Modern green badge */
+.status-badge.payment-initiated {
+  background: linear-gradient(145deg, #abf859, #abf859);
+  color: #333;
+}
+
+.status-badge.payment-done {
+  background: #0e9b06;
+  color: #e8f3df;
 }
 
 .status-badge.pending {
   background: linear-gradient(145deg, #ffc107, #e0a800);
-  /* Yellow for pending */
   color: #333;
+}
+.status-badge.payment-to-be-initiate {
+  background: linear-gradient(145deg, #abf859, #abf859);
+  color: #333;
+}
+
+.status-badge.pending-for-cto-approval {
+  background: #fbc30c;
+  color: #1b1a19;
+}
+
+.status-badge.pending-for-pm-approval {
+  background: #fbc30c;
+  color: #1b1a19;
+}
+
+.status-badge.pending-for-tl-approval {
+  background: #fbc30c;
+  color: #1b1a19;
 }
 
 .status-badge.rejected {
   background: linear-gradient(145deg, #dc3545, #b02a37);
-  /* Modern red badge */
 }
 
-/* Details Page */
-.details-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: linear-gradient(145deg, #00509e, #103358);
-  /* Gradient for a modern blue tone */
-  padding: 15px 25px;
-  color: #ffffff;
-  border-radius: 8px;
-}
-
-.details-content p {
-  font-size: 16px;
-  margin: 10px 0;
-  color: white#333;
-}
-
-/* Reject Reason */
-.reject-reason textarea {
-  /*width: 100%;*/
-  padding: 12px;
-  border: none;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #ffffff;
-  box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.1), inset -4px -4px 8px rgba(255, 255, 255, 0.7);
-}
-
-/* Approve Confirmation */
-.approve-confirmation {
-  padding: 20px;
-  background: linear-gradient(145deg, #28a745, #218838);
-  color: white;
-  border-radius: 12px;
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.2), -4px -4px 12px rgba(255, 255, 255, 0.7);
-}
-
-/* ... (your existing CSS) ... */
-
+/* Pagination Controls */
 .pagination-controls {
   display: flex;
   justify-content: center;
@@ -461,33 +557,21 @@
   cursor: default;
 }
 
+/* Overall Approvals List */
 .overall-approvals-list {
-  display: flex;
-  width: fit-content;
-  /* display: inline-flex; */
-  /* background-color: #056c1d; */
-  /* grid-template-columns: repeat(7, 1fr); */
-  /* Updated to 7 columns */
-  /* font-weight: bold; */
+  width: 100%;
   background: linear-gradient(145deg, #00509e, #003d80);
-  /* Gradient for a modern blue tone */
   padding: 12px;
   border-radius: 8px;
   color: #ffffff;
   text-transform: uppercase;
   font-size: 14px;
-  /* letter-spacing: 0.5px; */
-  width: 100%;
 }
 
 .overall-approvals-list .overall-list-header {
   display: flex;
   width: 100%;
   justify-content: space-around;
-  /* background-color: #056c1d;   */
-  /* flex-direction: row;
-  background-color: #f0f0f3;
-  display: inline-flex; */
 }
 
 .overall-list-field {
@@ -496,16 +580,12 @@
   font-size: 14px;
   font-weight: bold;
   width: 45%;
-  /* background-color: #5bc0de; */
 }
 
 .overall-values-header {
   display: flex;
   width: 100%;
   justify-content: space-around;
-  /* display: grid; */
-  /* grid-template-columns: repeat(7, 1fr); */
-  /* Updated to 7 columns */
   padding: 15px 20px;
   margin-top: 12px;
   border-radius: 8px;
@@ -514,12 +594,9 @@
   transition: transform 0.2s, box-shadow 0.2s;
 }
 
-
 .overall-values-header:hover {
   background: #f5faff;
-  /* Gentle hover effect */
   transform: translateY(-5px);
-  /* Lifting effect */
   box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8);
 }
 
@@ -528,5 +605,5 @@
   font-weight: bold;
   color: black;
   text-align: center;
-  margin: 10%
+  margin: 10%;
 }

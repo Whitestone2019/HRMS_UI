@@ -1,415 +1,542 @@
 /* General page styling */
 .advance-container {
-  font-family: Arial, sans-serif;
   padding: 20px;
-  background-color: #f8f9fa;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-.advance-container h2 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
+  background-color: #ffffff; /* Changed from #f8f9fa to match Expenses page */
+  border-radius: 16px; /* Added to match Expenses page */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1); /* Added to match Expenses page */
+
 }
 
+/* Header styling */
+.advance-container h2 {
+  margin: 0; /* Updated to match Expenses page */
+  font-size: 28px; /* Increased from 24px to match Expenses page */
+  font-weight: 700; /* Updated to match Expenses page */
+  color: #2c3e50; /* Added to match Expenses page */
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px; /* Retained */
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Updated to match Expenses page spacing */
+}
+
+.header-controls > * {
+  margin-left: 8px; /* Retained */
+}
+
+.header-controls > *:first-child {
+  margin-left: 0; /* Retained */
+}
+
+/* Filter container */
+.filter-container {
+  display: flex;
+  align-items: center;
+  gap: 10px; /* Retained */
+  margin-bottom: 15px; /* Retained */
+}
+
+/* Dropdown styling */
+.filter-container select {
+  padding: 8px 12px; /* Updated to match Expenses page */
+  border-radius: 8px; /* Updated to match Expenses page */
+  font-size: 14px; /* Retained */
+  border: 1px solid #ccc; /* Retained */
+  background: #ffffff; /* Added to match Expenses page */
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.6); /* Added to match Expenses page */
+  width: 150px; /* Retained */
+}
+
+.filter-container select option {
+  padding: 10px; /* Added to match Expenses page */
+}
+
+.filter-container select:focus option:checked {
+  background-color: #e0e0e0; /* Added to match Expenses page */
+}
+
+.filter-container select option:hover {
+  background-color: #f0f0f0; /* Added to match Expenses page */
+  cursor: pointer; /* Added to match Expenses page */
+}
+
+.filter-container select option[selected] {
+  background-color: #e0e0e0; /* Added to match Expenses page */
+}
+
+.filter-container select {
+  z-index: 1000; /* Added to match Expenses page */
+}
+
+/* Search input (commented out in HTML but styled for consistency) */
+.filter-container input {
+  padding: 8px; /* Retained */
+  border: 1px solid #ccc; /* Retained */
+  border-radius: 4px; /* Updated to match Expenses page */
+  font-size: 14px; /* Retained */
+  width: 150px; /* Retained */
+}
+
+/* Add New Advance button */
 .add-advance-btn {
-  padding: 10px 15px;
-  background-color: #18268a;
-  color: white;
-  border: none;
-  font-size: 16px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: 0.3s ease;
+  background: #00008b; /* Updated to match Expenses page btn-primary */
+  color: white; /* Retained */
+  border: none; /* Retained */
+  padding: 8px 16px; /* Updated to match Expenses page */
+  border-radius: 30px; /* Updated to match Expenses page */
+  cursor: pointer; /* Retained */
+  display: inline-flex; /* Added to match Expenses page */
+  align-items: center; /* Added to match Expenses page */
+  gap: 8px; /* Added to match Expenses page */
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Added to match Expenses page */
+  transition: all 0.3s ease; /* Updated to match Expenses page */
+  font-size: 14px; /* Updated for consistency */
+  font-weight: 600; /* Added for consistency */
 }
 
 .add-advance-btn:hover {
-  background-color: #1a157b;
+  background: #000074; /* Updated to match Expenses page */
+  transform: translateY(-2px); /* Added to match Expenses page */
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3); /* Added to match Expenses page */
 }
 
-/* Table Container */
-.table-container {
-  max-width: 100%;
-  margin: 0px;
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7);
-  overflow-x: auto;
-}
-
-/* Table Styling */
-table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 12px; /* Add gap between rows */
-}
-
-/* Table Header */
+/* List header */
 .list-header {
   display: grid;
-  grid-template-columns:0.8fr 0.8fr 0.8fr 1fr 2fr 0.9fr 1fr 0.8fr;
-  font-weight: bold;
-  background: linear-gradient(145deg, #00509e, #003d80); /* Blue gradient */
-  padding: 12px 15px;
-  border-radius: 8px;
-  color: #ffffff;
-  text-transform: uppercase;
-  font-size: 14px;
-  letter-spacing: 0.5px;
-  align-items: center; 
+  grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.7fr 1.6fr 2fr 0.6fr; /* Updated to match Expenses page */
+  font-weight: bold; /* Retained */
+  background: linear-gradient(145deg, #00509e, #003d80); /* Updated to match Expenses page */
+  padding: 12px; /* Updated to match Expenses page */
+  border-radius: 8px; /* Retained */
+  color: #ffffff; /* Retained */
+  text-transform: uppercase; /* Retained */
+  font-size: 14px; /* Retained */
+  letter-spacing: 0.5px; /* Retained */
+  align-items: center; /* Retained */
+  text-align: center; /* Added to ensure alignment */
 }
 
-/* Table Rows */
+.list-header > div {
+  padding: 8px 5px; /* Retained */
+}
+
+/* Advance item */
 .advance-item {
   display: grid;
-  grid-template-columns:0.8fr 0.8fr 0.8fr 1fr 2fr 0.9fr 1fr 0.8fr;
-  padding: 9px 15px;
-  margin-top: 12px;
-  border-radius: 8px;
-  background: #e3e8e3;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1), -4px -4px 10px rgba(255, 255, 255, 0.6);
-  transition: transform 0.2s, box-shadow 0.2s;
-  align-items: center;
+  grid-template-columns: 0.8fr 1.2fr 1fr 1fr 1.7fr 1.6fr 2fr 0.6fr; /* Updated to match Expenses page */
+  padding: 9px 20px; /* Updated to match Expenses page */
+  margin-top: 12px; /* Retained */
+  border-radius: 8px; /* Retained */
+  background: #e3e8e3; /* Retained */
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.1), -4px -4px 10px rgba(255, 255, 255, 0.6); /* Updated to match Expenses page */
+  transition: transform 0.2s, box-shadow 0.2s; /* Retained */
+  align-items: left; /* Retained */
+  text-align: center; /* Added to ensure alignment */
 }
 
 .advance-item:hover {
-  background: #f5faff;
-  transform: translateY(-5px);
-  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8);
+  background: #f5faff; /* Updated to match Expenses page */
+  transform: translateY(-5px); /* Retained */
+  box-shadow: 6px 6px 12px rgba(0, 0, 0, 0.2), -6px -6px 12px rgba(255, 255, 255, 0.8); /* Updated to match Expenses page */
+}
+
+/* .advance-item > div {
+  padding: 8px 20px; 
+} */
+
+/* Item details */
+.item-empid,
+.item-employeename,
+.item-details {
+  display: flex;
+  flex-direction: column; /* Updated to match Expenses page */
+  align-items: center; /* Added to match Expenses page */
+}
+
+.category {
+  font-weight: 500; /* Added to match Expenses page */
+  text-align: center; /* Added to match Expenses page */
+}
+
+.description {
+  font-size: 14px; /* Added to match Expenses page */
+  color: #636e72; /* Added to match Expenses page */
+  text-align: center; /* Added to match Expenses page */
 }
 
 /* Status badge styling */
 .status-badge {
-  padding: 4px 8px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 500;
+  padding: 4px 8px; /* Retained */
+  border-radius: 12px; /* Retained */
+  font-size: 12px; /* Retained */
+  font-weight: 500; /* Retained */
 }
 
 .status-badge.pending {
+  background: linear-gradient(145deg, #ffc107, #e0a800); /* Updated to match Expenses page */
+  color: #333; /* Updated to match Expenses page */
+}
+
+.status-badge.pending-for-cto-approval,
+.status-badge.pending-for-pm-approval {
+  background: linear-gradient(145deg, #ffc107, #e0a800); /* Updated to match Expenses page */
+  color: #333; /* Updated to match Expenses page */
+}
+
+.status-badge.pending-for-tl-approval {
   background: #fbc30c;
   color: #1b1a19;
 }
 
-.status-badge.approved {
-  background: #0e9b06;
-  color: #e8f3df;
+.status-badge.payment-to-be-initiate,
+.status-badge.payment-initiated {
+  background: linear-gradient(145deg, #abf859, #abf859); /* Retained */
+  color: #333; /* Retained */
+}
+
+.status-badge.payment-done {
+  background: #0e9b06; /* Retained */
+  color: #e8f3df; /* Retained */
 }
 
 .status-badge.rejected {
-  background: #d92727;
-  color: white;
+  background: #d92727; /* Retained */
+  color: white; /* Retained */
 }
 
 /* Item actions */
 .item-actions {
   display: flex;
-  gap: 8px;
+  gap: 8px; /* Retained */
+  justify-content: center; /* Added to match Expenses page */
 }
 
 /* Buttons */
 .btn-icon {
-  padding: 6px 10px;
-  border: none;
-  cursor: pointer;
-  border-radius: 8px;
-  background: linear-gradient(145deg, #0066cc, #004d99);
-  color: white;
-  font-weight: bold;
-  text-transform: uppercase;
-  transition: background 0.3s;
+  padding: 0px 12px; /* Updated to match Expenses page */
+  border: none; /* Retained */
+  cursor: pointer; /* Retained */
+  border-radius: 8px; /* Retained */
+  background: linear-gradient(145deg, #0066cc, #004d99); /* Updated to match Expenses page */
+  color: #ffffff; /* Updated to match Expenses page */
+  font-weight: bold; /* Retained */
+  text-transform: uppercase; /* Retained */
+  transition: background 0.3s, transform 0.3s; /* Updated to match Expenses page */
 }
 
 .btn-icon:hover {
-  background: linear-gradient(145deg, #005bb5, #004080);
-  transform: translateY(-2px);
+  background: linear-gradient(145deg, #005bb5, #004080); /* Updated to match Expenses page */
+  transform: translateY(-2px); /* Updated to match Expenses page */
 }
 
-/* No Requests Message */
+.btn-icon:active {
+  background: linear-gradient(145deg, #004d99, #003366); /* Added to match Expenses page */
+  transform: translateY(1px); /* Added to match Expenses page */
+}
+
+button:disabled {
+  opacity: 0.6; /* Added to match Expenses page */
+  cursor: not-allowed; /* Added to match Expenses page */
+}
+
+/* Reject reason column */
+.col-file {
+  text-align: center; /* Added to match Expenses page */
+  width: fit-content; /* Added to match Expenses page */
+}
+
+/* No requests message */
 .no-requests {
-  text-align: center;
-  font-size: 14px;
-  color: #6c757d;
-  padding: 10px;
+  text-align: center; /* Updated to match Expenses page */
+  padding: 50px 20px; /* Updated to match Expenses page */
+  color: #636e72; /* Updated to match Expenses page */
 }
 
-/* Overlay Styling */
+.no-requests i {
+  margin-bottom: 15px; /* Updated to match Expenses page */
+}
+
+.no-requests p {
+  margin-bottom: 20px; /* Updated to match Expenses page */
+}
+
+/* Overlay styling */
 .overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* Ensure it appears on top of everything */
+  position: fixed; /* Retained */
+  top: 0; /* Retained */
+  left: 0; /* Retained */
+  width: 100%; /* Retained */
+  height: 100%; /* Retained */
+  background-color: rgba(0, 0, 0, 0.5); /* Retained */
+  display: flex; /* Retained */
+  justify-content: center; /* Retained */
+  align-items: center; /* Retained */
+  z-index: 1000; /* Retained */
 }
 
-/* Pop-up Box Styling */
+/* Pop-up box styling */
 .popup-box {
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  width: 400px; /* Adjust width as needed */
-  max-width: 90%; /* Ensure it doesn't overflow on small screens */
+  background: #ffffff; /* Retained */
+  border-radius: 12px; /* Retained */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Retained */
+  padding: 20px; /* Retained */
+  width: 400px; /* Retained */
+  max-width: 90%; /* Retained */
 }
 
 .popup-box h3 {
-  margin-bottom: 20px;
-  font-size: 24px;
-  font-weight: bold;
-  text-align: center;
+  margin-bottom: 20px; /* Retained */
+  font-size: 24px; /* Retained */
+  font-weight: bold; /* Retained */
+  text-align: center; /* Retained */
+  color: #2c3e50; /* Added to match Expenses page */
 }
 
 .popup-box .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 15px; /* Retained */
 }
 
 .popup-box .form-group label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
+  display: block; /* Retained */
+  margin-bottom: 5px; /* Retained */
+  font-weight: bold; /* Retained */
+  color: #2c3e50; /* Added to match Expenses page */
 }
 
 .popup-box .form-group input,
 .popup-box .form-group select {
-  width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
+  width: 100%; /* Retained */
+  padding: 8px; /* Retained */
+  border: 1px solid #ccc; /* Retained */
+  border-radius: 5px; /* Retained */
+  font-size: 14px; /* Retained */
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), -3px -3px 6px rgba(255, 255, 255, 0.6); /* Added to match Expenses page */
 }
 
 .popup-box .buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 10px;
+  display: flex; /* Retained */
+  justify-content: flex-end; /* Retained */
+  gap: 10px; /* Retained */
 }
 
 .popup-box .submit-btn,
 .popup-box .cancel-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
+  padding: 8px 16px; /* Retained */
+  border: none; /* Retained */
+  border-radius: 5px; /* Retained */
+  cursor: pointer; /* Retained */
+  font-size: 14px; /* Retained */
+  font-weight: bold; /* Retained */
+  transition: all 0.3s ease; /* Added to match Expenses page */
 }
 
 .popup-box .submit-btn {
-  background: #18268a;
-  color: white;
+  background: #00008b; /* Updated to match Expenses page */
+  color: white; /* Retained */
 }
 
 .popup-box .cancel-btn {
-  background: #ccc;
-  color: #333;
+  background: #ccc; /* Retained */
+  color: #333; /* Retained */
 }
 
 .popup-box .submit-btn:hover {
-  background: #1a157b;
+  background: #000074; /* Updated to match Expenses page */
+  transform: translateY(-2px); /* Added to match Expenses page */
+  box-shadow: 0 8px 10px rgba(0, 0, 0, 0.3); /* Added to match Expenses page */
 }
 
 .popup-box .cancel-btn:hover {
-  background: #bbb;
-}
-/* Item details */
-.item-empid {
-  display: flex;
-  flex-direction: column;
-}
-/* Container styling for filter section */
-.filter-container {
-  display: flex;
-  align-items: center;
-  gap: 10px;  /* Space between elements */
-  margin-bottom: 15px; /* Adds space below */
+  background: #bbb; /* Retained */
+  transform: translateY(-2px); /* Added to match Expenses page */
 }
 
-/* Styling for select dropdown */
-.filter-container select {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 150px;
-}
-/* Styling for search input */
-.filter-container input {
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  width: 150px;
-}
-/* Cell padding adjustment */
-.list-header > div,
-.advance-item > div {
-    padding: 8px 5px; /* Add padding to each cell */
-}
-/* ... (your existing CSS) ... */
-
+/* Pagination controls */
 .pagination-controls {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
+  display: flex; /* Retained */
+  justify-content: center; /* Retained */
+  align-items: center; /* Retained */
+  margin-top: 20px; /* Retained */
 }
 
 .page-number {
-  margin: 0 10px;
-  font-size: 16px;
-  font-weight: bold;
+  margin: 0 10px; /* Retained */
+  font-size: 16px; /* Retained */
+  font-weight: bold; /* Retained */
 }
 
 .pagination-info {
-  text-align: right;
-  margin-top: 10px;
-  font-size: 14px;
-  color: #555;
-  padding-right: 20px;
+  text-align: center; /* Updated to match Expenses page */
+  margin-top: 10px; /* Retained */
+  font-size: 14px; /* Retained */
+  color: #555; /* Retained */
 }
 
 .arrow-button {
-  background: none;
-  border: none;
-  font-size: 20px;
-  padding: 8px 16px;
-  margin: 0 5px;
-  cursor: pointer;
-  color: #00008b;
+  background: none; /* Retained */
+  border: none; /* Retained */
+  font-size: 20px; /* Retained */
+  padding: 8px 16px; /* Retained */
+  margin: 0 5px; /* Retained */
+  cursor: pointer; /* Retained */
+  color: #00008b; /* Retained */
 }
 
 .arrow-button:disabled {
-  opacity: 0.5;
-  cursor: default;
+  opacity: 0.5; /* Retained */
+  cursor: default; /* Retained */
 }
-.pending-employees-section {
-  background: white;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 8px 8px 16px rgba(0, 0, 0, 0.15), -8px -8px 16px rgba(255, 255, 255, 0.7);
-  margin-bottom: 0px; 
 
+/* Pending employees section */
+.pending-employees-section {
+  margin-top: 40px; /* Updated to match Expenses page */
+  background: #f8f9fa; /* Retained */
+  padding: 20px; /* Retained */
+  border-radius: 8px; /* Retained */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Updated to match Expenses page */
 }
 
 .pending-employees-section h2 {
-  margin-bottom: 10px;
-  font-size: 28px; /* Increase font size */
-  font-weight: bold;
+  margin-bottom: 20px; /* Updated to match Expenses page */
+  font-size: 28px; /* Retained */
+  font-weight: 700; /* Updated to match Expenses page */
+  color: #2c3e50; /* Updated to match Expenses page */
 }
 
 .pending-employees-section h3 {
-  font-size: 20px; /* Keep h3 as it is or adjust as needed */
-  font-weight: bold;
+  font-size: 20px; /* Retained */
+  font-weight: 600; /* Updated to match Expenses page */
+  color: #34495e; /* Updated to match Expenses page */
+  margin-bottom: 20px; /* Updated to match Expenses page */
 }
 
-
 .employee-cards {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+  display: flex; /* Retained */
+  gap: 20px; /* Retained */
+  flex-wrap: wrap; /* Retained */
 }
 
 .employee-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  background: #f0f4f8;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.1);
-  width: 200px; /* Adjust width as needed */
-  text-align: center;
+  background: #ffffff; /* Updated to match Expenses page */
+  border-radius: 12px; /* Updated to match Expenses page */
+  padding: 20px; /* Retained */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Updated to match Expenses page */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Updated to match Expenses page */
+  display: flex; /* Retained */
+  flex-direction: column; /* Retained */
+  align-items: center; /* Retained */
+  width: 200px; /* Retained */
+  text-align: center; /* Retained */
+}
+
+.employee-card:hover {
+  transform: translateY(-5px); /* Updated to match Expenses page */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* Updated to match Expenses page */
 }
 
 .employee-id-container {
-  margin-bottom: 15px;
+  display: flex; /* Retained */
+  align-items: center; /* Retained */
+  justify-content: center; /* Retained */
+  margin-bottom: 15px; /* Retained */
 }
 
 .employee-id {
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 5px;
+  font-size: 18px; /* Retained */
+  font-weight: 600; /* Updated to match Expenses page */
+  margin-right: 10px; /* Updated to match Expenses page */
+  transition: transform 0.2s ease; /* Updated to match Expenses page */
+}
+
+.employee-id:hover {
+  transform: translateY(-3px); /* Updated to match Expenses page */
+  cursor: pointer; /* Updated to match Expenses page */
 }
 
 .pending-badge {
-  font-size: 14px;
-  font-weight: 600;
-  color: #e3c208f3;
-  background: rgba(161, 87, 23, 0.1);
-  padding: 6px 12px;
-  border-radius: 12px;
+  font-size: 14px; /* Retained */
+  font-weight: 500; /* Updated to match Expenses page */
+  color: #e3c208f3; /* Retained */
+  background: rgba(161, 87, 23, 0.1); /* Retained */
+  padding: 6px 12px; /* Retained */
+  border-radius: 12px; /* Retained */
+  margin-left: 10px; /* Updated to match Expenses page */
 }
 
 .view-details-button {
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(45deg, #3498db, #2980b9);
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  width: 100%; /* Retained */
+  padding: 12px; /* Retained */
+  border: none; /* Retained */
+  border-radius: 12px; /* Retained */
+  background: linear-gradient(45deg, #3498db, #2980b9); /* Retained */
+  color: #ffffff; /* Retained */
+  font-weight: 600; /* Retained */
+  cursor: pointer; /* Retained */
+  transition: background 0.3s ease; /* Retained */
+  display: flex; /* Retained */
+  align-items: center; /* Retained */
+  justify-content: center; /* Retained */
+  gap: 8px; /* Retained */
 }
+
 .view-details-button i {
-  font-size: 16px;
+  font-size: 16px; /* Retained */
 }
 
 .view-details-button:hover {
-  background: linear-gradient(45deg, #2980b9, #3498db);
+  background: linear-gradient(45deg, #2980b9, #3498db); /* Retained */
 }
 
-/* Updated View All Advances Button */
+/* View All Advances button */
 .view-all-expenses-button {
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(45deg, #0e198bea, #0e1092);
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s ease;
-  margin-top: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
+  width: 100%; /* Retained */
+  padding: 14px; /* Retained */
+  border: none; /* Retained */
+  border-radius: 12px; /* Retained */
+  background: linear-gradient(45deg, #0e198bea, #0e1092); /* Retained */
+  color: #ffffff; /* Retained */
+  font-weight: 600; /* Retained */
+  cursor: pointer; /* Retained */
+  transition: background 0.3s ease; /* Retained */
+  margin-top: 30px; /* Retained */
+  display: flex; /* Retained */
+  align-items: center; /* Retained */
+  justify-content: center; /* Retained */
+  gap: 8px; /* Retained */
 }
-.view-all-expense-button i {
-  font-size: 16px;
+
+.view-all-expenses-button i {
+  font-size: 16px; /* Retained */
 }
 
 .view-all-expenses-button:hover {
-  background: linear-gradient(45deg, #021363, #060f5ec0);
+  background: linear-gradient(45deg, #021363, #060f5ec0); /* Retained */
 }
 
+/* Back button */
 .back-button-container {
-  margin-top: 10px; /* Adjust margin as needed */
-  text-align: left;
+  margin-top: 10px; /* Retained */
+  text-align: left; /* Retained */
 }
 
 .back-button {
-  background-color: #3498db; /* Blue background */
-  color: white;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-weight: bold; /* Make the text bold */
+  background-color: #3498db; /* Retained */
+  color: white; /* Retained */
+  padding: 8px 12px; /* Retained */
+  border: none; /* Retained */
+  border-radius: 4px; /* Retained */
+  cursor: pointer; /* Retained */
+  font-weight: bold; /* Retained */
 }
 
 .back-button:hover {
-  background-color: #2980b9; /* Darker blue on hover */
+  background-color: #2980b9; /* Retained */
 }
-

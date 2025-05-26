@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormGroup, FormsModule } from '@angular/forms';
-import { Advance } from '../../shared/models/advance.model';
+import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../../api.service';
 import { Router } from '@angular/router';
 import { UserService } from '../../../user.service';
@@ -21,6 +20,7 @@ interface EmployeePaymentStatus {
   rejectreason?: string;
   paidThrough?: string;
   applyToTrip?: string;
+  approver?: string;
 }
 
 @Component({
@@ -33,47 +33,66 @@ interface EmployeePaymentStatus {
 export class PaymentStatusComponent {
   isAdmin: boolean = false;
   isManager: boolean = false;
+  isHr: boolean = false;
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   employeePaymentStatus: EmployeePaymentStatus[] = [];
   employeeName: string = localStorage.getItem('employeeName') || 'Unknown';
   empId: string = localStorage.getItem('empId') || 'Unknown';
-  advanceForm: FormGroup | undefined;
-  advances: Advance[] = [];
-  showForm: boolean = false;
-  filteredAdvances: Advance[] = [];
-  filterStatus: string = 'all';
-  searchEmployeeName: string = '';
   showPaymentStatusList: boolean = true;
   selectedEmployeePaymentStatus: EmployeePaymentStatus | null = null;
   selectedEmployee: string | null = null;
   showContent: boolean = true;
-  newAdvance = {
-    advanceDate: '',
-    amount: '',
-    paidThrough: '',
-    applyToTrip: '',
-    status: ''
-  };
-  editingIndex: number | undefined;
+  showApproveConfirmation: boolean = false;
   isLoading: boolean = false;
-  userRole: any;
+  isAdvanceSelected: 'expense' | 'advance' | null = null;
   error: string | undefined;
-  advance: any;
-  advanceId: any;
-
   currentPage: number = 1;
   itemsPerPage: number = 5;
-  pagedAdvances: Advance[] = [];
+  pagedAdvances: EmployeePaymentStatus[] = [];
   totalPages: number = 0;
   totalRecords: number = 0;
-
   animatedWidths: { [empId: string]: string } = {};
-
   steps = ['Initiated', 'In Progress', 'Finished'];
-  currentStep = 1;
-
   uploadedReceipt: string | ArrayBuffer | null = null;
-  receiptImageUrl: string | null = null;
+
+  private paymentStatusOptions = [
+    { value: 0, label: 'Payment To Be Initiated' },
+    { value: 1, label: 'Payment Initiated' },
+    { value: 2, label: 'Payment Done' }
+  ];
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private userService: UserService
+  ) {}
+
+  ngOnInit(): void {
+    this.empId = localStorage.getItem('employeeId') || '';
+    this.isAdmin = this.userService.isAdmin();
+    this.isManager = this.userService.isManager();
+    this.isHr = this.userService.isHr();
+
+    if (!this.empId) {
+      console.error('Error: Employee ID is missing.');
+      this.error = 'Failed to load payment status. Employee ID is missing.';
+      return;
+    }
+
+    this.loadData();
+
+    setTimeout(() => {
+      this.employeePaymentStatus.forEach(item => {
+        const width = this.getProgressWidth(item.paymentStatus);
+        this.animatedWidths[item.empId] = width;
+      });
+    }, 100);
+  }
+
+  getPaymentStatusLabel(status: number | undefined): string {
+    const option = this.paymentStatusOptions.find(opt => opt.value === status);
+    return option ? option.label : 'Unknown';
+  }
 
   getProgressWidth(status: number | undefined): string {
     if (status === undefined || status === 0) return '0%';
@@ -104,35 +123,9 @@ export class PaymentStatusComponent {
     return this.paymentStatus >= 2 ? '50%' : '0%';
   }
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router,
-    private userService: UserService
-  ) {}
-
-  ngOnInit(): void {
-    this.empId = localStorage.getItem('employeeId') || '';
-    this.isAdmin = this.userService.isAdmin();
-    this.isManager = this.userService.isManager();
-
-    if (!this.empId) {
-      console.error('Error: Employee ID is missing.');
-      this.error = 'Failed to load payment status. Employee ID is missing.';
-      return;
-    }
-
-    this.loadData();
-
-    setTimeout(() => {
-      this.employeePaymentStatus.forEach(item => {
-        const width = this.getProgressWidth(item.paymentStatus);
-        this.animatedWidths[item.empId] = width;
-      });
-    }, 100);
-  }
-
   loadData() {
     this.isLoading = true;
+    this.error = undefined;
     if (this.isAdmin) {
       Promise.all([
         this.apiService.getAllApprovedExpenses().toPromise().then(data => data ?? []),
@@ -155,60 +148,38 @@ export class PaymentStatusComponent {
   }
 
   processData(expenses: any[], advances: any) {
-    console.log('Expenses:', expenses);
-    console.log('Advances:', advances);
+    const processedExpenses = expenses.map(expense => ({
+      ...expense,
+      type: 'expense' as const,
+      status: expense.status?.trim().toLowerCase() || 'unknown',
+      date: new Date(expense.date || Date.now()),
+      employeeId: expense.empId || 'unknown',
+      employeeName: expense.employeeName || 'Unknown',
+      paymentStatus: expense.paymentStatus !== undefined ? expense.paymentStatus : 0,
+      rejectreason: expense.rejectreason,
+      approver: expense.approver
+    }));
 
-    // Process expenses
-    const processedExpenses = expenses.map(expense => {
-      const paymentStatus = expense.paymentStatus !== undefined ? expense.paymentStatus : 0;
-      console.log(`Expense ${expense.expenseId}: paymentStatus=${paymentStatus}`);
-      return {
-        ...expense,
-        type: 'expense' as const,
-        status: expense.status?.trim().toLowerCase() || 'unknown',
-        date: new Date(expense.date || Date.now()),
-        employeeId: expense.empId || 'unknown',
-        employeeName: expense.employeeName || 'Unknown',
-        paymentStatus,
-        rejectreason: expense.rejectreason
-      };
-    });
-
-    // Process advances, ensuring advances is an array
-    const processedAdvances = Array.isArray(advances) ? advances.map(advance => {
-      // Use paymentStatus directly if available, else map from status
-      const paymentStatus = advance.paymentStatus !== undefined 
+    const processedAdvances = Array.isArray(advances) ? advances.map(advance => ({
+      type: 'advance' as const,
+      empId: advance.empId || 'unknown',
+      employeeName: advance.employeeName || 'Unknown',
+      advanceId: advance.advanceId,
+      amount: advance.amount || 0,
+      date: new Date(advance.advanceDate || Date.now()),
+      status: advance.status?.trim().toLowerCase() || 'unknown',
+      paymentStatus: advance.paymentStatus !== undefined 
         ? advance.paymentStatus 
-        : this.mapAdvanceStatusToPaymentStatus(advance.status);
-      console.log(`Advance ${advance.advanceId}: paymentStatus=${paymentStatus}, status=${advance.status}`);
-      return {
-        type: 'advance' as const,
-        empId: advance.empId || 'unknown',
-        employeeName: advance.employeeName || 'Unknown',
-        advanceId: advance.advanceId,
-        amount: advance.amount || 0,
-        date: new Date(advance.advanceDate || Date.now()),
-        status: advance.status?.trim().toLowerCase() || 'unknown',
-        paymentStatus,
-        paidThrough: advance.paidThrough,
-        applyToTrip: advance.applyToTrip,
-        description: advance.description || 'Advance payment'
-      };
-    }) : [];
+        : this.mapAdvanceStatusToPaymentStatus(advance.status),
+      paidThrough: advance.paidThrough,
+      applyToTrip: advance.applyToTrip,
+      approver: advance.approver,
+      description: advance.description || 'Advance payment'
+    })) : [];
 
-    // Combine and sort by date (newest first)
     this.employeePaymentStatus = [...processedExpenses, ...processedAdvances].sort(
       (a, b) => b.date.getTime() - a.date.getTime()
     );
-
-    this.employeePaymentStatus.forEach(item => {
-      console.log(
-        'Type:', item.type,
-        'NAME:', item.employeeName,
-        'Status:', item.status,
-        'Payment Status:', item.paymentStatus
-      );
-    });
 
     this.isLoading = false;
     this.calculatePaginationDetails();
@@ -217,12 +188,9 @@ export class PaymentStatusComponent {
 
   mapAdvanceStatusToPaymentStatus(status: string): number {
     switch (status?.toLowerCase()) {
-      case 'initiated':
-        return 0;
-      case 'in progress':
-        return 1;
-      case 'finished':
-        return 2;
+      case 'initiated': return 0;
+      case 'in progress': return 1;
+      case 'finished': return 2;
       default:
         console.warn(`Unknown advance status: ${status}, defaulting to Initiated`);
         return 0;
@@ -236,18 +204,37 @@ export class PaymentStatusComponent {
   }
 
   showEmpPaymentStatus(item: EmployeePaymentStatus) {
-    if (item.type === 'expense' && item.expenseId) {
-      this.apiService.getReceiptUrl(item.expenseId).subscribe((blob: Blob) => {
-        this.uploadedReceipt = URL.createObjectURL(blob);
-      });
-    } else if (item.type === 'advance' && item.advanceId) {
-      this.apiService.getAdvanceReceiptUrl(item.advanceId).subscribe((blob: Blob) => {
-        this.uploadedReceipt = URL.createObjectURL(blob);
-      });
-    }
-    this.selectedEmployeePaymentStatus = item;
+    this.error = undefined;
+    // Ensure paymentStatus is initialized
+    this.selectedEmployeePaymentStatus = {
+      ...item,
+      paymentStatus: item.paymentStatus ?? 0 // Default to 0 if undefined
+    };
     this.selectedEmployee = item.empId;
     this.showPaymentStatusList = false;
+
+    // Fetch receipt
+    if (item.type === 'expense' && item.expenseId) {
+      this.apiService.getReceiptUrl(item.expenseId).subscribe({
+        next: (blob: Blob) => {
+          this.uploadedReceipt = URL.createObjectURL(blob);
+        },
+        error: (err) => {
+          console.error('Error fetching receipt:', err);
+          this.uploadedReceipt = null;
+        }
+      });
+    } else if (item.type === 'advance' && item.advanceId) {
+      this.apiService.getAdvanceReceiptUrl(item.advanceId).subscribe({
+        next: (blob: Blob) => {
+          this.uploadedReceipt = URL.createObjectURL(blob);
+        },
+        error: (err) => {
+          console.error('Error fetching receipt:', err);
+          this.uploadedReceipt = null;
+        }
+      });
+    }
   }
 
   goBack() {
@@ -255,16 +242,17 @@ export class PaymentStatusComponent {
     this.selectedEmployeePaymentStatus = null;
     this.uploadedReceipt = null;
     this.showPaymentStatusList = true;
+    this.error = undefined;
   }
 
   updatePagedAdvances() {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    this.pagedAdvances = this.filteredAdvances.slice(startIndex, endIndex);
+    this.pagedAdvances = this.employeePaymentStatus.slice(startIndex, endIndex);
   }
 
   nextPage() {
-    if (this.currentPage * this.itemsPerPage < this.filteredAdvances.length) {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.updatePagedAdvances();
     }
@@ -282,55 +270,82 @@ export class PaymentStatusComponent {
     this.totalPages = Math.ceil(this.totalRecords / this.itemsPerPage);
   }
 
-  parseDate(dateString: string): string {
-    if (!dateString) return '';
-    const parts = dateString.split(' ');
-    const dateParts = parts[0].split('-');
-    return `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-  }
-
   paymentStatusAPI(item: EmployeePaymentStatus, paymentStatus: number) {
-    const requesterEmpId = this.employeeId; // Approver's empId from localStorage
+    const requesterEmpId = this.employeeId;
     if (!requesterEmpId || requesterEmpId === 'Unknown') {
-      alert('Error: Approver ID is missing.');
+      this.error = 'Error: Approver ID is missing.';
       console.error('Approver ID not found in localStorage');
       return;
     }
-  
+
     const requestBody = { paymentStatus, requesterEmpId };
-  
-    if (item.type === 'expense') {
-      this.apiService
-        .updatePaymentStatus(item.expenseId!, requestBody)
-        .subscribe({
-          next: () => {
-            alert('Expense Payment Status updated successfully!');
-            this.loadData();
-            if (this.selectedEmployeePaymentStatus) {
-              this.selectedEmployeePaymentStatus.paymentStatus = paymentStatus;
-            }
-          },
-          error: (error) => {
-            alert('Error updating Expense Payment Status.');
-            console.error('Error from API:', error);
-          }
-        });
-    } else if (item.type === 'advance') {
-      this.apiService
-        .updateAdvancePaymentStatus(item.advanceId!, requestBody)
-        .subscribe({
-          next: () => {
-            alert('Advance Payment Status updated successfully!');
-            this.loadData();
-            if (this.selectedEmployeePaymentStatus) {
-              this.selectedEmployeePaymentStatus.paymentStatus = paymentStatus;
-            }
-          },
-          error: (error) => {
-            alert('Error updating Advance Payment Status.');
-            console.error('Error from API:', error);
-          }
-        });
+
+    const apiCall =
+      item.type === 'expense'
+        ? this.apiService.updatePaymentStatus(item.expenseId!, requestBody)
+        : this.apiService.updatePaymentStatusadvance(item.advanceId!, requestBody);
+
+    apiCall.subscribe({
+      next: () => {
+        this.error = undefined;
+        // Update the local status
+        if (this.selectedEmployeePaymentStatus) {
+          this.selectedEmployeePaymentStatus.paymentStatus = paymentStatus;
+        }
+        // Reload data to ensure consistency
+        this.loadData();
+        this.showApproveConfirmation = false;
+      },
+      error: (error) => {
+        this.error = `Error updating ${item.type === 'expense' ? 'Expense' : 'Advance'} Payment Status.`;
+        console.error('Error from API:', error);
+        this.showApproveConfirmation = false;
+      }
+    });
+  }
+
+  handleApproveButton() {
+    if (
+      !this.selectedEmployeePaymentStatus ||
+      !this.selectedEmployeePaymentStatus.approver ||
+      this.selectedEmployeePaymentStatus.approver.trim().toLowerCase() !== this.employeeId.trim().toLowerCase()
+    ) {
+      this.error = 'You are not authorized to approve this request.';
+      return;
     }
+    this.confirmApprove(this.selectedEmployeePaymentStatus);
+  }
+
+  confirmApprove(record: EmployeePaymentStatus) {
+    this.selectedEmployeePaymentStatus = record;
+    this.isAdvanceSelected = record.type;
+    this.showApproveConfirmation = true;
+  }
+
+  cancelApproval() {
+    this.showApproveConfirmation = false;
+    this.error = undefined;
+  }
+
+  onPaymentStatusChange(newStatus: number) {
+    if (this.selectedEmployeePaymentStatus) {
+      this.selectedEmployeePaymentStatus.paymentStatus = newStatus;
+      this.confirmApprove(this.selectedEmployeePaymentStatus);
+    }
+  }
+
+  getAvailableOptions(paymentStatus: number | undefined): { value: number; label: string }[] {
+    const status = paymentStatus ?? 0; // Default to 0 if undefined
+    if (status === 0) {
+      // Allow transition to Initiated (1) or Done (2)
+      return this.paymentStatusOptions.filter(option => option.value === 1 || option.value === 2);
+    } else if (status === 1) {
+      // Allow transition to Done (2)
+      return this.paymentStatusOptions.filter(option => option.value === 2);
+    } else if (status === 2) {
+      // No further transitions
+      return [];
+    }
+    return [];
   }
 }

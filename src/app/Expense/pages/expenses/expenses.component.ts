@@ -30,13 +30,13 @@ export class ExpensesComponent implements OnInit {
   filterStatus: string = 'all';
   searchEmpId: string = '';
   currentPage: number = 1;
-  itemsPerPage: number = 5;
+  itemsPerPage: number = 10;
   pagedExpenses: any[] = [];
   totalPages: number = 0;
   totalRecords: number = 0;
   pendingEmployees: { empId: string; employeeName: string }[] = [];
   selectedEmployee: string = '';
-  showFullTable: boolean = false;
+  showFullTable: boolean = true;
   employeeNames: { [key: string]: string } = {};
   isSpecificEmployeeView: boolean = false;
   searchEmpName: string = ''; 
@@ -100,19 +100,19 @@ export class ExpensesComponent implements OnInit {
       this.isLoading = false;
     };
     // alert("Exp"+this.userRole);
-    if (this.isAdmin) {
-      console.log('Calling API: getExpenses()');
-      this.apiService.getExpenses().subscribe({
-        next: processExpenses,
-        error: handleError,
-      });
-    } else {
+    // if (this.isAdmin) {
+    //   console.log('Calling API: getExpenses()');
+    //   this.apiService.getExpenses().subscribe({
+    //     next: processExpenses,
+    //     error: handleError,
+    //   });
+    // } else {
       console.log('Calling API: getExpensesEmp()');
       this.apiService.getExpensesEmp(this.employeeId).subscribe({
         next: processExpenses,
         error: handleError,
       });
-    }
+   // }
   }
   fetchEmployeeNames() {
     this.expenses.forEach(expense => {
@@ -165,17 +165,12 @@ processPendingEmployees() {
     this.selectedEmployee = '';
     this.filterStatus = 'all';
     this.searchEmpId = '';
-    this.currentPage = 1;
+    this.currentPage = 0;
     this.applyFilter(); 
     this.isSpecificEmployeeView = false;
   }
   
   applyFilter() {
-    // console.log('Filter Status:', this.filterStatus);
-    // console.log('All Expenses:', this.expenses);
-    // console.log('Search EmpId:', this.searchEmpId);
-    // console.log('Search EmpName:', this.searchEmpName); 
-
     let filtered = [...this.expenses];
     if (this.showFullTable && !this.isSpecificEmployeeView) {
       // Use separate search inputs for full table view
@@ -256,6 +251,38 @@ processPendingEmployees() {
             date: expenseDetails.date,
             currency: expenseDetails.currency,
             description: expenseDetails.description,
+            status: expenseDetails.status,
+          },
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching expense details:', err);
+        alert('Failed to load expense details. Please try again later.');
+      },
+    });
+  }
+
+  viewExpense(expense: Expense) {
+    const expenseId = expense.expenseId;
+    if (!expenseId) {
+      alert('Expense ID is missing!');
+      return;
+    }
+  
+    this.apiService.getExpenseById1(String(expenseId)).subscribe({
+      next: (response: any) => {
+        const expenseDetails = response.data;
+        this.router.navigate(['/expences/dashboardexp/new'], {
+          queryParams: {
+            expenseId: expenseDetails.expenseId,
+            empId: expenseDetails.empId,
+            amount: expenseDetails.amount,
+            category: expenseDetails.category,
+            date: expenseDetails.date,
+            currency: expenseDetails.currency,
+            description: expenseDetails.description,
+            status: expenseDetails.status || '',
+            rejectreason: expenseDetails.rejectreason || 'N/A',
           },
         });
       },
@@ -317,5 +344,9 @@ processPendingEmployees() {
   addExpense() {
     console.log('Add Expense clicked!');
     this.router.navigate(['/expenses/add']);
+  }
+  getStatusClass(status: string | undefined): string {
+    if (!status) return ''; // Return empty string if undefined
+    return status.toLowerCase().replace(/ /g, '-'); // Replace all spaces with hyphens
   }
 }
