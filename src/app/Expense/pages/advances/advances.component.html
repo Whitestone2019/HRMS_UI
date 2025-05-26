@@ -1,53 +1,22 @@
 <div class="advance-container">
     <div *ngIf="showContent">
-        <div *ngIf="showPendingEmployees" class="pending-employees-section">
+        <div *ngIf="showPendingEmployees" class="header-content">
             <h2>Advances</h2>
-            <div class="header-actions">
+            <div *ngIf="isViewAllAdvances" class="header-controls">
                 <div class="filter-container">
                     <select (change)="filterAdvances()" (click)="$event.stopPropagation()" [(ngModel)]="filterStatus">
                         <option value="all">All Requests</option>
                         <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
+                        <option value="Payment To Be Initiate">Payment To Be Initiate</option>
+                        <option value="Payment Initiated">Payment Initiated</option>
+                        <option value="Payment Done">Payment Done</option>
                         <option value="rejected">Rejected</option>
                     </select>
-                    <input type="text" [(ngModel)]="searchEmployeeName" (input)="filterAdvances()"
-                        placeholder="Search Pending Employee" />
+                    <!-- <input type="text" [(ngModel)]="searchEmployeeName" (input)="filterAdvances()"
+                        placeholder="Search Employee Name" /> -->
                     <button class="add-advance-btn" (click)="toggleForm()">+ Add New Advance</button>
                 </div>
             </div>
-            <h3>Employees with {{filterStatus | titlecase }} Advances</h3>
-            <div class="employee-cards">
-                <div *ngFor="let employee of pendingEmployees" class="employee-card">
-                    <div class="employee-id-container">
-                        <div class="employee-id">
-                            {{ getEmployeeInfo(employee)?.employeeName }} ({{ getEmployeeInfo(employee)?.empId }})
-                        </div>
-                        <div class="pending-badge">Pending</div>
-                    </div>
-                    <button (click)="showEmployeePending(employee)" class="view-details-button">
-                        <i class="fas fa-eye"></i> View Details
-                    </button>
-                </div>
-            </div>
-            <button (click)="showAllAdvances()" class="view-all-expenses-button">
-                <i class="fas fa-list"></i> View All Advances
-            </button>
-        </div>
-
-        <div *ngIf="!showPendingEmployees" class="table-container">
-            <h2>Advances</h2>
-            <div *ngIf="isViewAllAdvances" class="header-actions">
-                <div class="filter-container">
-                    <select (change)="filterAdvances()" (click)="$event.stopPropagation()" [(ngModel)]="filterStatus">
-                        <option value="all">All Requests</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="rejected">Rejected</option>
-                    </select>
-                    <input type="text" [(ngModel)]="searchEmployeeName" (input)="filterAdvances()"
-                        placeholder="Search Employee Name" />
-                    <button class="add-advance-btn" (click)="toggleForm()">+ Add New Advance</button>
-                </div>
             </div>
             <div class="list-header">
                 <div class="header-empid">Empid</div>
@@ -56,7 +25,7 @@
                 <div class="header-amount">Amount</div>
                 <div class="header-merchant">Category/Description</div>
                 <div class="headesr-status">Status</div>
-                <div class="col-file">RejectReason</div>
+                <div class="col-file">Reason</div>
                 <div class="header-actions">Actions</div>
             </div>
 
@@ -84,10 +53,13 @@
                 </div>
                 <div class="col-file">{{ advance.rejectreason || 'N/A' }}</div>
                 <div class="item-actions">
-                    <button class="btn-icon" (click)="onEdit(advance)" title="Edit">
+                    <button *ngIf="advance.status !== 'Pending'" class="btn-icon" (click)="viewExpense(advance)" title="View">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    <button *ngIf="advance.status === 'Pending'" class="btn-icon" (click)="onEdit(advance)" title="Edit">
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn-icon" (click)="onDeleteAdvance(advances.indexOf(advance))" title="Delete">
+                    <button  *ngIf="advance.status === 'Pending'" class="btn-icon" (click)="onDeleteAdvance(advances.indexOf(advance))" title="Delete">
                         <i class="fas fa-trash"></i>
                     </button>
                 </div>
@@ -112,44 +84,43 @@
                 Total Records: {{ totalRecords }}, Total Pages: {{ totalPages }}
             </div>
 
-            <button (click)="goBack()" class="back-button">
+            <!-- <button (click)="goBack()" class="back-button">
                 <i class="fas fa-arrow-left"></i> Back
-            </button>
-        </div>
+            </button> -->
     </div>
 
     <div class="overlay" *ngIf="showForm">
         <div class="popup-box">
-            <h3>{{ editingIndex !== undefined ? 'Edit' : 'Add' }} Advance Request</h3>
+            <h3>{{headerText}}</h3>
             <form #advanceForm="ngForm" (ngSubmit)="submitAdvance(advanceForm)">
                 <div class="form-group">
                     <label for="advanceDate">Date:</label>
                     <input id="advanceDate" type="date" [(ngModel)]="newAdvance.advanceDate" name="advanceDate"
-                        required />
+                        required [disabled]="!showbtn" [min]="minDate"/>
                 </div>
 
                 <div class="form-group">
                     <label for="amount">Amount:</label>
-                    <input id="amount" type="number" [(ngModel)]="newAdvance.amount" name="amount" required />
+                    <input id="amount" type="number" [(ngModel)]="newAdvance.amount" name="amount" required [disabled]="!showbtn" />
                 </div>
 
                 <div class="form-group">
                     <label for="paidThrough">Paid Through:</label>
                     <select id="paidThrough" (click)="$event.stopPropagation()"
-                        [(ngModel)]="newAdvance.paidThrough" name="paidThrough" required>
-                        <option value="" disabled selected>Select Payment Method</option>
-                        <option value="Cash">Cash</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
-                        <option value="Credit Card">Credit Card</option>
+                        [(ngModel)]="newAdvance.paidThrough" name="paidThrough" required [disabled]="!showbtn">
+                        <!-- <option value="" disabled selected>Select Payment Method</option>
+                        <option value="Cash">Cash</option> -->
+                        <option value="Bank Transfer" selected>Bank Transfer</option>
+                        <!-- <option value="Credit Card">Credit Card</option> -->
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="applyToTrip">Apply to Trip:</label>
+                    <label for="applyToTrip">Purpose:</label>
                     <input id="applyToTrip" type="text" [(ngModel)]="newAdvance.applyToTrip" name="applyToTrip"
-                        placeholder="Trip ID or Details (optional)" />
+                        placeholder="Trip ID or Details (optional)" [disabled]="!showbtn"/>
                 </div>
                 <div class="buttons">
-                    <button type="submit" class="submit-btn" [disabled]="!advanceForm.valid">
+                    <button *ngIf="showbtn;" type="submit" class="submit-btn" [disabled]="!advanceForm.valid">
                         {{ editingIndex !== undefined ? 'Update' : 'Submit' }}
                     </button>
                     <button type="button" class="cancel-btn" (click)="toggleForm()">Cancel</button>

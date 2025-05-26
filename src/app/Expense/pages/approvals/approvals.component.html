@@ -15,8 +15,8 @@
     </div>
     <div *ngFor="let employee of filteredPendingEmployees" class="overall-values-header"
       (click)="filterSingleEmpList(employee)">
-      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empName }}</div>
-      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee)?.empId }}</div>
+      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee).empName }}</div>
+      <div class="overall-list-field" style="color: black;">{{ getEmployeeInfo(employee).empId }}</div>
     </div>
     <div *ngIf="filteredPendingEmployees.length === 0" class="no-items">
       <p>No pending approval requests found for this employee.</p>
@@ -38,8 +38,10 @@
       <select (click)="$event.stopPropagation()" (change)="filterSingleEmpRecords()"
         [(ngModel)]="singlePersonFilterStatus">
         <option value="all">All Requests</option>
-        <option value="pending">Pending</option>
-        <option value="approved">Approved</option>
+        <option value="pending">Pending</option> 
+        <option value="Payment To Be Initiate">Payment To Be Initiate</option>
+        <option value="Payment Initiated">Payment Initiated</option>
+        <option value="Payment Done">Payment Done</option>
         <option value="rejected">Rejected</option>
       </select>
     </div>
@@ -49,28 +51,32 @@
       <div class="col-date">Date</div>
       <div class="col-employee">Employee</div>
       <div class="col-type">Type</div>
-      <div class="col-category">Category/Purpose</div>
+      <div class="col-category">Category</div>
       <div class="col-amount">Amount</div>
       <div class="col-status">Status</div>
       <div class="col-actions">Actions</div>
-      <div class="col-file">Reject Reason</div>
+      <div class="col-file">Reason</div>
     </div>
     <div *ngFor="let record of singlePersonFilteredRecords" class="approval-item" (click)="viewDetails(record, $event)">
       <div class="col-date">{{ (record.type === 'advance' ? record.requestDate : record.date) | date: 'mediumDate' }}</div>
       <div class="col-employee">{{ record.employeeName }}</div>
       <div class="col-type">{{ record.type | titlecase }}</div>
-      <div class="col-category">{{ record.type === 'advance' ? record.applyToTrip : record.category }}</div>
-      <div class="col-amount">{{ record.currency }} {{ record.amount | number: '1.2-2' }}</div>
+      <div class="col-category">{{record.category }}</div>
+      <div class="col-amount">{{ record.amount | number: '1.2-2' }}</div>
       <div class="col-status">
-        <span class="status-badge" [class]="record.status">{{ record.status | titlecase }}</span>
+        <span class="status-badge" [ngClass]="getStatusClass(record.status)">
+          {{ record.status | titlecase }}
+        </span>
+        
       </div>
       <div class="col-actions">
         <button class="btn-icon view-btn" (click)="viewDetails(record, $event)">View</button>
       </div>
-      <div class="col-file">{{ record.rejectreason }}</div>
+      <div class="col-file">{{ record.reason }}</div>
     </div>
     <div *ngIf="singlePersonFilteredRecords.length === 0" class="no-items">
-      <p>No {{ singlePersonFilterStatus }} approval requests found for this employee.</p>
+      <!-- <p>No {{ singlePersonFilterStatus }} approval requests found for this employee.</p> -->
+      <p>No records available under {{ singlePersonFilterStatus }} status.</p>
     </div>
   </div>
 </div>
@@ -84,7 +90,9 @@
         <select (click)="$event.stopPropagation()" (change)="filterRecords()" [(ngModel)]="filterStatus">
           <option value="all">All Requests</option>
           <option value="pending">Pending</option>
-          <option value="approved">Approved</option>
+          <option value="Payment To Be Initiate">Payment To Be Initiate</option>
+          <option value="Payment Initiated">Payment Initiated</option>
+          <option value="Payment Done">Payment Done</option>
           <option value="rejected">Rejected</option>
         </select>
         <input type="text" [(ngModel)]="searchEmpName" (input)="filterRecords()" placeholder="Search Employee Name"
@@ -97,25 +105,27 @@
       <div class="col-date">Date</div>
       <div class="col-employee">Employee</div>
       <div class="col-type">Type</div>
-      <div class="col-category">Category/Purpose</div>
+      <div class="col-category">Category</div>
       <div class="col-amount">Amount</div>
       <div class="col-status">Status</div>
       <div class="col-actions">Actions</div>
-      <div class="col-file">Reject Reason</div>
+      <div class="col-file">Reason</div>
     </div>
     <div *ngFor="let record of pagedRecords" class="approval-item" (click)="viewDetails(record, $event)">
       <div class="col-date">{{ (record.type === 'advance' ? record.requestDate : record.date) | date: 'mediumDate' }}</div>
       <div class="col-employee">{{ record.employeeName }}</div>
       <div class="col-type">{{ record.type | titlecase }}</div>
-      <div class="col-category">{{ record.type === 'advance' ? record.purpose : record.category }}</div>
-      <div class="col-amount">{{ record.currency }} {{ record.amount | number: '1.2-2' }}</div>
+      <div class="col-category">{{ record.type === 'advance' ? record.applyToTrip : record.category }}</div>
+      <div class="col-amount">{{ record.amount | number: '1.2-2' }}</div>
       <div class="col-status">
-        <span class="status-badge" [class]="record.status">{{ record.status | titlecase }}</span>
+        <span class="status-badge" [ngClass]="getStatusClass(record.status)">
+          {{ record.status | titlecase }}
+        </span>
       </div>
       <div class="col-actions">
         <button class="btn-icon view-btn" (click)="viewDetails(record, $event)">View</button>
       </div>
-      <div class="col-file">{{ record.rejectreason }}</div>
+      <div class="col-file">{{ record.reason }}</div>
     </div>
     <div *ngIf="filteredRecords.length === 0" class="no-items">
       <p>No approval requests found</p>
@@ -138,27 +148,49 @@
 <div class="details-page" *ngIf="selectedExpenseOrAdvance && viewingDetails">
   <div class="details-header">
     <h3>{{ isAdvanceSelected ? 'Advance' : 'Expense' }} Details</h3>
-    <button class="btn-icon back-btn" (click)="selectedExpenseOrAdvance = null; viewingDetails = !showAllExpenses;">Back</button>
+    <button class="btn-icon back-btn" (click)="backToList()">Back</button>
   </div>
   <div class="details-content">
-    <p><strong>Date:</strong> {{ isAdvanceSelected ? (selectedExpenseOrAdvance.requestDate | date: 'mediumDate') : (selectedExpenseOrAdvance.date | date: 'mediumDate') }}</p>
-    <p><strong>Employee:</strong> {{ selectedExpenseOrAdvance.employeeName }}</p>
-    <p *ngIf="!isAdvanceSelected"><strong>Category:</strong> {{ selectedExpenseOrAdvance.category }}</p>
-    <p *ngIf="isAdvanceSelected"><strong>Purpose:</strong> {{ selectedExpenseOrAdvance.purpose }}</p>
-    <p><strong>Amount:</strong> {{ selectedExpenseOrAdvance.currency }} {{ selectedExpenseOrAdvance.amount | number: '1.2-2' }}</p>
-    <p><strong>Status:</strong> {{ selectedExpenseOrAdvance.status | titlecase }}</p>
-  </div>
-  <div *ngIf="showRejectReason" class="reject-reason">
-    <label for="rejectreason">Reason for Rejection:</label>
-    <textarea id="rejectreason" [(ngModel)]="rejectreason" placeholder="Enter reason for rejection"></textarea>
-  </div>
-  <div class="details-actions" *ngIf="selectedExpenseOrAdvance.status === 'pending'">
-    <button class="btn-approve" (click)="confirmApprove(selectedExpenseOrAdvance)">Approve</button>
-    <button class="btn-reject" (click)="handleRejectButton()">Reject</button>
-  </div>
-  <div *ngIf="showApproveConfirmation" class="approve-confirmation">
-    <p>Are you sure you want to approve this {{ isAdvanceSelected ? 'advance' : 'expense' }}?</p>
-    <button (click)="approveRecord(selectedExpenseOrAdvance)">Yes, Approve</button>
-    <button (click)="cancelApproval()">Cancel</button>
+    <div class="details-grid">
+      <!-- First column: Expense/Advance Details -->
+      <div class="details-column">
+        <p><strong>Date:</strong> {{ isAdvanceSelected ? (selectedExpenseOrAdvance.requestDate | date: 'mediumDate') : (selectedExpenseOrAdvance.date | date: 'mediumDate') }}</p>
+        <p><strong>Employee:</strong> {{ selectedExpenseOrAdvance.employeeName }}</p>
+        <p *ngIf="!isAdvanceSelected"><strong>Category:</strong> {{ selectedExpenseOrAdvance.category }}</p>
+        <p *ngIf="isAdvanceSelected"><strong>Purpose:</strong> {{ selectedExpenseOrAdvance.applyToTrip }}</p>
+        <p><strong>Amount:</strong> {{ selectedExpenseOrAdvance.currency }} {{ selectedExpenseOrAdvance.amount | number: '1.2-2' }}</p>
+        <p><strong>Status:</strong> {{ selectedExpenseOrAdvance.status | titlecase }}</p>
+        <p *ngIf="selectedExpenseOrAdvance.reason"><strong>Reason:</strong> {{ selectedExpenseOrAdvance.reason }}</p>
+       <!-- Reason Input -->
+       <label for="reason"><strong>Reason for Approval/Rejection:</strong></label>
+       <textarea id="reason" [(ngModel)]="reason" placeholder="Enter reason for approval or rejection"></textarea>
+    <div  class="reason">
+     
+    </div>
+    <!-- Action Buttons -->
+    <div class="details-actions" *ngIf="showbtn">
+      <button class="btn-approve" (click)="handleApproveButton()">Approve</button>
+      <button class="btn-reject" (click)="handleRejectButton()">Reject</button>
+    </div>
+    <!-- Approval Confirmation -->
+    <div *ngIf="showApproveConfirmation" class="approve-confirmation">
+      <p>Are you sure you want to approve this {{ isAdvanceSelected ? 'advance' : 'expense' }}?</p>
+      <button (click)="approveRecord(selectedExpenseOrAdvance)">Yes, Approve</button>
+      <button (click)="cancelApproval()">Cancel</button>
+    </div>
+      </div>
+      <!-- Second column: Receipt Preview (only for expenses) -->
+      <div *ngIf="!isAdvanceSelected" class="receipt-preview">
+        <h4>Receipt:</h4>
+        <ng-container *ngIf="receiptUrl; else loadingOrNoReceipt">
+          <img [src]="receiptUrl" alt="Receipt Preview" style="max-width: 80%; height: auto;">
+        </ng-container>
+        <ng-template #loadingOrNoReceipt>
+          <p *ngIf="receiptUrl === ''">No receipt available</p>
+          <p *ngIf="receiptUrl === null">Loading receipt...</p>
+        </ng-template>
+      </div>
+    </div>
+   
   </div>
 </div>

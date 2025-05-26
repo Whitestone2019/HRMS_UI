@@ -13,7 +13,10 @@ export class UserService {
 
   private adminRoles: string[] = ['HR', 'CEO', 'CTO'];
   private employeeRoles: string[] = ['AS', 'SAS'];
-  private managerRoles: string[] = ['TL', 'PM', 'HR']; // Add any other manager roles here
+  private managerRoles: string[] = ['TL', 'PM', 'HR','CEO', 'CTO']; // Add any other manager roles here
+
+  private accountant: string[] =['ACC'];
+  private hr :string[] =['HR'];
 
   constructor() {}
 
@@ -72,6 +75,14 @@ export class UserService {
 
   isManager(): boolean {
     return this.managerRoles.includes(this.role);
+  }
+
+  isAccountant(): boolean {
+    return this.accountant.includes(this.role);
+  }
+
+  isHr(): boolean {
+    return this.hr.includes(this.role);
   }
 
   hasRoleAccess(): boolean {

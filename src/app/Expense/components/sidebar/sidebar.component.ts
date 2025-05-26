@@ -15,29 +15,29 @@ import { NgIf } from '@angular/common';
       </div>
       <div></div>
       <nav>
-        <a routerLink="/expences/dashboardexp/dashboard" routerLinkActive="active">
+        <a *ngIf="isAdmin" routerLink="/expences/dashboardexp/dashboard" routerLinkActive="active">
           <i class="fas fa-home"></i>
           Dashboard
         </a>
         <a routerLink="/expences/dashboardexp/exp" routerLinkActive="active">
           <i class="fas fa-receipt"></i>
-          Expenses
+          My Expenses
+        </a>
+        <a routerLink="/expences/dashboardexp/advances" routerLinkActive="active">
+          <i class="fas fa-money-bill"></i>
+          My Advances
         </a>
         <a *ngIf="isAdmin" routerLink="/expences/dashboardexp/approval" routerLinkActive="active">
           <i class="fas fa-check-double"></i>
           Approvals
         </a>
-         <a routerLink="/expences/dashboardexp/reports" routerLinkActive="active">
-          <i class="fas fa-chart-bar"></i>
-          Reports
-        </a>
-        <a routerLink="/expences/dashboardexp/advances" routerLinkActive="active">
-          <i class="fas fa-money-bill"></i>
-          Advances
-        </a>
         <a routerLink="/expences/dashboardexp/payment-status" routerLinkActive="active">
           <i class="fa-solid fa-arrows-rotate"></i>
           Payment status
+        </a>
+         <a routerLink="/expences/dashboardexp/reports" routerLinkActive="active">
+          <i class="fas fa-chart-bar"></i>
+          Reports
         </a>
       </nav>
     </aside>

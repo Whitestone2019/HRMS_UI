@@ -23,7 +23,8 @@ export class ExpenseFormComponent {
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   expenseForm: FormGroup;
   uploadedReceipt: string | ArrayBuffer | null = null; // For preview
-
+  showbtn :boolean =false ;
+  headerText : String ="";
 
   constructor(private fb: FormBuilder, private apiService: ApiService, private router: Router, private route: ActivatedRoute) {
     this.expenseForm = this.fb.group({
@@ -34,7 +35,7 @@ export class ExpenseFormComponent {
       amount: ['', [Validators.required, Validators.min(0)]],
       currency: ['INR', Validators.required],
       description: ['', Validators.required],
-      receipt: [null, Validators.required]
+      receipt: [null, Validators.required],
     });
 
   }
@@ -42,6 +43,7 @@ export class ExpenseFormComponent {
 
   ngOnInit() {
     this.expenseForm.patchValue({ empid: this.employeeId });
+    this.checkstatus("New");
 
     this.route.queryParams.subscribe(params => {
       if (params['expenseId']) {
@@ -49,10 +51,24 @@ export class ExpenseFormComponent {
           const selectedExpense = expenses.find(e => e.expenseId === params['expenseId']);
           if (selectedExpense) {
             let formattedDate = selectedExpense.date;
-            if (selectedExpense.date && !isNaN(Date.parse(selectedExpense.date))) {
-              formattedDate = new Date(selectedExpense.date).toISOString().split('T')[0]; // Get YYYY-MM-DD
-            }
-
+ 
+if (selectedExpense.date) {
+  // Check if format is DD-MM-YYYY or similar
+  const parts1 = selectedExpense.date.split(/[ \/]/);
+  alert("parts1"+parts1[0])
+  const parts = parts1[0].split(/[-\/]/);
+  if (parts.length === 3 && parts[0].length === 2) {
+    // Assuming format is DD-MM-YYYY
+    const day = parts[0];
+    const month = parts[1];
+    const year = parts[2];
+    formattedDate = `${year}-${month}-${day}`; // Convert to YYYY-MM-DD
+  } else if (!isNaN(Date.parse(selectedExpense.date))) {
+    // Already parseable by Date, just convert to ISO format
+    formattedDate = new Date(selectedExpense.date).toISOString().split('T')[0];
+  }
+}
+alert ("formattedDate"+formattedDate);
             this.expenseForm.patchValue({
               expenseId: selectedExpense.expenseId,
               date: formattedDate,
@@ -60,10 +76,11 @@ export class ExpenseFormComponent {
               amount: selectedExpense.amount,
               currency: selectedExpense.currency,
               description: selectedExpense.description,
-              empid: selectedExpense.empId
+              empid: selectedExpense.empId,
+              status: selectedExpense.status
 
             });
-
+            this.checkstatus(selectedExpense.status);
             // Fetch and set the receipt URL
             this.apiService.getReceiptUrl(selectedExpense.expenseId).subscribe((blob: Blob) => {
               const fileUrl = URL.createObjectURL(blob);
@@ -84,6 +101,21 @@ export class ExpenseFormComponent {
     });
   }
 
+  checkstatus(status: string) {
+    const statusBtn = status.trim().toLowerCase(); // Use input status and fix typo
+    console.log('statusBtn:', statusBtn); // Use console.log instead of alert for debugging
+    if (statusBtn === 'pending') {
+      this.showbtn = true; // Assignment, not comparison
+      this.headerText = 'Edit Expense';
+    } else if(statusBtn === 'new'){
+      this.showbtn = true;
+      this.headerText = 'New Expense';
+    }else{
+      this.showbtn = false;
+      this.headerText = 'View Expense';
+    }
+    console.log('showbtn:', this.showbtn);
+  }
 
 
   onFileChange(event: Event): void {

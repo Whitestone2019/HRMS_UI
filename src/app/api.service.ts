@@ -245,6 +245,7 @@ export class ApiService {
       'Content-Type': 'application/json'
     });
     this.loaderService.show();
+    console.log('employeeData1:', employeeData1);
     return this.http.post(`${this.apiUrl}/approve`, employeeData1, { headers }).pipe(
       tap(() => this.openDialog('Success', 'Employee approved successfully.')),
       finalize(() => this.loaderService.hide()),
@@ -677,15 +678,6 @@ export class ApiService {
     );
   }
   
-
-
-
-  // submitExpense(expenseDetails: any): Observable<any> {
-  //   const apiUrl = 'http://localhost:8088/HRMS/expenses';  // Correct back-end endpoint
-  //   return this.http.post<any>(apiUrl, expenseDetails);
-  // }
-
-
   getApproval(employeeId: string): Observable<any> {
     this.loaderService.show();
     return this.http.get<any>(`${this.apiUrl}/expensesbyid/${employeeId}`).pipe(
@@ -748,17 +740,17 @@ export class ApiService {
   }
 
 
-  updateExpense(expenseId: string, formData: FormData): Observable<any> {
+  updateExpense(expenseId: string, requestData: any): Observable<any> {
     this.loaderService.show();
-    return this.http.put<any>(`${this.apiUrl}/update/expenses/${expenseId}`, {}).pipe(
+    return this.http.put<any>(`${this.apiUrl}/update/expenses/${expenseId}`,requestData).pipe(
       finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
     );
   }
 
-  updateAdvance(advanceId: string, formData: FormData): Observable<any> {
+  updateAdvance(advanceId: string, requestData: any): Observable<any> {
     this.loaderService.show();
     alert(advanceId);
-    return this.http.put<any>(`${this.apiUrl}/update/advance/approval/${advanceId}`, {}).pipe(
+    return this.http.put<any>(`${this.apiUrl}/update/advance/approval/${advanceId}`,requestData).pipe(
       finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
     );
   }
@@ -1123,6 +1115,21 @@ export class ApiService {
     return this.http
       .put<any>(
         `${this.apiUrl}/update/expenses/${expenseId}/payment-status`,
+        requestBody,
+        {
+          headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+        }
+      )
+      .pipe(
+        finalize(() => this.loaderService.hide())
+      );
+  }
+
+  updatePaymentStatusadvance(advanceId: string, requestBody: { paymentStatus: number, requesterEmpId: string }): Observable<any> {
+    this.loaderService.show();
+    return this.http
+      .put<any>(
+        `${this.apiUrl}/update/advance/Paymentstatus/${advanceId}`,
         requestBody,
         {
           headers: new HttpHeaders({ 'Content-Type': 'application/json' })

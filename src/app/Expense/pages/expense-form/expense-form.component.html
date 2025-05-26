@@ -2,14 +2,14 @@
   <!-- Form on the left side -->
   <div class="expense-form-container">
     <div class="form-header">
-      <h2>New Expense</h2>
+      <h2>{{headerText}}</h2>
     </div>
 
     <form [formGroup]="expenseForm" (ngSubmit)="onSubmit()" class="expense-form">
       <div class="form-grid">
         <div class="form-group">
           <label for="date">Date</label>
-          <input type="date" id="date" formControlName="date">
+          <input type="date" id="date" formControlName="date" [attr.disabled]="!showbtn ? true : null">
         </div>
 
         <div class="form-group">
@@ -19,7 +19,7 @@
 
         <div class="form-group">
           <label for="category">Category</label>
-          <select id="category" (click)="$event.stopPropagation()" formControlName="category">
+          <select id="category" (click)="$event.stopPropagation()" formControlName="category" [attr.disabled]="!showbtn ? true : null">
             <option value="">Select Category</option>
             <option value="meals">Meals</option>
             <option value="transportation">Transportation</option>
@@ -32,26 +32,26 @@
 
         <div class="form-group">
           <label for="amount">Amount</label>
-          <input type="number" id="amount" formControlName="amount" placeholder="0.00">
+          <input type="number" id="amount" formControlName="amount" placeholder="0.00" [attr.disabled]="!showbtn ? true : null">
         </div>
 
         <div class="form-group">
           <label for="currency">Currency</label>
-          <select id="currency" (click)="$event.stopPropagation()" formControlName="currency">
+          <select id="currency" (click)="$event.stopPropagation()" formControlName="currency" [attr.disabled]="!showbtn ? true : null">
             <option value="INR">INR</option>
           </select>
         </div>
 
         <div class="form-group full-width">
           <label for="description">Description</label>
-          <textarea id="description" formControlName="description" rows="3"></textarea>
+          <textarea id="description" formControlName="description" rows="3" [attr.disabled]="!showbtn ? true : null"></textarea>
         </div>
       </div>
 
 
-      <div class="form-footer">
+      <div class="form-footer" >
         <button type="button" class="btn-secondary" (click)="cancel()">Cancel</button>
-        <button type="submit" class="btn-primary" [disabled]="!expenseForm.valid">Submit Expense</button>
+        <button *ngIf="showbtn;" type="submit" class="btn-primary" [disabled]="!expenseForm.valid">Submit Expense</button>
       </div>
 
     </form>
@@ -60,9 +60,9 @@
 
 
   <!-- Upload section on the right side -->
-  <div class="upload-section">
-    <h3>Upload Receipt</h3>
-    <input type="file" id="receipt" accept="image/*" [class.small]="uploadedReceipt" (change)="onFileSelected($event)">
+  <div class="upload-section" >
+    <h3 *ngIf="showbtn;">Upload Receipt</h3>
+    <input *ngIf="showbtn;" type="file" id="receipt" accept="image/*" [class.small]="uploadedReceipt" (change)="onFileSelected($event)">
     <div *ngIf="uploadedReceipt" class="receipt-preview">
       <h4>Uploaded Receipt:</h4>
       <img [src]="uploadedReceipt" alt="Receipt Preview" style="max-width: 100%; height: auto;">
