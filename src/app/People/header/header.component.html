@@ -28,7 +28,7 @@
 
       <div class="dropdown-menu" [class.show]="isMenuVisible">
         <a routerLink="/dashboard/overview" (click)="closeMenu()">People</a>
-        <a routerLink="/expences/dashboardexp" (click)="closeMenu()">Expense</a>
+        <a *ngIf="!isTrainee" routerLink="/expences/dashboardexp" (click)="closeMenu()">Expense</a>
         <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>
       </div>
     </div>

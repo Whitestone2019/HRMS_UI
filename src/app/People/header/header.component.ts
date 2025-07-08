@@ -11,6 +11,7 @@ export class HeaderComponent implements OnInit {
   isMenuVisible = false; // Flag to track menu visibility
   userRole: string = ''; // Store the role of the user
   isAdmin: boolean = false;
+  isTrainee: boolean=false;
 
   constructor(private router: Router,private userService: UserService) {}
 
@@ -18,6 +19,7 @@ export class HeaderComponent implements OnInit {
     // Fetch role from session or service
     this.userRole = this.userService.role;
     this.isAdmin = this.userService.isAdmin();
+    this.isTrainee=this.userService.isTrainee();
     //this.userRole ='employee';
    // alert(this.userRole);
 

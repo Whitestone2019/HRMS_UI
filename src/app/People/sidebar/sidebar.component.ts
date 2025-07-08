@@ -12,11 +12,13 @@ export class SidebarComponent implements OnInit {
   selectedSubMenu: string = '';   // Default to no submenu selected
   userRole: string = '';          // Default user role
    adminRoles: string[] = ['HR', 'CEO', 'CTO']; // Admin roles
-  employeeRoles: string[] = ['PM','TL','AS', 'SAS']; // Employee roles
+  employeeRoles: string[] = ['PM','TL','AS', 'SAS','JA']; // Employee roles
+  isTrainee: boolean=false;
 
   constructor(private menuSelectionService: MenuSelectionService, private userService: UserService) {}
 
   ngOnInit(): void {
+      this.isTrainee = this.userService.isTrainee();
     // Retrieve user role from UserService
     this.userRole = this.userService.role?.trim().toUpperCase() || ''; // Ensure handling null/undefined values
 
