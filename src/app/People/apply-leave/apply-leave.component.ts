@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-
+import { ActivatedRoute } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../../api.service';
 
@@ -11,40 +10,28 @@ import { ApiService } from '../../api.service';
   styleUrls: ['./apply-leave.component.css'],
 })
 export class ApplyLeaveComponent implements OnInit {
-  empId: string = localStorage.getItem('empId') || 'Unknown';
   leaveForm!: FormGroup;
-  leaveTypes = [
-    // 'medical leave',
-    'casual leave', 
-  ];
+  leaveTypes = ['casual leave','medical leave'];
   isModalOpen = true;
   aj: string = '';
-  errorMessage: string | null = null;
-  successMessage: string | null = null;
-  isLoading = false;
-
-  // Populate Employee ID from localStorage
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
 
   constructor(
     private fb: FormBuilder,
     private route: ActivatedRoute,
-    private router: Router,
     private apiService: ApiService,
     private location: Location
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
-  
-    // Handle query parameters
+
     this.route.queryParams.subscribe((params) => {
       const leaveTypeFromQuery = params['type'];
       const ej = params['ej'];
-      
       this.leaveForm.patchValue({ aj: ej });
       this.aj = ej;
-  
+
       if (leaveTypeFromQuery) {
         this.leaveForm.patchValue({ leavetype: leaveTypeFromQuery });
         this.leaveForm.get('leavetype')?.disable();
@@ -52,88 +39,93 @@ export class ApplyLeaveComponent implements OnInit {
         this.leaveForm.get('leavetype')?.enable();
       }
     });
-    // Listen for changes in empid and fetch manager email automatically
-    this.empId = localStorage.getItem('employeeId') || '';
-      if (this.empId) {
-        this.fetchManagerEmail(this.empId);
-      } else {
-        this.leaveForm.patchValue({ teamemail: '' }); // Clear if empId is empty
-      }
+
+    this.fetchManagerEmail(this.employeeId);
   }
-  fetchManagerEmail(empId: string): void {
-    this.apiService.getManagerEmail(empId).subscribe(
-      (response) => {
-        this.leaveForm.patchValue({ teamemail: response.email }); // ✅ Ensure response.email exists
-      },
-      (error) => {
-        this.leaveForm.patchValue({ teamemail: '' }); // Clear field on error
-      }
-    );
-  }
+
   initializeForm(): void {
     this.leaveForm = this.fb.group({
       empid: [this.employeeId, Validators.required],
       leavetype: ['', Validators.required],
-      startDate: ['', Validators.required],
-      endDate: ['', Validators.required],
+      startdate: ['', Validators.required],
+      enddate: ['', Validators.required],
+      startHalf: [false],
+      endHalf: [false],
       teamemail: ['', [Validators.required, Validators.email]],
       leavereason: ['', Validators.required],
       noofdays: ['', Validators.required],
+      aj: ['']
     });
   }
 
-  // Calculate No. of Days between start and end date
+  fetchManagerEmail(empId: string): void {
+    this.apiService.getManagerEmail(empId).subscribe(
+      (response) => {
+        this.leaveForm.patchValue({ teamemail: response.email });
+      },
+      () => {
+        this.leaveForm.patchValue({ teamemail: '' });
+      }
+    );
+  }
+
   calculatenoofdays(): void {
-    const startDate = this.leaveForm.get('startDate')?.value;
-    const endDate = this.leaveForm.get('endDate')?.value;
+    const startDate = this.leaveForm.get('startdate')?.value;
+    const endDate = this.leaveForm.get('enddate')?.value;
+    const isStartHalf = this.leaveForm.get('startHalf')?.value === true || this.leaveForm.get('startHalf')?.value === 'true';
+    const isEndHalf = this.leaveForm.get('endHalf')?.value === true || this.leaveForm.get('endHalf')?.value === 'true';
 
     if (startDate && endDate) {
       const start = new Date(startDate);
       const end = new Date(endDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
 
-      // Check if start date is in the past
-      if (start < new Date()) {
+      if (start < today) {
         alert('Start date cannot be in the past.');
-        this.leaveForm.get('startDate')?.setValue('');
+        this.leaveForm.get('startdate')?.setValue('');
         return;
       }
 
-      // Ensure end date is after or equal to start date
       if (end < start) {
         alert('End date cannot be before start date.');
-        this.leaveForm.get('endDate')?.setValue('');
+        this.leaveForm.get('enddate')?.setValue('');
         return;
       }
 
-      const timeDifference = end.getTime() - start.getTime();
-      const days = timeDifference / (1000 * 3600 * 24) + 1;
+      let days = (end.getTime() - start.getTime()) / (1000 * 3600 * 24) + 1;
+
+      if (start.toDateString() === end.toDateString()) {
+        if (isStartHalf && isEndHalf) {
+          days = 0.5;
+        } else if (isStartHalf || isEndHalf) {
+          days = 1;
+        }
+      } else {
+        if (isStartHalf) days -= 0.5;
+        if (isEndHalf) days -= 0.5;
+      }
+
       this.leaveForm.get('noofdays')?.setValue(days);
     }
   }
 
   submitForm(): void {
     if (this.leaveForm.valid) {
-      // Get the form values including disabled fields
       const formValues = { ...this.leaveForm.getRawValue() };
-      console.log('Form Values:', formValues);
-  
-      // Send the data to the API
       this.apiService.putLeaveReq(formValues).subscribe(
         (response) => {
-          console.log('Response:', response);
           alert(response.message);
           this.location.back();
         },
         (error) => {
-          console.error('Error:', error);
+          console.error('Submission Error:', error);
         }
       );
     } else {
-      console.log('Form is invalid');
       this.markAllFieldsTouched();
     }
   }
-  
 
   private markAllFieldsTouched(): void {
     Object.keys(this.leaveForm.controls).forEach((field) => {
@@ -144,17 +136,8 @@ export class ApplyLeaveComponent implements OnInit {
     });
   }
 
-  onFieldBlur(field: string): void {
-    const control = this.leaveForm.get(field);
-    if (control) {
-      control.markAsTouched();
-    }
-  }
-
   closeModal(): void {
-    console.log('Modal closed');
     this.isModalOpen = false;
-    this.location.back(); // Navigate to the previous page
+    this.location.back();
   }
-  
 }

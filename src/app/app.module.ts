@@ -2,10 +2,17 @@ import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { FullCalendarModule } from '@fullcalendar/angular'; // For FullCalendar in TimesheetComponent
+import { AppRoutingModule } from './app-routing.module';
 import { APP_BASE_HREF } from '@angular/common';
-providers: [{ provide: APP_BASE_HREF, useValue: '/HRMS' }]
+
+// Material Modules
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatDialogModule } from '@angular/material/dialog';
+import { MatCardModule } from '@angular/material/card'; // Added for calendar card UI
 
 // Components
 import { AppComponent } from './app.component';
@@ -36,33 +43,24 @@ import { TriggerComponent } from './People/operations/userinfo/add-emp/createemp
 import { CreateempComponent } from './People/operations/userinfo/add-emp/createemp/createemp.component';
 import { UserinfoComponent } from './People/operations/userinfo/userinfo.component';
 import { AddEmpComponent } from './People/operations/userinfo/add-emp/add-emp.component';
-
-
-// Material Modules
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
+import { ResetPasswordComponent } from './People/reset-password/reset-password.component';
+import { EmployeeAttendanceSummaryComponent } from './People/employee-attendance-summary/employee-attendance-summary.component';
+import { AddCandidateComponent } from './People/addcandidate/addcandidate.component';
+import { TravelComponent } from './People/travel/travel.component';
+import { TravelRequestViewComponent } from './People/travel-request-view/travel-request-view.component';
+import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
+import { PayslipComponent } from './Payroll/components/settings/payslip/payslip.component';
+import { LoaderComponent } from './shared/loader/loader.component';
+import { TimesheetComponent } from './People/timesheet/timesheet.component';
 
 // Services and Interceptors
 import { ApiService } from './api.service';
 import { TimeFormatInterceptor } from './People/interceptors/time-format.interceptor';
-import { ResetPasswordComponent } from './People/reset-password/reset-password.component';
-import { EmployeeAttendanceSummaryComponent } from './People/employee-attendance-summary/employee-attendance-summary.component';
-import { AddCandidateComponent } from './People/addcandidate/addcandidate.component';
-import { RouterModule } from '@angular/router';
-//import { ExpenseListItemComponent } from './Expense/pages/expenses/expense-list-item.component';
-import { TravelComponent } from './People/travel/travel.component';
-import { TravelRequestViewComponent } from './People/travel-request-view/travel-request-view.component';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { AlertDialogComponent } from './alert-dialog/alert-dialog.component';
-import { PayslipComponent } from './Payroll/components/settings/payslip/payslip.component';
 import { ApiKeyInterceptor } from './interceptors/api-key.interceptor';
-import { LoaderComponent } from './shared/loader/loader.component';
-//import { HeaderComponent } from './Payroll/components/layout/header/header.component';
-
-
-
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { TimesheetCalendarDialogComponent } from './People/timesheet-calendar-dialog/timesheet-calendar-dialog.component';
+import { MatOption } from "@angular/material/core";
+import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/edit-attendance-dialog.component';
 
 @NgModule({
   declarations: [
@@ -90,22 +88,21 @@ import { LoaderComponent } from './shared/loader/loader.component';
     LeaveRequestComponent,
     ApplyLeaveComponent,
     OnboardingComponent,
-    AddCandidateComponent,
-    AddEmpComponent,
+    TriggerComponent,
+    CreateempComponent,
     UserinfoComponent,
+    AddEmpComponent,
     ResetPasswordComponent,
     EmployeeAttendanceSummaryComponent,
-    OnboardingComponent,
+    AddCandidateComponent,
     TravelComponent,
     TravelRequestViewComponent,
-    AddCandidateComponent,
-    AddEmpComponent,
-    UserinfoComponent,
-    AddEmpComponent,
     AlertDialogComponent,
     PayslipComponent,
-    LoaderComponent
-  
+    LoaderComponent,
+    TimesheetComponent,
+    TimesheetCalendarDialogComponent,
+    EditAttendanceDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -113,26 +110,34 @@ import { LoaderComponent } from './shared/loader/loader.component';
     FormsModule,
     ReactiveFormsModule,
     HttpClientModule,
-    BrowserAnimationsModule, // Replaced `provideAnimationsAsync()` with this
+    BrowserAnimationsModule,
+    FullCalendarModule,
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    RouterModule
-  ],
+    MatCardModule // Added for card-based UI
+    ,
+    MatOption
+],
   exports: [
-    AdminMenuComponent, // Export AdminMenuComponent if used outside AppModule
+    AdminMenuComponent // For external use in other modules
   ],
   providers: [
     ApiService,
     {
       provide: HTTP_INTERCEPTORS,
-      useClass: ApiKeyInterceptor, // Register the interceptor
-      multi: true,
+      useClass: ApiKeyInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: TimeFormatInterceptor,
+      multi: true
     },
     { provide: APP_BASE_HREF, useValue: '/HRMS' },
-      provideAnimationsAsync(),
+    provideAnimationsAsync()
   ],
-  bootstrap: [AppComponent],
+  bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

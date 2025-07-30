@@ -1,0 +1,31 @@
+<div class="timesheet-container">
+  <h2>Timesheet for {{ month }}/{{ year }}</h2>
+  <table class="timesheet-table" *ngIf="timesheetData.length > 0">
+    <thead>
+      <tr>
+        <th>S.No</th>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Effective Working Days</th>
+        <th>Present</th>
+        <th>Absent</th>
+        <th>Miss Punch</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of timesheetData" (click)="onRowClick(employee)">
+        <td>{{ employee.sno }}</td>
+        <td>{{ employee.employeeId }}</td>
+        <td>{{ employee.members }}</td>
+        <td>{{ employee.effectiveWorkingDays }}</td>
+        <td>{{ employee.present }}</td>
+        <td>{{ employee.absent }}</td>
+        <td>{{ employee.missPunch }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="timesheetData.length === 0">
+    No data available or loading...
+  </div>
+</div>

@@ -22,7 +22,8 @@ body {
   max-width: 100%;
 }
 
-.modal-header, .modal-footer {
+.modal-header,
+.modal-footer {
   padding: 15px;
   border-bottom: 1px solid #e5e5e5;
 }
@@ -44,13 +45,13 @@ body {
   font-size: 20px;
   cursor: pointer;
   background-color: transparent;
-color: #ff6b6b; /* Soft red color */
-padding: 0.5rem;
-/* position: absolute; */
-top: 10px;
-left: 10px;
-transition: transform 0.2s, color 0.2s;  
+  color: #ff6b6b; /* Soft red color */
+  padding: 0.5rem;
+  top: 10px;
+  left: 10px;
+  transition: transform 0.2s, color 0.2s;
 }
+
 .modal-header .close-btn:hover {
   transform: scale(1.2);
   color: #ff4c4c; /* Brighter red on hover */
@@ -63,9 +64,10 @@ transition: transform 0.2s, color 0.2s;
 }
 
 .modal-header .close-btn:focus {
-  outline: none; 
-  color: #ff4c4c; 
+  outline: none;
+  color: #ff4c4c;
 }
+
 .modal-body {
   padding: 20px;
 }
@@ -80,7 +82,9 @@ transition: transform 0.2s, color 0.2s;
   font-weight: 500;
 }
 
-.form-group input, .form-group select, .form-group textarea {
+.form-group input,
+.form-group select,
+.form-group textarea {
   width: calc(100% - 20px);
   padding: 10px;
   border: 1px solid #ccc;
@@ -129,4 +133,39 @@ transition: transform 0.2s, color 0.2s;
 .modal-footer .btn-cancel {
   background-color: #f8f9fa;
   color: black;
+}
+
+/* ✅ Half Day Radio Button Styling */
+.form-group.half-day-radio-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group.half-day-radio-group label {
+  font-weight: 500;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.half-day-options {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.half-day-options label {
+  display: flex;
+  align-items: center;
+  font-weight: normal;
+  cursor: pointer;
+}
+
+.half-day-options input[type="radio"] {
+  margin-right: 6px;
+  accent-color: #007bff;
+  cursor: pointer;
+}
+
+.half-day-options input[type="radio"]:hover {
+  outline: 1px solid #007bff;
 }

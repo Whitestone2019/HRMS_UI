@@ -6,8 +6,7 @@ import { FormsModule } from '@angular/forms';    // Import FormsModule
 
 @Component({
   selector: 'app-createemp',
-  standalone: true,
-  imports: [RouterModule, CommonModule, FormsModule],  // Add CommonModule and FormsModule here
+  //imports: [RouterModule, CommonModule, FormsModule],  // Add CommonModule and FormsModule here
   templateUrl: './createemp.component.html',
   styleUrls: ['./createemp.component.css']
 })

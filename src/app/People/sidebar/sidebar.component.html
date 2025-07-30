@@ -18,16 +18,16 @@
   </a>
   
   <!-- Leave Tracker menu -->
-  <a *ngIf="isMenuVisible('leave-summary')" routerLink="/dashboard/leave-summary" (click)="onMenuSelect('leave-summary')" 
-     [class.active]="selectedMenu === 'leave-summary'">
-    <i class="fas fa-clock"></i> Leave Tracker
-  </a>
+ <a *ngIf="isMenuVisible('leave-summary')" routerLink="/dashboard/leave-summary" (click)="onMenuSelect('leave-summary')" 
+   [class.active]="selectedMenu === 'leave-summary'">
+  <i class="fas fa-user-minus"></i> Leave Tracker
+</a>
   
   <!-- Tasks menu -->
-  <a *ngIf="isMenuVisible('tasks')" routerLink="/dashboard" (click)="onMenuSelect('tasks')" 
+  <!-- <a *ngIf="isMenuVisible('tasks')" routerLink="/dashboard" (click)="onMenuSelect('tasks')" 
      [class.active]="selectedMenu === 'tasks'">
     <i class="fas fa-tasks"></i> Tasks
-  </a>
+  </a> -->
 
   <!-- Operations menu -->
   <a *ngIf="isMenuVisible('settings')" routerLink="/dashboard" (click)="onMenuSelect('settings')" 
@@ -44,6 +44,11 @@
   <a *ngIf="isMenuVisible('travel')" routerLink="/dashboard/travel" (click)="onMenuSelect('travel')" 
    [class.active]="selectedMenu === 'travel'">
   <i class="fas fa-plane-departure"></i> Travel
+</a>
+
+<a *ngIf="isMenuVisible('timesheet')" routerLink="/dashboard/timesheet" (click)="onMenuSelect('timesheet')" 
+   [class.active]="selectedMenu === 'timesheet'">
+  <i class="fas fa-clock"></i> Timesheet
 </a>
 
 </div>

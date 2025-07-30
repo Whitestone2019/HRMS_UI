@@ -1,0 +1,15 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h3>Timesheet for {{ employeeName }}</h3>
+  </div>
+
+  <div class="calendar-wrapper" *ngIf="!isLoading; else loading">
+    <full-calendar #calendar [options]="calendarOptions"></full-calendar>
+  </div>
+
+  <ng-template #loading>
+    <div class="loading-spinner">Loading...</div>
+  </ng-template>
+
+  <button class="close-btn" (click)="goBack()">Back to Timesheet</button>
+</div>

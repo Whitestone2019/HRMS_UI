@@ -20,6 +20,30 @@ interface User {
   role: string;
 }
 
+interface Timesheet {
+  sno: number;
+  employeeId: string;
+  members: string;
+  effectiveWorkingDays: number;
+  present: number;
+  absent: number;
+  missPunch: number;
+}
+
+interface AttendanceEvent {
+  title: string;
+  date: string;
+  backgroundColor: string;
+  extendedProps: {
+    dayOfWeek: string;
+    status: string;
+  };
+}
+
+interface EmployeeName {
+  name: string;
+}
+
 interface AttendancePayload {
   attendanceid: string;
   checkInTime?: string;
@@ -630,6 +654,7 @@ export class ApiService {
     const endpoint = `${this.apiUrl}/leaveRequest`; // Adjust if needed
     const headers = { 'Content-Type': 'application/json' };
     this.loaderService.show();
+    console.log("data:::"+JSON.stringify(data));
     return this.http.post<any>(endpoint, data, { headers }).pipe(
       tap(() => this.openDialog('Success', 'Leave request submitted successfully.')),finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
@@ -1191,6 +1216,79 @@ export class ApiService {
         finalize(() => this.loaderService.hide())
       );
   }
+
+  getTimesheetData(year: number, month: number, repoteTo: string): Observable<Timesheet[]> {
+    const url = `${this.apiUrl}/data?year=${year}&month=${month}&repoteTo=${repoteTo}`;
+    this.loaderService.show();
+    return this.http.get<Timesheet[]>(url, {  headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        this.openDialog('Error', `Failed to fetch timesheet data: ${error.error?.error || 'Server error'}`);
+        return throwError(() => new Error(error.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // Fetch attendance events for an employee
+  getAttendanceEvents(employeeId: string, year: number, month: number): Observable<AttendanceEvent[]> {
+    const url = `${this.apiUrl}/events/${employeeId}?year=${year}&month=${month}`;
+    this.loaderService.show();
+    return this.http.get<AttendanceEvent[]>(url, {  headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        this.openDialog('Error', `Failed to fetch attendance events: ${error.error?.error || 'Server error'}`);
+        return throwError(() => new Error(error.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // Fetch employee name by employeeId
+  getEmployeeName1(employeeId: string): Observable<EmployeeName> {
+    const url = `${this.apiUrl}/employee/${employeeId}`;
+    this.loaderService.show();
+    return this.http.get<EmployeeName>(url, {  headers: new HttpHeaders({ 'Content-Type': 'application/json' }) }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        this.openDialog('Error', `Failed to fetch employee name: ${error.error?.error || 'Server error'}`);
+        return throwError(() => new Error(error.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+updateAttendance(data: any): Observable<any> {
+  const url = `${this.apiUrl}/attendance/update`;
+  this.loaderService.show();
+
+  return this.http.post<any>(url, data, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  }).pipe(
+    tap(response => {
+      // Show success dialog if response contains a message
+      if (response?.message) {
+        this.openDialog('Success', response.message);
+      } else {
+        this.openDialog('Success', 'Attendance updated successfully.');
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Backend error response:', error);
+
+      // Handle both string and object error bodies
+      let errorMsg = 'Server error';
+      if (typeof error.error === 'string') {
+        errorMsg = error.error;
+      } else if (error.error?.error) {
+        errorMsg = error.error.error;
+      }
+
+      this.openDialog('Error', `Failed to update attendance: ${errorMsg}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+  
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
