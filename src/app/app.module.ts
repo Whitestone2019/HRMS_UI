@@ -61,6 +61,8 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 import { TimesheetCalendarDialogComponent } from './People/timesheet-calendar-dialog/timesheet-calendar-dialog.component';
 import { MatOption } from "@angular/material/core";
 import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/edit-attendance-dialog.component';
+import { NoCacheInterceptor } from './no-cache.interceptor';
+import { AttendancePieChartComponent } from './People/overview/attendance-pie-chart/attendance-pie-chart.component';
 
 @NgModule({
   declarations: [
@@ -102,7 +104,8 @@ import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/e
     LoaderComponent,
     TimesheetComponent,
     TimesheetCalendarDialogComponent,
-    EditAttendanceDialogComponent
+    EditAttendanceDialogComponent,
+    AttendancePieChartComponent
   ],
   imports: [
     BrowserModule,
@@ -133,6 +136,11 @@ import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/e
     {
       provide: HTTP_INTERCEPTORS,
       useClass: TimeFormatInterceptor,
+      multi: true
+    },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: NoCacheInterceptor,
       multi: true
     },
     { provide: APP_BASE_HREF, useValue: '/HRMS' },

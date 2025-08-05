@@ -44,22 +44,38 @@ export class LeaveSummaryComponent implements OnInit {
     this.fetchUpcomingHolidays(); // Fetch the upcoming holidays
   }
 
-  // Fetch leave counts from the backend API
-  getLeaveCounts(empId: string): void {
-    this.apiService.getLeaveCounts(empId).subscribe((leaveCounts: any) => {
-      // Update the leaveTypes array with the booked counts and adjust the available value
+getLeaveCounts(empId: string): void {
+  this.apiService.getLeaveCounts(empId).subscribe({
+    next: (leaveCounts: any) => {
       this.leaveTypes.forEach(leaveType => {
-        const leaveTypeKey = leaveType.name.toLowerCase().replace(' ', ''); // Convert 'Sick Leave' to 'sickleave'
+        const leaveTypeKey = leaveType.name.toLowerCase().replace(' ', '');
         if (leaveCounts[leaveTypeKey] !== undefined) {
-          leaveType.booked = leaveCounts[leaveTypeKey]; // Assign booked count to the correct leave type
-          leaveType.available = 12 - leaveType.booked; // Update available based on booked
-          if(leaveType.name == "earned leave" || leaveType.name == "leavewithoutpay"){
+          // Set available from backend response
+          leaveType.available = leaveCounts[leaveTypeKey];
+          // Only calculate booked if available is non-zero, otherwise assume no leaves booked
+          leaveType.booked = leaveType.available > 0 ? 12 - leaveType.available : 0;
+          // Override for specific leave types
+          if (leaveType.name.toLowerCase() === 'earned leave' || leaveType.name.toLowerCase() === 'leavewithoutpay') {
             leaveType.available = 0;
+            leaveType.booked = 0; // Optionally set booked to 0 for consistency
           }
+        } else {
+          // Handle case where leave type key is not in response
+          leaveType.available = 0;
+          leaveType.booked = 0;
         }
       });
-    });
-  }
+    },
+    error: (err) => {
+      console.error('Error fetching leave counts:', err);
+      // Optionally reset all leave types or show an error message
+      this.leaveTypes.forEach(leaveType => {
+        leaveType.available = 0;
+        leaveType.booked = 0;
+      });
+    }
+  });
+}
 
   // Fetch upcoming holidays from the backend API
   fetchUpcomingHolidays(): void {

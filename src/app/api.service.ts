@@ -96,7 +96,7 @@ export class ApiService {
     const url = `${this.apiUrl}/attendance/status/${employeeId}`;
     this.loaderService.show();
     return this.http.get<any>(url).pipe(
-      tap(() => this.openDialog('Success', 'Check-in status retrieved successfully.')),
+    //  tap(() => this.openDialog('Success', 'Check-in status retrieved successfully.')),
       catchError((error: HttpErrorResponse) => {
         console.error('Error fetching check-in status:', error);
         this.openDialog('Error', `Failed to retrieve check-in status: ${error.error?.message || 'Unknown error'}`);
@@ -125,7 +125,7 @@ export class ApiService {
     const url = `${this.apiUrl}/checkIn`;
     this.loaderService.show();
     return this.http.post<AttendanceResponse>(url, attendanceData).pipe(
-      tap(() => this.openDialog('Success', 'Attendance marked successfully.')),
+      //tap(() => this.openDialog('Success', 'Attendance marked successfully.')),
       finalize(() => this.loaderService.hide()),
       catchError((error: HttpErrorResponse) => {
         console.error('Error marking attendance:', error);
@@ -139,7 +139,7 @@ export class ApiService {
   checkoutAttendance(attendanceData: AttendancePayload): Observable<AttendanceResponse> {
     this.loaderService.show();
     return this.http.post<AttendanceResponse>(`${this.apiUrl}/checkOut`, attendanceData).pipe(
-      tap(() => this.openDialog('Success', 'Check-out successful.')),
+     // tap(() => this.openDialog('Success', 'Check-out successful.')),
       finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
@@ -620,7 +620,8 @@ export class ApiService {
   getEmployeeLeaveReport(): Observable<any> {
     this.loaderService.show();
     return this.http.get<any>(`${this.apiUrl}/generateLeaveReport`).pipe(
-      tap(() => this.openDialog('Success', 'Fetched leave report successfully.')),finalize(() => this.loaderService.hide()),
+      //tap(() => this.openDialog('Success', 'Fetched leave report successfully.')),
+      finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
   }
@@ -628,7 +629,8 @@ export class ApiService {
   getLeaveCounts(empId: string): Observable<any> {
     this.loaderService.show();
     return this.http.get<any>(`${this.apiUrl}/leave/count?empId=${empId}`).pipe(
-      tap(() => this.openDialog('Success', `Leave counts fetched for Employee ID: ${empId}`)),finalize(() => this.loaderService.hide()),
+     // tap(() => this.openDialog('Success', `Leave counts fetched for Employee ID: ${empId}`)),
+      finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
   }
@@ -636,7 +638,8 @@ export class ApiService {
   rejectLeaveRequest1(empid: string, leavereason: string): Observable<any> {
     this.loaderService.show();
     return this.http.post<any>(`${this.apiUrl}/rejectLeaveRequest`, { empid, leavereason }).pipe(
-      tap(() => this.openDialog('Success', `Leave request rejected for Employee ID: ${empid}`)),finalize(() => this.loaderService.hide()),
+     // tap(() => this.openDialog('Success', `Leave request rejected for Employee ID: ${empid}`)),
+      finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
   }
@@ -645,7 +648,8 @@ export class ApiService {
   rejectLeaveRequest(empId: string): Observable<any> {
     this.loaderService.show();
     return this.http.put<any>(`${this.apiUrl}/rejupdateEntityFlag?empid=${empId}`, null).pipe(
-      tap(() => this.openDialog('Success', `Leave request updated for Employee ID: ${empId}`)),finalize(() => this.loaderService.hide()),
+     // tap(() => this.openDialog('Success', `Leave request updated for Employee ID: ${empId}`)),
+      finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
   }
@@ -665,16 +669,18 @@ export class ApiService {
     const endpoint = `${this.apiUrl}/leaveRequests/get/${empId}`; // Ensure empId is passed in the URL
     this.loaderService.show();
     return this.http.get<any>(endpoint).pipe(
-      tap(() => this.openDialog('Success', 'Fetched leave requests successfully.')),finalize(() => this.loaderService.hide()),
+    //  tap(() => this.openDialog('Success', 'Fetched leave requests successfully.')),
+      finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
   }
 
-  updateEntityFlag(empId: string, leavereason: string): Observable<any> {
+  updateEntityFlag(empId: string, srlnum: string): Observable<any> {
     // Add leaveType as a query parameter
     this.loaderService.show();
-    return this.http.put<any>(`${this.apiUrl}/updateEntityFlag?empid=${empId}&leavereason=${leavereason}`, null).pipe(
-      tap(() => this.openDialog('Success', `Entity flag updated successfully for Employee ID: ${empId} and Leave Type: ${leavereason}`)),
+    alert(srlnum);
+    return this.http.put<any>(`${this.apiUrl}/updateEntityFlag?empid=${empId}&srlnum=${srlnum}`, null).pipe(
+    //  tap(() => this.openDialog('Success', `Entity flag updated successfully for Employee ID: ${empId} and Leave Type: ${srlnum}`)),
       finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
@@ -685,7 +691,7 @@ export class ApiService {
     const endpoint = `${this.apiUrl}/leaveRequests/upcomingHolidays`; // Endpoint to fetch upcoming holidays
     this.loaderService.show();
     return this.http.get<any>(endpoint).pipe(
-      tap(() => this.openDialog('Success', 'Fetched upcoming holidays successfully.')),
+     // tap(() => this.openDialog('Success', 'Fetched upcoming holidays successfully.')),
       finalize(() => this.loaderService.hide()),
       catchError(this.handleError.bind(this))
     );
@@ -697,7 +703,7 @@ export class ApiService {
     return this.http.post<any>(apiUrl, advanceObj, {
       headers: { 'Content-Type': 'application/json' }
     }).pipe(
-      tap((response) => console.log('Response from submitAdvance:', response)),
+    //  tap((response) => console.log('Response from submitAdvance:', response)),
       finalize(() => this.loaderService.hide()),
       catchError(this.handleError)
     );
@@ -1288,7 +1294,20 @@ updateAttendance(data: any): Observable<any> {
   );
 }
 
-  
+getAttendancePieData(empId: string, date: string): Observable<any> {
+  const url = `${this.apiUrl}/attendance/pie?empId=${empId}&date=${date}`;
+  this.loaderService.show();
+  return this.http.get<any>(url, {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  }).pipe(
+    catchError((error: HttpErrorResponse) => {
+      this.openDialog('Error', `Failed to fetch attendance pie data: ${error.error?.error || 'Server error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';

@@ -71,8 +71,8 @@ export class LeaveRequestComponent implements OnInit {
     if (confirm('Do you want to approve this leave request?')) {
       console.log("Request Object:", JSON.stringify(request, null, 2)); // Detailed log
       // Pass both empid and leaveType in the API call
-      alert("request.leavereason: " + request.leavereason);
-      this.apiService.updateEntityFlag(request.empid, request.leavereason).subscribe(
+      alert("request.leavereason: " + request.srlnum);
+      this.apiService.updateEntityFlag(request.empid, request.srlnum).subscribe(
         (response: any) => {
           console.log("API Response:", response); // Log response
           if (response.status === 'success') {

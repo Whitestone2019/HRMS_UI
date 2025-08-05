@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, ViewChild, ViewContainerRef, Type } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ViewContainerRef, Type, Input } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AttendanceService } from '../../attendance.service';
 import { CheckInDialogComponent } from '../check-in-dialog/check-in-dialog.component';
@@ -31,7 +31,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
   checkOutTime: number = 0; // Track the check-out time
   checkInLocation: string = ''; // Track the check-in location
   checkOutLocation: string = ''; // Track the check-out location
+  yesterday_present: number = 0;
+  yesterday_absent: number = 0;
+  yesterday_day: string = '';
 
+  today_present: number = 0;
+  today_absent: number = 0;
+  today_day: string = '';
+ yesterday_label: string = "Yesterday's";
+  today_label: string = "Today's";
 
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef, static: true })
   container: ViewContainerRef | undefined;
@@ -46,7 +54,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscribeToAttendanceUpdates();
     console.log(`Welcome, ${this.username}! Employee ID: ${this.employeeId}`);
-
+    this.getAttendancePieData(); 
     // Check if the user was previously checked in and resume the timer
     this.checkTimerStatusOnLoad();
   }
@@ -110,11 +118,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       (error) => console.error('Error fetching check-in status:', error)
     );
   }
-  
-
-
-
-
   stopTimer(): void {
     this.attendanceService.stopTimer();
   }
@@ -332,4 +335,24 @@ export class OverviewComponent implements OnInit, OnDestroy {
       const componentRef = this.container.createComponent(component);
     }
   }
+
+
+getAttendancePieData(): void {
+  const today = new Date().toISOString().slice(0, 10); // "2025-08-05"
+  this.apiService.getAttendancePieData(this.employeeId, today).subscribe(
+    (res) => {
+      this.yesterday_present = res.yesterday.present;
+      this.yesterday_absent = res.yesterday.absent;
+      this.yesterday_day = res.yesterday.day;
+
+      this.today_present =res.today.present;
+      this.today_absent = res.today.absent;
+      this.today_day = res.today.day;
+    },
+    (error) => {
+      console.error('Failed to load pie chart data:', error);
+    }
+  );
+}
+
 }
