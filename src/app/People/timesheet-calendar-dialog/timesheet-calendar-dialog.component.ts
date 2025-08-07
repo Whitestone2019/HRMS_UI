@@ -91,12 +91,12 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         targetYear,
         monthForApi
       );
-alert("EMPNAME::::"+this.employeeName);
+//alert("EMPNAME::::"+this.employeeName);
     } else {
       this.route.paramMap.subscribe((params) => {
         const empId = params.get('employeeId');
         const empname = params.get('employeeName');
-        alert("EMPNAME::::"+empname);
+       // alert("EMPNAME::::"+empname);
          this.employeeName = empname ?? ''; // Assign for HTML
         if (empId) {
           this.employeeId = empId;

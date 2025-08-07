@@ -678,7 +678,7 @@ export class ApiService {
   updateEntityFlag(empId: string, srlnum: string): Observable<any> {
     // Add leaveType as a query parameter
     this.loaderService.show();
-    alert(srlnum);
+  //  alert(srlnum);
     return this.http.put<any>(`${this.apiUrl}/updateEntityFlag?empid=${empId}&srlnum=${srlnum}`, null).pipe(
     //  tap(() => this.openDialog('Success', `Entity flag updated successfully for Employee ID: ${empId} and Leave Type: ${srlnum}`)),
       finalize(() => this.loaderService.hide()),
@@ -780,7 +780,7 @@ export class ApiService {
 
   updateAdvance(advanceId: string, requestData: any): Observable<any> {
     this.loaderService.show();
-    alert(advanceId);
+   // alert(advanceId);
     return this.http.put<any>(`${this.apiUrl}/update/advance/approval/${advanceId}`,requestData).pipe(
       finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
     );

@@ -252,7 +252,7 @@ export class HeaderComponent {
     this.userRole = this.userService.role;
     this.isAdmin = this.userService.isAdmin();
     this.isTrainee = this.userService.isTrainee();
-alert (this.isTrainee);
+//alert (this.isTrainee);
     if (!this.userRole.trim()) {
       this.router.navigate(['/dashboard/addcandidate']);
     }
