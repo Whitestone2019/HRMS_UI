@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Location } from '@angular/common';
 import { ApiService } from '../../api.service';
+import { parse } from 'date-fns';
 
 @Component({
   selector: 'app-leave-request',
@@ -31,7 +32,14 @@ export class LeaveRequestComponent implements OnInit {
     this.apiService.getLeaveRequests(empId).subscribe(
       (response: any) => {
         console.log('Fetched Leave Requests:', response);
-        this.leaveRequests = response.data || [];
+
+this.leaveRequests = (response.data || []).map((req: any) => {
+  return {
+    ...req,
+    startdate: req.startdate ? parse(req.startdate, 'dd-MM-yyyy HH:mm:ss', new Date()) : null,
+    enddate: req.enddate ? parse(req.enddate, 'dd-MM-yyyy HH:mm:ss', new Date()) : null
+  };
+});
         this.hasData = this.leaveRequests.length > 0;
       },
       (error) => {

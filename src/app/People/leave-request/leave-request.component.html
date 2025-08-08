@@ -5,9 +5,12 @@
       <thead>
         <tr>
           <th>Employee ID</th>
+          <th>Employee name</th>
           <th>Leave Type</th>
           <th>Leave Reason</th>
           <th>No. of Days</th>
+          <th>Start Date</th>
+          <th>End Date</th>
           <th>Status</th>
           <th>Action</th>
         </tr>
@@ -15,9 +18,12 @@
       <tbody>
         <tr *ngFor="let request of leaveRequests; let i = index" class="table-row">
           <td>{{ request.empid }}</td>
+          <td>{{ request.name}}</td>
           <td>{{ request.leavetype }}</td>
           <td>{{ request.leavereason }}</td>
           <td>{{ request.noofdays }}</td>
+          <td>{{ request.startdate |date: 'yyyy-MM-dd'}}</td>
+          <td>{{ request.enddate | date: 'yyyy-MM-dd' }}</td>
           <td>{{ request.status }}</td>
           <td>
             <!-- Hide buttons if the request belongs to the logged-in user -->

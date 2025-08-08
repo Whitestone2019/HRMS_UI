@@ -22,6 +22,7 @@ export class AttendanceComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
   attendanceData: any[] = []; 
+  srlNum:number=0;
 
   constructor(
     private attendanceService: AttendanceService,
@@ -106,7 +107,7 @@ export class AttendanceComponent implements OnInit {
         const formattedDuration = this.formatDuration(checkOutDuration); // Convert seconds to HH:MM:SS format
         //alert('Checkout Duration OVERVIEW: ' + formattedDuration); // Display formatted duration
 
-        this.apiService.checkOut(status, locationName, checkOutDuration).subscribe(
+        this.apiService.checkOut(status, locationName, checkOutDuration,this.srlNum).subscribe(
           (response) => {
             console.log('Check-out successful:', response);
             this.attendanceService.checkOut();

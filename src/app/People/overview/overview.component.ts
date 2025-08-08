@@ -40,6 +40,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   today_day: string = '';
  yesterday_label: string = "Yesterday's";
   today_label: string = "Today's";
+  srlNum : number=0;
 
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef, static: true })
   container: ViewContainerRef | undefined;
@@ -55,8 +56,9 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.subscribeToAttendanceUpdates();
     console.log(`Welcome, ${this.username}! Employee ID: ${this.employeeId}`);
     this.getAttendancePieData(); 
-    // Check if the user was previously checked in and resume the timer
+
     this.checkTimerStatusOnLoad();
+
   }
 
   ngOnDestroy(): void {
@@ -75,17 +77,20 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   checkTimerStatusOnLoad(): void {
+    //alert(this.employeeId);
     this.apiService.getCheckInStatus(this.employeeId).subscribe(
       (response) => {
+         this.srlNum = response.srlNum;
+       // alert("response.srlnum"+response.srlNum);
         if (response.isCheckedIn) {
           // Fix the date format if needed (ensure it's in ISO 8601 format)
           let checkInTimeString = response.checkInTime.replace(' ', 'T'); // Convert space to 'T'
-          
+         
           // If the backend does not provide time in UTC (Z), you can manually add the 'Z' (indicating UTC)
           if (!checkInTimeString.endsWith('Z')) {
             checkInTimeString += 'Z'; // Add 'Z' for UTC time
           }
-  
+       
           // Convert the corrected string to a Date object
           this.checkInTime = new Date(checkInTimeString).getTime();
           console.log("Check-in time in milliseconds:", this.checkInTime);  // Debug log to verify the value
@@ -245,6 +250,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   checkOut(): void {
+     
     const dialogRef = this.dialog.open(CheckOutDialogComponent);
 
     dialogRef.afterClosed().subscribe((status) => {
@@ -255,6 +261,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private handleCheckOut(status: string): void {
+    // alert(this.srlNum);
     // this.requestGeolocationPermission()
     // .then(() =>
     this.getLocationByIP()//)
@@ -265,8 +272,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
         const checkOutDuration = (Date.now() - this.checkInTime) / 1000; // Duration in seconds
         const formattedDuration = this.formatDuration(checkOutDuration); // Convert seconds to HH:MM:SS format
        // alert('Checkout Duration OVERVIEW: ' + formattedDuration); // Display formatted duration
-  
-        this.apiService.checkOut(status, locationName, checkOutDuration).subscribe(
+
+        this.apiService.checkOut(status, locationName, checkOutDuration,this.srlNum).subscribe(
           (response) => {
             console.log('Check-out successful:', response);
             this.attendanceService.checkOut();

@@ -51,6 +51,7 @@ interface AttendancePayload {
   status?: string;
   checkinlocation?: string;
   checkOutDuration?: number;
+  srlnum?:number;
 }
 
 interface AttendanceResponse {
@@ -93,16 +94,21 @@ export class ApiService {
 
 
   getCheckInStatus(employeeId: string): Observable<any> {
+   // alert("Api"+employeeId);
     const url = `${this.apiUrl}/attendance/status/${employeeId}`;
     this.loaderService.show();
-    return this.http.get<any>(url).pipe(
-    //  tap(() => this.openDialog('Success', 'Check-in status retrieved successfully.')),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error fetching check-in status:', error);
-        this.openDialog('Error', `Failed to retrieve check-in status: ${error.error?.message || 'Unknown error'}`);
-        return throwError(() => new Error(error.message));
-      }), finalize(() => this.loaderService.hide())
-    );
+  return this.http.get<any>(url).pipe(
+  tap((response) => {
+    console.log('Check-in status response:', response); // This will print to the browser console
+    //this.openDialog('Success', 'Check-in status retrieved successfully.');
+  }),
+  catchError((error: HttpErrorResponse) => {
+    console.error('Error fetching check-in status:', error);
+    this.openDialog('Error', `Failed to retrieve check-in status: ${error.error?.message || 'Unknown error'}`);
+    return throwError(() => new Error(error.message));
+  }),
+  finalize(() => this.loaderService.hide())
+);
   }
 
   addEmployee1(employeeData: any): Observable<any> {
@@ -165,7 +171,7 @@ export class ApiService {
   }
 
   // Check-Out API call
-  checkOut(status: string, locationName: string, checkOutDuration: number): Observable<AttendanceResponse> {
+  checkOut(status: string, locationName: string, checkOutDuration: number, srlnum: number): Observable<AttendanceResponse> {
     const attendanceid = this.getEmployeeId();
     if (!attendanceid) {
       const error = 'Employee ID not found. Please log in again.';
@@ -178,6 +184,7 @@ export class ApiService {
       checkinlocation: locationName,
       checkOutDuration,
       attendanceid,
+      srlnum,
     };
 
     return this.checkoutAttendance(attendanceData);
