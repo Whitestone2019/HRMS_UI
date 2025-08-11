@@ -10,6 +10,6 @@ function getBackendUrl(): string {
   const port = window.location.port;         // e.g., '4200'
   
   // Customize backend port if different from frontend
-  const backendPort = '8088'; // Replace with your backend port
+  const backendPort = '9094'; // Replace with your backend port
   return `${protocol}//${hostname}:${backendPort}/HRMS`;
 }
