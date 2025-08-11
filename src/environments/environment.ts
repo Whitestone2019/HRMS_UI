@@ -6,8 +6,8 @@ export const environment = {
 
 function getBackendUrl(): string {
   const protocol = window.location.protocol; // e.g., 'http:'
- const hostname = window.location.hostname; // e.g., 'example.com'
-  //const hostname = "hrms_backend";
+  //const hostname = window.location.hostname; // e.g., 'example.com'
+  const hostname = "localhost";
   const port = window.location.port;         // e.g., '4200'
   
   // Customize backend port if different from frontend
