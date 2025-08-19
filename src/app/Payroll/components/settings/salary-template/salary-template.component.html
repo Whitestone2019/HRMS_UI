@@ -1,63 +1,196 @@
-<!-- <div class="salary-template">
-  <div class="header">
-    <h1>Salary Structure</h1>
-    <div class="company-info">
-      <h2>Your Company Name</h2>
-      <p>123 Business Street, City, Country</p>
-    </div>
-  </div>
-
-  <div class="employee-details">
-    <div class="form-group">
-      <label>Employee Name:</label>
-      <input type="text" [(ngModel)]="employeeName" placeholder="Enter employee name">
-    </div>
-    <div class="form-group">
-      <label>Employee ID:</label>
-      <input type="text" [(ngModel)]="employeeId" placeholder="Enter employee ID">
-    </div>
-  </div>
-
-  <div class="salary-breakdown">
-    <div class="earnings-section">
-      <h3>Earnings</h3>
-      <div class="salary-items">
-        <div class="salary-item header-row">
-          <span>Component</span>
-          <span>Amount</span>
-        </div>
-        <div class="salary-item" *ngFor="let earning of earnings">
-          <span>{{earning.name}}</span>
-          <input type="number" [(ngModel)]="earning.amount">
-        </div>
-        <div class="salary-item total">
-          <span>Total Earnings</span>
-          <span>{{getTotalEarnings() | number:'1.2-2'}}</span>
-        </div>
+<div class="salary-template">
+  <!-- Header Section -->
+  <div class="template-header">
+    <h4 *ngIf="!basic">New Salary Template</h4>
+    <div class="template-form">
+      <div class="form-group" *ngIf="!basic">
+        <label>Template Name <span class="required">*</span></label>
+        <input type="text" [(ngModel)]="templateName" placeholder="Enter template name">
       </div>
-    </div>
 
-    <div class="deductions-section">
-      <h3>Deductions</h3>
-      <div class="salary-items">
-        <div class="salary-item header-row">
-          <span>Component</span>
-          <span>Amount</span>
-        </div>
-        <div class="salary-item" *ngFor="let deduction of deductions">
-          <span>{{deduction.name}}</span>
-          <input type="number" [(ngModel)]="deduction.amount">
-        </div>
-        <div class="salary-item total">
-          <span>Total Deductions</span>
-          <span>{{getTotalDeductions() | number:'1.2-2'}}</span>
+      <div class="form-group" *ngIf="!basic">
+        <label>Description</label>
+        <textarea [(ngModel)]="description" placeholder="Max 500 Characters"></textarea>
+      </div>
+      <div class="form-group">
+        <label>Annual CTC</label>
+        <div class="ctc-input">
+          <span class="currency">₹</span>
+          <input type="number" [(ngModel)]="annualCTC" (ngModelChange)="onAnnualCTCChange()" placeholder="0">
+          <span class="period">per year</span>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="net-salary">
-    <h3>Net Salary</h3>
-    <div class="amount">{{getNetSalary() | number:'1.2-2'}}</div>
+  <!-- Dropdown for Existing Templates -->
+  <div class="form-group">
+    <label for="existingTemplate">Select Existing Template</label>
+    <select (click)="$event.stopPropagation()" (change)="onTemplateChange($event)" [(ngModel)]="selectedTemplateId" id="existingTemplate">
+      <option value="0">-- Select Template --</option>
+      <option *ngFor="let template of templates" [value]="template.templateId">
+        {{ template.templateName }}
+      </option>
+    </select>
   </div>
-</div> -->
+
+  <!-- Salary Components Section -->
+  <div class="template-body">
+    <!-- Earnings Section -->
+    <h3>Earnings <button (click)="addEarning()" class="add-icon">+</button></h3>
+    <div class="component-list">
+      <table>
+        <thead>
+          <tr>
+            <th>SALARY COMPONENTS</th>
+            <th>CALCULATION TYPE</th>
+            <th>MONTHLY AMOUNT</th>
+            <th>ANNUAL AMOUNT</th>
+            <th>REMOVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let component of earnings; let i = index">
+            <td>
+              <input [(ngModel)]="component.name" placeholder="Enter salary component name" 
+                     [readonly]="component.name === 'Special Allowance'">
+            </td>
+            <td>
+              <span *ngIf="component.name === 'Special Allowance'">Remaining Balance</span>
+              <div *ngIf="component.name !== 'Special Allowance'">
+                <select (click)="$event.stopPropagation()" [(ngModel)]="component.type" (ngModelChange)="updateSpecialAllowance()">
+                  <option value="percentage">% of CTC</option>
+                  <option value="fixed">Fixed amount</option>
+                  <option value="basicPercentage">% of Basic</option>
+                </select>
+                <input *ngIf="component.type === 'percentage'" type="number" [(ngModel)]="component.percentage" 
+                       (ngModelChange)="updateSpecialAllowance()" class="percentage-input" placeholder="Enter %">
+                <input *ngIf="component.type === 'basicPercentage'" type="number" [(ngModel)]="component.percentage" 
+                       (ngModelChange)="updateSpecialAllowance()" class="percentage-input" placeholder="Enter % of Basic">
+                <input *ngIf="component.type === 'fixed'" type="number" [(ngModel)]="component.amount" 
+                       (ngModelChange)="updateSpecialAllowance()" class="fixed-input" placeholder="Enter amount">
+              </div>
+            </td>
+            <td>₹ {{calculateMonthlyAmount(component) | number:'1.0-0'}}</td>
+            <td>₹ {{calculateAnnualAmount(component) | number:'1.0-0'}}</td>
+            <td>
+              <button *ngIf="component.name !== 'Special Allowance'" (click)="removeEarning(i)">&#10005;</button>
+            </td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">Total Earnings</td>
+            <td>₹ {{calculateTotalEarnings() | number:'1.0-0'}}</td>
+            <td>₹ {{calculateTotalEarnings() * 12 | number:'1.0-0'}}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <h3>Other Allowance</h3>
+    <div class="component-list">
+      <table>
+        <thead>
+          <tr>
+            <th>SALARY COMPONENTS</th>
+            <th>LOCATION</th>
+            <th>EDIT</th>
+            <th>AMOUNT</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Per Day Allowance</td>
+            <td rowspan="2">
+              <select (change)="fetchAllowanceAmount($event)" [(ngModel)]="selectedLocationPerDay" (click)="$event.stopPropagation()">
+                <option *ngFor="let location of locations" [value]="location.locationName">
+                  {{ location.locationName }}
+                </option>
+              </select>
+            </td>
+            <td>
+              <input type="radio" name="editAllowance" (change)="toggleEdit('perDayAllowance')" [checked]="editPerDayAllowance" />
+            </td>
+            <td>
+              ₹ <input type="number" [(ngModel)]="perDayAllowanceAmount" (ngModelChange)="updateSpecialAllowance()" [readonly]="!editPerDayAllowance" />
+            </td>
+          </tr>
+
+          <tr>
+            <td>PG Rent</td>
+            <td>
+              <input type="radio" name="editAllowance" (change)="toggleEdit('pgRent')" [checked]="editPgRent" />
+            </td>
+            <td>
+              ₹ <input type="number" [(ngModel)]="pgRentAmount" (ngModelChange)="updateSpecialAllowance()" [readonly]="!editPgRent" />
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Deductions Section -->
+    <h3>Deductions <button (click)="addDeduction()" class="add-icon">+</button></h3>
+    <div class="component-list">
+      <table>
+        <thead>
+          <tr>
+            <th>SALARY COMPONENTS</th>
+            <th>CALCULATION TYPE</th>
+            <th>MONTHLY AMOUNT</th>
+            <th>ANNUAL AMOUNT</th>
+            <th>REMOVE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let component of deductions; let i = index">
+            <td>
+              <input [(ngModel)]="component.name" placeholder="Enter salary component name">
+            </td>
+            <td>
+              <select (click)="$event.stopPropagation()" [(ngModel)]="component.type" (ngModelChange)="updateSpecialAllowance()">
+                <option value="basicPercentage">% of Basic</option>
+                <option value="percentage">% of CTC</option>
+                <option value="fixed">Fixed amount</option>
+              </select>
+              <input *ngIf="component.type === 'percentage'" type="number" [(ngModel)]="component.percentage" 
+                     (ngModelChange)="updateSpecialAllowance()" class="percentage-input" placeholder="Enter %">
+              <input *ngIf="component.type === 'basicPercentage'" type="number" [(ngModel)]="component.percentage" 
+                     (ngModelChange)="updateSpecialAllowance()" class="percentage-input" placeholder="Enter % of Basic">
+              <input *ngIf="component.type === 'fixed'" type="number" [(ngModel)]="component.amount" 
+                     (ngModelChange)="updateSpecialAllowance()" class="fixed-input" placeholder="Enter amount">
+            </td>
+            <td>₹ {{calculateMonthlyAmount(component) | number:'1.0-0'}}</td>
+            <td>₹ {{calculateAnnualAmount(component) | number:'1.0-0'}}</td>
+            <td><button (click)="removeDeduction(i)">&#10005;</button></td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2">Total Deductions</td>
+            <td>₹ {{calculateTotalDeductions() | number:'1.0-0'}}</td>
+            <td>₹ {{calculateTotalDeductions() * 12 | number:'1.0-0'}}</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <!-- Net Salary Section -->
+    <div class="net-salary">
+      <div class="net-salary-row">
+        <span>Net Salary (Monthly)</span>
+        <span>₹ {{calculateNetSalary() | number:'1.0-0'}}</span>
+      </div>
+      <div class="net-salary-row">
+        <span>Net Salary (Annual)</span>
+        <span>₹ {{calculateNetSalary() * 12 | number:'1.0-0'}}</span>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-save" (click)="saveTemplate()">Save</button>
+      <button class="btn-cancel" (click)="cancel()">Cancel</button>
+    </div>
+  </div>
+</div>
