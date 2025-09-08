@@ -1315,6 +1315,15 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   );
 }
 
+ saveUser(user: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/usermaintenance-save`, user);
+  }
+
+  // Save trainee details
+  saveTrainee(user: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/trng-save`, user);
+  }
+
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';

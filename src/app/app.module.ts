@@ -63,6 +63,7 @@ import { MatOption } from "@angular/material/core";
 import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/edit-attendance-dialog.component';
 import { NoCacheInterceptor } from './no-cache.interceptor';
 import { AttendancePieChartComponent } from './People/overview/attendance-pie-chart/attendance-pie-chart.component';
+import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
 
 @NgModule({
   declarations: [
@@ -105,7 +106,8 @@ import { AttendancePieChartComponent } from './People/overview/attendance-pie-ch
     TimesheetComponent,
     TimesheetCalendarDialogComponent,
     EditAttendanceDialogComponent,
-    AttendancePieChartComponent
+    AttendancePieChartComponent,
+    UserTraineeComponent
   ],
   imports: [
     BrowserModule,

@@ -1,0 +1,40 @@
+/* src/app/user-trainee/user-trainee.component.css */
+.container {
+  width: 500px;
+  margin: auto;
+}
+
+.radio-buttons {
+  margin-bottom: 20px;
+}
+
+.radio-buttons label {
+  margin-right: 20px;
+}
+
+.form-container {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+label {
+  display: block;
+  margin-top: 10px;
+}
+
+input {
+  width: 100%;
+  padding: 6px;
+  margin-top: 4px;
+}
+
+button {
+  margin-top: 15px;
+  padding: 10px 20px;
+}
+
+.message {
+  margin-top: 20px;
+  color: green;
+}

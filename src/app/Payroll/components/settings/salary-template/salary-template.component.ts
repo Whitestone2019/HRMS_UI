@@ -51,6 +51,7 @@ export class SalaryTemplateComponent {
   locations: any[] = [];
   editPerDayAllowance: boolean = false;
   editPgRent: boolean = false;
+  showNegativeAllowanceError: boolean = false;
 
   constructor(private apiService: ApiService) {}
 
@@ -96,7 +97,6 @@ export class SalaryTemplateComponent {
   }
 
   updateSpecialAllowance() {
-    // Find or create special allowance component
     let specialAllowance = this.earnings.find(e => e.name === 'Special Allowance');
     
     if (!specialAllowance) {
@@ -108,23 +108,30 @@ export class SalaryTemplateComponent {
       this.earnings.push(specialAllowance);
     }
 
-    // Calculate total of all earnings except special allowance
     const totalOtherEarnings = this.earnings
       .filter(earning => earning.name !== 'Special Allowance')
       .reduce((sum, earning) => sum + this.calculateMonthlyAmount(earning), 0);
 
-    // Calculate total deductions
     const totalDeductions = this.calculateTotalDeductions();
-
-    // Calculate monthly salary from annual CTC
     const monthlySalary = this.annualCTC / 12;
 
-    // Special allowance is what's left after other earnings and deductions
     specialAllowance.amount = monthlySalary - totalOtherEarnings - totalDeductions;
+    
+    // Check if special allowance is negative
+    this.showNegativeAllowanceError = specialAllowance.amount < 0;
   }
 
   onAnnualCTCChange() {
     this.updateSpecialAllowance();
+  }
+
+  isSalaryTemplateValid(): boolean {
+    const isAnnualCTCValid = this.annualCTC > 0;
+    const areEarningsValid = this.earnings.length > 0;
+    const areDeductionsValid = this.deductions.length > 0;
+    const isSpecialAllowanceValid = !this.showNegativeAllowanceError;
+
+    return isAnnualCTCValid && areEarningsValid && areDeductionsValid && isSpecialAllowanceValid;
   }
 
   loadSettings() {
@@ -281,7 +288,6 @@ export class SalaryTemplateComponent {
   }
 
   removeEarning(index: number) {
-    // Don't allow removal if it's the Special Allowance
     if (this.earnings[index].name !== 'Special Allowance') {
       this.earnings.splice(index, 1);
       this.updateSpecialAllowance();
@@ -389,15 +395,17 @@ export class SalaryTemplateComponent {
     return daysInPreviousMonth + daysInCurrentMonth;
   }
 
-  isSalaryTemplateValid(): boolean {
-    const isAnnualCTCValid = this.annualCTC > 0;
-    const areEarningsValid = this.earnings.length > 0;
-    const areDeductionsValid = this.deductions.length > 0;
-
-    return isAnnualCTCValid && areEarningsValid && areDeductionsValid;
-  }
-
   saveTemplate() {
+    if (this.showNegativeAllowanceError) {
+      alert('Cannot save template: Special Allowance cannot be negative. Please adjust your components.');
+      return;
+    }
+
+    if (!this.isSalaryTemplateValid()) {
+      alert('Please fill all required fields and ensure valid values!');
+      return;
+    }
+
     const template = {
       template: {
         templateName: this.templateName,
@@ -465,6 +473,7 @@ export class SalaryTemplateComponent {
     this.selectedTemplateId = 0;
     this.perDayAllowanceAmount = 0;
     this.pgRentAmount = 0;
+    this.showNegativeAllowanceError = false;
   }
 
   loadLocations() {

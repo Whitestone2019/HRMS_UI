@@ -1,0 +1,74 @@
+<!-- src/app/user-trainee/user-trainee.component.html -->
+<div class="container">
+  <h2>User and Trainee Maintenance</h2>
+
+  <!-- Radio buttons for selecting form -->
+  <div class="radio-buttons">
+    <label>
+      <input type="radio" name="formSelect" value="user" [(ngModel)]="selectedForm" /> User Maintenance
+    </label>
+    <label>
+      <input type="radio" name="formSelect" value="trainee" [(ngModel)]="selectedForm" /> Trainee Master
+    </label>
+  </div>
+
+  <!-- User Maintenance Form -->
+  <div *ngIf="selectedForm === 'user'" class="form-container">
+    <h3>User Maintenance</h3>
+    <form [formGroup]="userForm" (ngSubmit)="submitUser()">
+      <label>Employee ID:</label>
+      <input formControlName="empid" type="text" />
+
+      <label>Password:</label>
+      <input formControlName="password" type="password" />
+
+      <label>Username:</label>
+      <input formControlName="username" type="text" />
+
+      <label>First Name:</label>
+      <input formControlName="firstname" type="text" />
+
+      <label>Last Name:</label>
+      <input formControlName="lastname" type="text" />
+
+      <label>Email ID:</label>
+      <input formControlName="emailid" type="email" />
+
+      <label>Phone Number:</label>
+      <input formControlName="phonenumber" type="text" />
+
+      <label>Role ID:</label>
+      <input formControlName="roleid" type="text" />
+
+      <button type="submit">Save User</button>
+    </form>
+  </div>
+
+  <!-- Trainee Master Form -->
+  <div *ngIf="selectedForm === 'trainee'" class="form-container">
+    <h3>Trainee Master</h3>
+    <form [formGroup]="traineeForm" (ngSubmit)="submitTrainee()">
+      <label>Trainee ID:</label>
+      <input formControlName="trngid" type="text" />
+
+      <label>Password:</label>
+      <input formControlName="password" type="password" />
+
+      <label>Name:</label>
+      <input formControlName="name" type="text" />
+
+      <label>Email ID:</label>
+      <input formControlName="emailid" type="email" />
+
+      <label>Phone Number:</label>
+      <input formControlName="phonenumber" type="text" />
+
+      <label>Role ID:</label>
+      <input formControlName="roleid" type="text" />
+
+      <button type="submit">Save Trainee</button>
+    </form>
+  </div>
+
+  <div *ngIf="message" class="message">{{ message }}</div>
+</div>
