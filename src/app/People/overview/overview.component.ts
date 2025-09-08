@@ -192,6 +192,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
 
   private async completeCheckOut(status: string, locationName: string): Promise<void> {
     const checkOutDuration = (Date.now() - this.checkInTime) / 1000;
+    console.log("this.srlNum>>>>>>>>>>>>>>>>>"+this.srlNum)
     await this.apiService.checkOut(status, locationName, checkOutDuration, this.srlNum).toPromise();
     
     this.attendanceService.checkOut();
