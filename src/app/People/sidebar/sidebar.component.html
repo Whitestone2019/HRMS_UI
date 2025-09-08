@@ -10,6 +10,11 @@
      [class.active]="selectedMenu === 'onboarding'">
     <i class="fas fa-user-plus"></i> Onboarding
   </a>
+
+   <a *ngIf="isMenuVisible('useradd')" routerLink="/dashboard/useradd" (click)="onMenuSelect('useradd')" 
+     [class.active]="selectedMenu === 'useradd'">
+    <i class="fas fa-cogs"></i>Employee Add
+  </a>
   
   <!-- Attendance menu -->
   <a *ngIf="isMenuVisible('attendance')" routerLink="/dashboard/attendance" (click)="onMenuSelect('attendance')" 
