@@ -223,10 +223,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
-    return this.http.get<any>('https://ipapi.co/json/').toPromise()
+ //   return this.http.get<any>('https://ipapi.co/json/').toPromise()
+        return this.http.get<any>('http://ip-api.com/json').toPromise()
       .then(data => {
         if (data.latitude && data.longitude) {
-          return { lat: data.latitude, lon: data.longitude };
+          return { lat: data.latitude, lon: data.longitude }
         }
         throw new Error('Invalid location data');
       })
