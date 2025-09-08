@@ -11,7 +11,7 @@ export class SidebarComponent implements OnInit {
   selectedMenu: string = 'home';  // Default selection is 'home'
   selectedSubMenu: string = '';   // Default to no submenu selected
   userRole: string = '';          // Default user role
-   adminRoles: string[] = ['HR', 'CEO', 'CTO']; // Admin roles
+  adminRoles: string[] = ['HR', 'CEO', 'CTO']; // Admin roles
   employeeRoles: string[] = ['PM','TL','AS', 'SAS','JA']; // Employee roles
   isTrainee: boolean=false;
 
@@ -54,7 +54,7 @@ export class SidebarComponent implements OnInit {
 
     // Employee roles have restricted access
     if (this.employeeRoles.includes(this.userRole)) {
-      return !['settings', 'analytics', 'onboarding','report','travel'].includes(menu); // Hide these menus
+      return !['settings', 'analytics', 'onboarding','report','travel','useradd'].includes(menu); // Hide these menus
     }
 
     // Default: Hide all menus
