@@ -223,17 +223,38 @@ export class OverviewComponent implements OnInit, OnDestroy {
   }
 
   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
- //   return this.http.get<any>('https://ipapi.co/json/').toPromise()
-        return this.http.get<any>('http://ip-api.com/json').toPromise()
-      .then(data => {
-        if (data.latitude && data.longitude) {
-          return { lat: data.latitude, lon: data.longitude }
-        }
-        throw new Error('Invalid location data');
-      })
-      .catch(error => {
-        throw new Error(`IP location failed: ${error.message}`);
-      });
+    return new Promise((resolve, reject) => {
+      // Make a request to ip-api.com to get the IP geolocation information
+      const ipInfoUrl = 'http://ip-api.com/json';  // No API key required for basic usage
+
+      fetch(ipInfoUrl)
+        .then((response) => {
+          if (!response.ok) {
+            reject('Failed to fetch location based on IP.');
+          }
+          return response.json();
+        })
+        .then((data) => {
+          if (data.status === 'fail') {
+            reject('Failed to retrieve geolocation data.');
+          } else {
+            const lat = parseFloat(data.lat);
+            const lon = parseFloat(data.lon);
+
+            // Validate latitude and longitude ranges
+            if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+              reject('Invalid geolocation data received.');
+            } else {
+              //alert(`Your Location: Latitude = ${lat}, Longitude = ${lon}`);
+              resolve({ lat, lon });
+            }
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching location from IP:', error);
+          reject(`Error fetching location: ${error.message}`);
+        });
+    });
   }
 
   private getLocationName(lat: number, lon: number): Promise<string> {
