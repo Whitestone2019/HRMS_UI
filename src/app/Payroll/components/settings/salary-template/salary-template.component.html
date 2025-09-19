@@ -79,11 +79,11 @@
           </tr>
         </tbody>
         <tfoot>
-          <tr>
+          <!-- <tr>
             <td colspan="2">Total Earnings</td>
             <td>₹ {{calculateTotalEarnings() | number:'1.0-0'}}</td>
             <td>₹ {{calculateTotalEarnings() * 12 | number:'1.0-0'}}</td>
-          </tr>
+          </tr> -->
         </tfoot>
       </table>
     </div>
@@ -180,11 +180,11 @@
     <div class="net-salary">
       <div class="net-salary-row">
         <span>Net Salary (Monthly)</span>
-        <span>₹ {{calculateNetSalary() | number:'1.0-0'}}</span>
+        <span>₹ {{calculateTotalEarnings() | number:'1.0-0'}}</span>
       </div>
       <div class="net-salary-row">
         <span>Net Salary (Annual)</span>
-        <span>₹ {{calculateNetSalary() * 12 | number:'1.0-0'}}</span>
+        <span>₹ {{calculateTotalEarnings() * 12 | number:'1.0-0'}}</span>
       </div>
     </div>
 
