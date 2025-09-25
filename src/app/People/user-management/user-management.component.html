@@ -1,0 +1,76 @@
+<div class="content">
+  <h2>User Management</h2>
+  
+  <div class="filter-container">
+    <div class="radio-group">
+      <label>
+        <input type="radio" [(ngModel)]="userType" value="employee" (change)="onUserTypeChange()"> Employees
+      </label>
+      <label>
+        <input type="radio" [(ngModel)]="userType" value="trainee" (change)="onUserTypeChange()"> Trainees
+      </label>
+    </div>
+    <div class="filter-inputs">
+      <input type="text" placeholder="Search by User ID, Emp ID, or Name" [(ngModel)]="searchQuery" (input)="filterUsers()">
+    </div>
+  </div>
+
+  <table class="leave-table">
+    <thead>
+      <tr>
+        <th>User ID</th>
+        <th>Emp ID</th>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Phone</th>
+        <th>Status</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="userType === 'employee' && filteredEmployees.length > 0">
+        <tr *ngFor="let employee of paginatedEmployees">
+          <td>{{employee.userid}}</td>
+          <td>{{employee.empid || 'N/A'}}</td>
+          <td>{{employee.firstname}} {{employee.lastname}}</td>
+          <td>{{employee.emailid}}</td>
+          <td>{{employee.phonenumber}}</td>
+          <td>{{employee.status}}</td>
+          <td>
+            <button *ngIf="employee.status !== 'Active'" class="approve-btn" 
+                    (click)="updateStatus(employee, 'Active')">Activate</button>
+            <button *ngIf="employee.status !== 'Inactive'" class="reject-btn" 
+                    (click)="updateStatus(employee, 'Inactive')">Deactivate</button>
+          </td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="userType === 'trainee' && filteredTrainees.length > 0">
+        <tr *ngFor="let trainee of paginatedTrainees">
+          <td>{{trainee.userid}}</td>
+          <td>{{trainee.trngid || 'N/A'}}</td>
+          <td>{{trainee.firstname}} {{trainee.lastname}}</td>
+          <td>{{trainee.emailid}}</td>
+          <td>{{trainee.phonenumber}}</td>
+          <td>{{trainee.status}}</td>
+          <td>
+            <button *ngIf="trainee.status !== 'Active'" class="approve-btn" 
+                    (click)="updateStatus(trainee, 'Active')">Activate</button>
+            <button *ngIf="trainee.status !== 'Inactive'" class="reject-btn" 
+                    (click)="updateStatus(trainee, 'Inactive')">Deactivate</button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+
+  <div class="no-data" *ngIf="(userType === 'employee' && filteredEmployees.length === 0) || (userType === 'trainee' && filteredTrainees.length === 0)">
+    <img src="https://via.placeholder.com/150" alt="No Data">
+    <p>No users found.</p>
+  </div>
+
+  <div class="pagination" *ngIf="(userType === 'employee' && filteredEmployees.length > 0) || (userType === 'trainee' && filteredTrainees.length > 0)">
+    <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
+    <span>Page {{currentPage}} of {{totalPages}}</span>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>
+  </div>
+</div>

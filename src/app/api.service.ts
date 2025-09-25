@@ -19,6 +19,50 @@ interface User {
   employeeId: string; // Assuming employeeId is part of the login response
   role: string;
 }
+export interface TraineeMaster {
+  userid: string;
+  trngid: string;
+  password: string;
+  username: string;
+  firstname: string;
+  lastname: string;
+  emailid: string;
+  phonenumber: string;
+  roleid: string;
+  repoteTo: string;
+  status: string;
+  lastlogin: Date;
+  disablefromdate: Date;
+  disabletodate: Date;
+  rcreuserid: string;
+  rcretime: Date;
+  rmoduserid: string;
+  rmodtime: Date;
+  rvfyuserid: string;
+  rvfytime: Date;
+}
+export interface Usermaintenance {
+  userid: string;
+  empid: string;
+  password: string;
+  username: string;
+  firstname: string;
+  lastname: string;
+  emailid: string;
+  phonenumber: string;
+  roleid: string;
+  repoteTo: string;
+  status: string;
+  lastlogin: Date;
+  disablefromdate: Date;
+  disabletodate: Date;
+  rcreuserid: string;
+  rcretime: Date;
+  rmoduserid: string;
+  rmodtime: Date;
+  rvfyuserid: string;
+  rvfytime: Date;
+}
 
 interface Timesheet {
   sno: number;
@@ -1365,6 +1409,23 @@ putPermissionReq(formData: any): Observable<any> {
 
   rejectPermissionRequest(empid: string, srlnum: string): Observable<any> {
     return this.http.post(`${this.apiUrl}/rejectPermissionRequest`, { empid, srlnum });
+  }
+
+  
+  getEmployees1(): Observable<Usermaintenance[]> {
+    return this.http.get<Usermaintenance[]>(`${this.apiUrl}/employeesdetails`);
+  }
+
+  getTrainees(): Observable<TraineeMaster[]> {
+    return this.http.get<TraineeMaster[]>(`${this.apiUrl}/trainees`);
+  }
+
+  updateEmployeeStatus(userId: string, status: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/employee/${userId}/status`, { status });
+  }
+
+  updateTraineeStatus(userId: string, status: string): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/trainee/${userId}/status`, { status });
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

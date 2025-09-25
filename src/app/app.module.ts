@@ -65,6 +65,7 @@ import { NoCacheInterceptor } from './no-cache.interceptor';
 import { AttendancePieChartComponent } from './People/overview/attendance-pie-chart/attendance-pie-chart.component';
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
 import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
+import { UserManagementComponent } from './People/user-management/user-management.component';
 
 @NgModule({
   declarations: [
@@ -109,7 +110,8 @@ import { LocationAllowanceComponent } from './Payroll/components/settings/locati
     EditAttendanceDialogComponent,
     AttendancePieChartComponent,
     UserTraineeComponent,
-    LocationAllowanceComponent
+    LocationAllowanceComponent,
+    UserManagementComponent
   ],
   imports: [
     BrowserModule,

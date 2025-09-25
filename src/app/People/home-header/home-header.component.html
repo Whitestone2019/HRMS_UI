@@ -6,6 +6,7 @@
     <a *ngIf="selectedMenu === 'home'" routerLink="/dashboard/calendar" routerLinkActive="active">Calendar</a> -->
 
     <a *ngIf="selectedMenu === 'onboarding'" routerLink="/dashboard/onboarding" routerLinkActive="active">Candidate</a>
+    <a *ngIf="selectedMenu === 'onboarding'" routerLink="/dashboard/EmpDetails" routerLinkActive="active">Employee List</a>
     <!-- Show attendance-specific menus when 'attendance' is selected -->
     <a *ngIf="selectedMenu === 'attendance'" routerLink="/dashboard/attendance" routerLinkActive="active">Attendance Summary</a>
     <a *ngIf="selectedMenu === 'attendance' && isAdmin" routerLink="/dashboard/attendanceAll" routerLinkActive="active">Employee Attendance Summary</a>

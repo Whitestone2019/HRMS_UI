@@ -56,6 +56,7 @@ import { TimesheetComponent } from './People/timesheet/timesheet.component';
 import { TimesheetCalendarDialogComponent } from './People/timesheet-calendar-dialog/timesheet-calendar-dialog.component';
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
 import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
+import { UserManagementComponent } from './People/user-management/user-management.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -113,6 +114,7 @@ export const routes: Routes = [
       { path: 'add-emp', component: AddEmpComponent },
       { path: 'addcandidate', component: AddCandidateComponent },
       { path: 'onboarding', component: OnboardingComponent },
+       { path: 'EmpDetails', component: UserManagementComponent },
       { path: 'report', component: ReportComponent },
       { path: 'leave-summary', component: LeaveSummaryComponent },
       { path: 'apply-leave', component: ApplyLeaveComponent },
