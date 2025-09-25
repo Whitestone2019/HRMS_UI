@@ -105,7 +105,7 @@ export const routes: Routes = [
     path: 'dashboard',
     component: DashboardComponent,
     canActivate: [AuthGuard, RoleGuard],
-    data: { roles: ['HR', 'AS', 'TL'] },
+    data: { roles: ['HR', 'AS', 'TL','ACC'] },
     children: [
       { path: 'trigger', component: TriggerComponent },
       { path: 'createemp', component: CreateempComponent },

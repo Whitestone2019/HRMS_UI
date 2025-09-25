@@ -11,7 +11,7 @@ export class SidebarComponent implements OnInit {
   selectedMenu: string = 'home';  // Default selection is 'home'
   selectedSubMenu: string = '';   // Default to no submenu selected
   userRole: string = '';          // Default user role
-  adminRoles: string[] = ['HR', 'CEO', 'CTO']; // Admin roles
+  adminRoles: string[] = ['HR', 'CEO', 'CTO','ACC']; // Admin roles
   employeeRoles: string[] = ['PM','TL','AS', 'SAS','JA']; // Employee roles
   isTrainee: boolean=false;
 

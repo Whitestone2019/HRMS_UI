@@ -11,9 +11,9 @@ export class UserService {
   private _activeMenuKey = 'activeMenu';
   private _sessionTimeout = 30 * 60 * 1000; // 30 minutes
 
-  private adminRoles: string[] = ['HR', 'CEO', 'CTO'];
+  private adminRoles: string[] = ['HR', 'CEO', 'CTO','ACC'];
   private employeeRoles: string[] = ['AS', 'SAS'];
-  private managerRoles: string[] = ['TL', 'PM', 'HR','CEO', 'CTO']; // Add any other manager roles here
+  private managerRoles: string[] = ['TL','PM', 'HR','CEO', 'CTO','ACC']; // Add any other manager roles here
   private trainee: string[] = ['JA'];
 
   private accountant: string[] =['ACC'];
