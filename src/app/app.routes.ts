@@ -55,6 +55,7 @@ import { RoleGuard } from './guards/role.guard';
 import { TimesheetComponent } from './People/timesheet/timesheet.component';
 import { TimesheetCalendarDialogComponent } from './People/timesheet-calendar-dialog/timesheet-calendar-dialog.component';
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
+import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -158,7 +159,8 @@ export const routes: Routes = [
           { path: 'salary-components', component: SalaryComponentsListComponent },
           { path: 'salary-templates', component: SalaryTemplateComponent },
           { path: 'payslip', component: PayslipComponent },
-          { path: 'pay-schedule', component: PayScheduleComponent }
+          { path: 'pay-schedule', component: PayScheduleComponent },
+          { path: 'location-allowance', component: LocationAllowanceComponent }
         ]
       }
     ]

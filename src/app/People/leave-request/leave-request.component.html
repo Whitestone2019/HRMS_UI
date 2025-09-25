@@ -1,53 +1,77 @@
-<div class="content">
-  <!-- Table to display leave requests -->
-  <div *ngIf="hasData; else noDataTemplate">
-    <table class="leave-table">
-      <thead>
-        <tr>
-          <th>Employee ID</th>
-          <th>Employee name</th>
-          <th>Leave Type</th>
-          <th>Leave Reason</th>
-          <th>No. of Days</th>
-          <th>Start Date</th>
-          <th>End Date</th>
-          <th>Status</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let request of leaveRequests; let i = index" class="table-row">
-          <td>{{ request.empid }}</td>
-          <td>{{ request.name}}</td>
-          <td>{{ request.leavetype }}</td>
-          <td>{{ request.leavereason }}</td>
-          <td>{{ request.noofdays }}</td>
-          <td>{{ request.startdate |date: 'yyyy-MM-dd'}}</td>
-          <td>{{ request.enddate | date: 'yyyy-MM-dd' }}</td>
-          <td>{{ request.status }}</td>
-          <td>
-            <!-- Hide buttons if the request belongs to the logged-in user -->
-            <div *ngIf="(request.entitycreflg === 'N' && (request.status === 'Pending' || request.status === '')) && (request.empid !== currentEmpId)">
-              <button class="reject-btn" (click)="deleteRequest(i)">Reject</button>
-              <button class="approve-btn" (click)="approve(request, i)">Approve</button>
-            </div>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- No data template -->
-  <ng-template #noDataTemplate>
-    <div class="no-data">
-      <img
-        src="https://storage.googleapis.com/a1aa/image/5MWcRUNssN6KO9yUPQlebQ8HjUGlnX5qfMo29HAb2E3duPwTA.jpg"
-        alt="Illustration of a robot with a magnifying glass"
-        width="150"
-        height="150"
-      />
-      <p>No Data Found</p>
-      <button (click)="addRequest()" class="add-request-btn">Add Request</button>
+  <div class="content">
+    <!-- Radio Buttons and Filters -->
+    <div class="filter-container">
+      <div class="radio-group">
+        <label>
+          <input type="radio" value="Leave" [(ngModel)]="requestType" (change)="onRequestTypeChange('Leave')" checked>
+          Leave Requests
+        </label>
+        <label>
+          <input type="radio" value="Permission" [(ngModel)]="requestType" (change)="onRequestTypeChange('Permission')">
+          Permission Requests
+        </label>
+      </div>
+      <div class="filter-inputs">
+        <input type="text" [(ngModel)]="filterEmpId" (ngModelChange)="onFilterChange()" placeholder="Filter by Employee ID">
+        <input type="text" [(ngModel)]="filterName" (ngModelChange)="onFilterChange()" placeholder="Filter by Employee Name">
+      </div>
     </div>
-  </ng-template>
-</div>
+
+    <!-- Table to display requests -->
+    <div *ngIf="hasData; else noDataTemplate">
+      <table class="leave-table">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Employee Name</th>
+            <th>Type</th>
+            <th>Reason</th>
+            <th>Duration</th>
+            <th>Start Date</th>
+            <th>End Date</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let request of displayedRequests; let i = index" class="table-row">
+            <td>{{ request.empid || 'N/A' }}</td>
+            <td>{{ request.name || 'N/A' }}</td>
+            <td>{{ request.leavetype || request.type || 'N/A' }}</td>
+            <td>{{ request.leavereason || 'N/A' }}</td>
+            <td>{{ request.noofdays != null ? request.noofdays : 'N/A' }}</td>
+            <td>{{ (request.startdate ? (request.startdate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
+  <td>{{ (request.enddate ? (request.enddate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
+            <td>{{ request.status || 'N/A' }}</td>
+            <td>
+              <div *ngIf="request.entitycreflg === 'N' && (request.status === 'Pending' || request.status === '') && request.empid !== currentEmpId">
+                <button class="reject-btn" (click)="deleteRequest(i)">Reject</button>
+                <button class="approve-btn" (click)="approve(request, i)">Approve</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Pagination Controls -->
+      <div class="pagination">
+        <button [disabled]="currentPage === 0" (click)="changePage(currentPage - 1)">Previous</button>
+        <span>Page {{ currentPage + 1 }} of {{ totalPages }}</span>
+        <button [disabled]="currentPage >= totalPages - 1" (click)="changePage(currentPage + 1)">Next</button>
+      </div>
+    </div>
+
+    <!-- No Data Template -->
+    <ng-template #noDataTemplate>
+      <div class="no-data">
+        <img
+          src="https://storage.googleapis.com/a1aa/image/5MWcRUNssN6KO9yUPQlebQ8HjUGlnX5qfMo29HAb2E3duPwTA.jpg"
+          alt="Illustration of a robot with a magnifying glass"
+          width="150"
+          height="150"
+        />
+        <p>No Data Found</p>
+        <button (click)="addRequest()" class="add-request-btn">Add {{ requestType }} Request</button>
+      </div>
+    </ng-template>
+  </div>

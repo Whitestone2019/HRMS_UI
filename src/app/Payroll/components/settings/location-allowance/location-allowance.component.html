@@ -1,0 +1,55 @@
+<div class="container">
+  <h2>Location Allowances</h2>
+
+  <!-- Add Form -->
+  <form (ngSubmit)="addAllowance()" class="form">
+    <input [(ngModel)]="newAllowance.locationName" name="locationName" placeholder="Location Name" required />
+    <select (click)="$event.stopPropagation()"[(ngModel)]="newAllowance.type" name="type">
+      <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+    </select>
+    <input [(ngModel)]="newAllowance.amount" name="amount" type="number" placeholder="Amount" required />
+    <button type="submit">Add Allowance</button>
+  </form>
+
+  <!-- Table -->
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Location</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let allowance of allowances">
+        <td>{{ allowance.id }}</td>
+
+        <td>
+          <span *ngIf="editingId !== allowance.id">{{ allowance.locationName }}</span>
+          <input *ngIf="editingId === allowance.id" [(ngModel)]="tempAllowance.locationName"/>
+        </td>
+
+        <td>
+          <span *ngIf="editingId !== allowance.id">{{ allowance.type }}</span>
+          <select (click)="$event.stopPropagation()" *ngIf="editingId === allowance.id" [(ngModel)]="tempAllowance.type">
+            <option *ngFor="let t of types" [value]="t">{{ t }}</option>
+          </select>
+        </td>
+
+        <td>
+          <span *ngIf="editingId !== allowance.id">{{ allowance.amount }}</span>
+          <input *ngIf="editingId === allowance.id" type="number" [(ngModel)]="tempAllowance.amount"/>
+        </td>
+
+        <td>
+          <button *ngIf="editingId !== allowance.id" (click)="editAllowance(allowance)">Edit</button>
+          <button *ngIf="editingId === allowance.id" (click)="saveAllowance(allowance.id!)">Save</button>
+          <button *ngIf="editingId === allowance.id" (click)="cancelEdit()">Cancel</button>
+          <button (click)="deleteAllowance(allowance.id!)">Delete</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -64,6 +64,7 @@ import { EditAttendanceDialogComponent } from './People/edit-attendance-dialog/e
 import { NoCacheInterceptor } from './no-cache.interceptor';
 import { AttendancePieChartComponent } from './People/overview/attendance-pie-chart/attendance-pie-chart.component';
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
+import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
 
 @NgModule({
   declarations: [
@@ -107,7 +108,8 @@ import { UserTraineeComponent } from './People/user-trainee/user-trainee.compone
     TimesheetCalendarDialogComponent,
     EditAttendanceDialogComponent,
     AttendancePieChartComponent,
-    UserTraineeComponent
+    UserTraineeComponent,
+    LocationAllowanceComponent
   ],
   imports: [
     BrowserModule,

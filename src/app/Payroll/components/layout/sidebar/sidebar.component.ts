@@ -29,10 +29,10 @@ import { RouterModule } from '@angular/router';
               <span>Employees Salary Details</span>
             </a>
 
-            <a routerLink="/payroll/overview/payroll" routerLinkActive="active" class="nav-item">
+            <!-- <a routerLink="/payroll/overview/payroll" routerLinkActive="active" class="nav-item">
               <i class="fas fa-money-bill-wave"></i>
               <span>Payroll</span>
-            </a>
+            </a> -->
           </div>
 
           <div class="nav-group">
@@ -54,6 +54,10 @@ import { RouterModule } from '@angular/router';
               <a routerLink="/payroll/overview/settings/departments" routerLinkActive="active" class="nav-item">
                 <i class="fas fa-sitemap"></i>
                 <span>Departments</span>
+              </a>
+               <a routerLink="/payroll/overview/settings/location-allowance" routerLinkActive="active" class="nav-item">
+                <i class="fas fa-city"></i>
+                <span>Location Allowance</span>
               </a>
               <a routerLink="/payroll/overview/settings/designations" routerLinkActive="active" class="nav-item">
                 <i class="fas fa-id-badge"></i>

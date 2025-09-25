@@ -2,7 +2,7 @@
 <div class="modal" *ngIf="isModalOpen">
   <div class="modal-content" (click)="$event.stopPropagation()">
     <div class="modal-header">
-      <h4>Apply Leave</h4>
+      <h4>Apply Leave / Permission</h4>
       <button class="close-btn" (click)="closeModal()">&times;</button>
     </div>
 
@@ -13,22 +13,38 @@
           <input type="text" id="empid" formControlName="empid" readonly />
         </div>
 
-        <div class="form-group">
+      <div class="form-group request-type-group">
+  <div class="request-type-row">
+    <label class="request-type-label">Request Type <span class="required">*</span></label>
+    <div class="request-type-options">
+      <label for="req-leave">
+        <input type="radio" id="req-leave" formControlName="requestType" value="leave" (change)="onRequestTypeChange()" />
+        Leave
+      </label>
+      <label for="req-permission">
+        <input type="radio" id="req-permission" formControlName="requestType" value="permission" (change)="onRequestTypeChange()" />
+        Permission
+      </label>
+    </div>
+  </div>
+</div>
+
+        <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'leave'">
           <input type="hidden" id="aj" formControlName="aj">
           <label for="leavetype">Leave Type <span style="color: red;">*</span></label>
-          <select id="leavetype" formControlName="leavetype" required (click)="$event.stopPropagation()" (change)="calculatenoofdays()">
+          <select id="leavetype" formControlName="leavetype" required (click)="$event.stopPropagation()" (change)="calculateDuration()">
             <option value="" selected>Select</option>
             <option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</option>
           </select>
         </div>
 
-        <div class="form-group">
+        <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'leave'">
           <label>Leave Dates <span style="color: red;">*</span></label>
           <div class="date-group">
             <div>
               <label>Start Date</label>
-              <input type="date" formControlName="startdate" (change)="calculatenoofdays()" required>
-              <select formControlName="startHalf" (click)="$event.stopPropagation()" (change)="calculatenoofdays()">
+              <input type="date" formControlName="startdate" (change)="calculateDuration()" required>
+              <select formControlName="startHalf" (click)="$event.stopPropagation()" (change)="calculateDuration()">
                 <option [value]="false">Full Day</option>
                 <option [value]="true">Half Day</option>
               </select>
@@ -36,8 +52,8 @@
 
             <div>
               <label>End Date</label>
-              <input type="date" formControlName="enddate" (change)="calculatenoofdays()" required>
-              <select formControlName="endHalf" (click)="$event.stopPropagation()" (change)="calculatenoofdays()">
+              <input type="date" formControlName="enddate" (change)="calculateDuration()" required>
+              <select formControlName="endHalf" (click)="$event.stopPropagation()" (change)="calculateDuration()">
                 <option [value]="false">Full Day</option>
                 <option [value]="true">Half Day</option>
               </select>
@@ -45,8 +61,23 @@
           </div>
         </div>
 
+        <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'permission'">
+          <label>Permission Date <span style="color: red;">*</span></label>
+          <input type="date" formControlName="permissionDate" (change)="calculateDuration()" required>
+          <div class="time-group">
+            <div>
+              <label>Start Time <span style="color: red;">*</span></label>
+              <input type="time" formControlName="startTime" (change)="calculateDuration()" required>
+            </div>
+            <div>
+              <label>End Time <span style="color: red;">*</span></label>
+              <input type="time" formControlName="endTime" (change)="calculateDuration()" required>
+            </div>
+          </div>
+        </div>
+
         <div class="form-group">
-          <label for="noofdays">No. of Days</label>
+          <label for="noofdays">{{ leaveForm.get('requestType')?.value === 'permission' ? 'No. of Hours' : 'No. of Days' }}</label>
           <input type="text" id="noofdays" formControlName="noofdays" readonly />
         </div>
 
@@ -56,7 +87,7 @@
         </div>
 
         <div class="form-group">
-          <label for="leavereason">Reason for Leave <span style="color: red;">*</span></label>
+          <label for="leavereason">Reason <span style="color: red;">*</span></label>
           <textarea id="leavereason" formControlName="leavereason" rows="4" required></textarea>
         </div>
 

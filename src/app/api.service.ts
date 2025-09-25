@@ -63,6 +63,13 @@ interface AttendanceResponse {
   status?: string;
 }
 
+export interface LocationAllowance {
+  id?: number;
+  locationName: string;
+  type: string;
+  amount: number;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -1323,7 +1330,42 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   saveTrainee(user: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/trng-save`, user);
   }
+ getAllAllowances(): Observable<LocationAllowance[]> {
+    const url = `${this.apiUrl}/location-allowances`;
+    return this.http.get<LocationAllowance[]>(url);
+  }
 
+  // ✅ Create new allowance
+  createAllowance(allowance: LocationAllowance): Observable<LocationAllowance> {
+    const url = `${this.apiUrl}/location-allowances`;
+    return this.http.post<LocationAllowance>(url, allowance);
+  }
+
+  // ✅ Delete allowance by ID
+  deleteAllowance(id: number): Observable<void> {
+    const url = `${this.apiUrl}/location-allowances/${id}`;
+    return this.http.delete<void>(url);
+  }
+
+  updateAllowance(id: number, allowance: LocationAllowance): Observable<LocationAllowance> {
+    return this.http.put<LocationAllowance>(`${this.apiUrl}/location-allowances/${id}`, allowance);
+  }
+
+ getPermissionRequests(empId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/permissionRequests/get/${empId}`);
+  }
+
+putPermissionReq(formData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/permissionRequest`, formData);
+  }
+
+  approvePermissionRequest(empid: string, srlnum: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/approvePermissionRequest`, { empid, srlnum });
+  }
+
+  rejectPermissionRequest(empid: string, srlnum: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/rejectPermissionRequest`, { empid, srlnum });
+  }
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
