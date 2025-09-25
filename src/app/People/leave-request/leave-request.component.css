@@ -91,13 +91,7 @@
   background: #fff;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   animation: tableSlideIn 1.2s ease-out;
-  border: 2px solid transparent;
-  background-image: linear-gradient(white, white),
-    linear-gradient(135deg, #6c63ff, #948eff);
-  background-origin: border-box;
-  background-clip: content-box, border-box;
-  /* display: block; */
-  overflow-x: auto; /* Responsive scroll */
+ 
 }
 
 .leave-table th {
@@ -114,10 +108,19 @@
   font-size: 0.9rem;
   color: #333;
 }
-
-.leave-table tr:nth-child(even) td {
-  background-color: #f9f9f9;
+/* ✅ Extra padding for left and right edges */
+.leave-table th:first-child,
+.leave-table td:first-child {
+  padding-left: 1.25rem;
 }
+
+.leave-table th:last-child,
+.leave-table td:last-child {
+  padding-right: 1.25rem;
+}
+/* .leave-table tr:nth-child(even) td {
+  background-color: #f9f9f9;
+} */
 
 .leave-table tr:hover {
   background-color: #f3f5ff;

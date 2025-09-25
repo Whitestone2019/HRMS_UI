@@ -38,7 +38,7 @@
             <td>{{ request.empid || 'N/A' }}</td>
             <td>{{ request.name || 'N/A' }}</td>
             <td>{{ request.leavetype || request.type || 'N/A' }}</td>
-            <td>{{ request.leavereason || 'N/A' }}</td>
+            <td>{{ request.leavereason || request.permissionreason || 'N/A' }}</td>
             <td>{{ request.noofdays != null ? request.noofdays : 'N/A' }}</td>
             <td>{{ (request.startdate ? (request.startdate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
   <td>{{ (request.enddate ? (request.enddate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
