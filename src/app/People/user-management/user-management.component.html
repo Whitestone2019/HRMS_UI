@@ -1,5 +1,5 @@
 <div class="content">
-  <h2>User Management</h2>
+  <h5>USER MANAGEMENT</h5>
   
   <div class="filter-container">
     <div class="radio-group">
@@ -23,6 +23,7 @@
         <th>Name</th>
         <th>Email</th>
         <th>Phone</th>
+        <th>Employee Type</th>
         <th>Status</th>
         <th>Actions</th>
       </tr>
@@ -35,6 +36,7 @@
           <td>{{employee.firstname}} {{employee.lastname}}</td>
           <td>{{employee.emailid}}</td>
           <td>{{employee.phonenumber}}</td>
+          <td>{{employee.empType|| 'N/A'}}</td>
           <td>{{employee.status}}</td>
           <td>
             <button *ngIf="employee.status !== 'Active'" class="approve-btn" 

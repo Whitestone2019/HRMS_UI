@@ -57,6 +57,7 @@ import { TimesheetCalendarDialogComponent } from './People/timesheet-calendar-di
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
 import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
 import { UserManagementComponent } from './People/user-management/user-management.component';
+//import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -133,6 +134,7 @@ export const routes: Routes = [
       { path: 'timesheet1/:employeeId/:employeeName',component: TimesheetCalendarDialogComponent},
       { path: 'travel-request-view', component: TravelRequestViewComponent },
       { path: 'useradd', component: UserTraineeComponent },
+     // { path: 'project', component: EmployeeHistoryComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default child route set to Overview
     ]
   },

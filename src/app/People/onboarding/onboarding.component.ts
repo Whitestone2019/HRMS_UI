@@ -67,6 +67,6 @@ export class OnboardingComponent implements OnInit {
   }
   
   AddEmployeeDetails(mode: string) {
-    this.router.navigate(['/dashboard/addcandidate'], { queryParams: { mode } });
+    this.router.navigate(['/dashboard/useradd'], { queryParams: { mode } });
   }
 }

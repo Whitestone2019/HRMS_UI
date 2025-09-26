@@ -50,6 +50,7 @@ export interface Usermaintenance {
   lastname: string;
   emailid: string;
   phonenumber: string;
+  empType:string;
   roleid: string;
   repoteTo: string;
   status: string;
@@ -1366,67 +1367,105 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   );
 }
 
- saveUser(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/usermaintenance-save`, user);
+   // ✅ Save user
+  saveUser(user: any): Observable<any> {
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/usermaintenance-save`, user)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  // Save trainee details
+  // ✅ Save trainee
   saveTrainee(user: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/trng-save`, user);
-  }
- getAllAllowances(): Observable<LocationAllowance[]> {
-    const url = `${this.apiUrl}/location-allowances`;
-    return this.http.get<LocationAllowance[]>(url);
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/trng-save`, user)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  // ✅ Create new allowance
+  // ✅ Get allowances
+  getAllAllowances(): Observable<LocationAllowance[]> {
+    this.loaderService.show();
+    return this.http.get<LocationAllowance[]>(`${this.apiUrl}/location-allowances`)
+      .pipe(finalize(() => this.loaderService.hide()));
+  }
+
+  // ✅ Create allowance
   createAllowance(allowance: LocationAllowance): Observable<LocationAllowance> {
-    const url = `${this.apiUrl}/location-allowances`;
-    return this.http.post<LocationAllowance>(url, allowance);
+    this.loaderService.show();
+    return this.http.post<LocationAllowance>(`${this.apiUrl}/location-allowances`, allowance)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  // ✅ Delete allowance by ID
+  // ✅ Delete allowance
   deleteAllowance(id: number): Observable<void> {
-    const url = `${this.apiUrl}/location-allowances/${id}`;
-    return this.http.delete<void>(url);
+    this.loaderService.show();
+    return this.http.delete<void>(`${this.apiUrl}/location-allowances/${id}`)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Update allowance
   updateAllowance(id: number, allowance: LocationAllowance): Observable<LocationAllowance> {
-    return this.http.put<LocationAllowance>(`${this.apiUrl}/location-allowances/${id}`, allowance);
+    this.loaderService.show();
+    return this.http.put<LocationAllowance>(`${this.apiUrl}/location-allowances/${id}`, allowance)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
- getPermissionRequests(empId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/permissionRequests/get/${empId}`);
+  // ✅ Get permission requests
+  getPermissionRequests(empId: string): Observable<any> {
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/permissionRequests/get/${empId}`)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-putPermissionReq(formData: any): Observable<any> {
-    return this.http.post(`${this.apiUrl}/permissionRequest`, formData);
+  // ✅ Create permission request
+  putPermissionReq(formData: any): Observable<any> {
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/permissionRequest`, formData)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Approve permission request
   approvePermissionRequest(empid: string, srlnum: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/approvePermissionRequest`, { empid, srlnum });
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/approvePermissionRequest`, { empid, srlnum })
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Reject permission request
   rejectPermissionRequest(empid: string, srlnum: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/rejectPermissionRequest`, { empid, srlnum });
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/rejectPermissionRequest`, { empid, srlnum })
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  
+  // ✅ Get employees
   getEmployees1(): Observable<Usermaintenance[]> {
-    return this.http.get<Usermaintenance[]>(`${this.apiUrl}/employeesdetails`);
+    this.loaderService.show();
+    return this.http.get<Usermaintenance[]>(`${this.apiUrl}/employeesdetails`)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Get trainees
   getTrainees(): Observable<TraineeMaster[]> {
-    return this.http.get<TraineeMaster[]>(`${this.apiUrl}/trainees`);
+    this.loaderService.show();
+    return this.http.get<TraineeMaster[]>(`${this.apiUrl}/trainees`)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Update employee status
   updateEmployeeStatus(userId: string, status: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/employee/${userId}/status`, { status });
+    this.loaderService.show();
+    return this.http.put<void>(`${this.apiUrl}/employee/${userId}/status`, { status })
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  // ✅ Update trainee status
   updateTraineeStatus(userId: string, status: string): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/trainee/${userId}/status`, { status });
+    this.loaderService.show();
+    return this.http.put<void>(`${this.apiUrl}/trainee/${userId}/status`, { status })
+      .pipe(finalize(() => this.loaderService.hide()));
   }
+
+
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
