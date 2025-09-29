@@ -19,6 +19,18 @@ interface User {
   employeeId: string; // Assuming employeeId is part of the login response
   role: string;
 }
+interface Project {
+  empId: string;
+  name: string;
+  projectName: string;
+  projectDuration: string;
+  location: string;
+  clientInfo: string;
+  vendorDetails: string;
+  techParkName: string;
+  vendorName: string;
+  modeOfWork: string;
+}
 export interface TraineeMaster {
   userid: string;
   trngid: string;
@@ -1465,7 +1477,22 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
       .pipe(finalize(() => this.loaderService.hide()));
   }
 
+ getProjectHistory(managerEmpId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/projects/${managerEmpId}`);
+  }
 
+  // Add project
+  addProject(projectData: any): Observable<any> {
+    const headers = new HttpHeaders().set('LoggedInEmpId', projectData.rcreUserId);
+    return this.http.post(`${this.apiUrl}/projects`, projectData, { headers });
+  }
+
+  // Fetch employees reporting to the manager
+  getReportingEmployees(managerEmpId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/employees/reporting-to/${managerEmpId}`);
+  }
+
+ 
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';

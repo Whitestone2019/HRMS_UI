@@ -66,6 +66,7 @@ import { AttendancePieChartComponent } from './People/overview/attendance-pie-ch
 import { UserTraineeComponent } from './People/user-trainee/user-trainee.component';
 import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
 import { UserManagementComponent } from './People/user-management/user-management.component';
+import { EmployeeProjectHistoryComponent } from './People/employee-history/employee-history.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -113,7 +114,7 @@ import { UserManagementComponent } from './People/user-management/user-managemen
     UserTraineeComponent,
     LocationAllowanceComponent,
     UserManagementComponent,
-   // EmployeeHistoryComponent
+   EmployeeProjectHistoryComponent
   ],
   imports: [
     BrowserModule,

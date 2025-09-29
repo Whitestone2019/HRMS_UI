@@ -1,0 +1,83 @@
+<div class="container">
+  <h5>Employee Project History</h5>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="text-red-500 mb-4">{{ error }}</div>
+
+  <!-- Employee Cards -->
+  <div class="employee-cards">
+    <div *ngFor="let emp of reportingEmployees" class="employee-card">
+      <h6>{{ emp.firstname }} {{ emp.lastname }} ({{ emp.empid }})</h6>
+
+      <div *ngIf="latestProjects[emp.empid]; else noProject">
+        <p><strong>Project:</strong> {{ latestProjects[emp.empid].projectName }}</p>
+        <p><strong>Duration:</strong> {{ latestProjects[emp.empid].projectDuration }}</p>
+        <p><strong>Client:</strong> {{ latestProjects[emp.empid].clientInfo }}</p>
+      </div>
+      <ng-template #noProject>
+        <p class="no-data">No project history available</p>
+      </ng-template>
+
+      <div class="actions">
+        <button class="btn btn-blue" (click)="openProjectList(emp)">View All Projects</button>
+        <button class="btn btn-green" (click)="openAddProjectForm(emp)">Add Project</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Project Modal -->
+  <div class="modal" *ngIf="showAddModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6>Add Project for {{ selectedEmployee?.firstname }} {{ selectedEmployee?.lastname }}</h6>
+        <button class="close" (click)="closeAddProjectForm()">×</button>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" class="form-grid">
+        <!-- Employee ID -->
+        <div class="col-span-2">
+          <input type="text" [(ngModel)]="formData.empId" name="empId" readonly class="readonly"/>
+        </div>
+
+        <!-- Project Fields -->
+        <input type="text" [(ngModel)]="formData.projectName" name="projectName" placeholder="Project Name" required />
+        <input type="text" [(ngModel)]="formData.projectDuration" name="projectDuration" placeholder="Project Start Date" required />
+        <input type="text" [(ngModel)]="formData.location" name="location" placeholder="Location" required />
+        <input type="text" [(ngModel)]="formData.clientInfo" name="clientInfo" placeholder="Client Info" required />
+        <input type="text" [(ngModel)]="formData.vendorDetails" name="vendorDetails" placeholder="Vendor Details" required />
+        <input type="text" [(ngModel)]="formData.techParkName" name="techParkName" placeholder="Tech Park Name" required />
+        <input type="text" [(ngModel)]="formData.vendorName" name="vendorName" placeholder="Vendor Name" required />
+        <select (click)="$event.stopPropagation()"  [(ngModel)]="formData.modeOfWork" name="modeOfWork">
+          <option value="Onsite">Onsite</option>
+          <option value="Offsite">Offsite</option>
+        </select>
+        <div class="col-span-2">
+          <button type="submit" class="btn btn-blue">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Project List Modal -->
+  <div class="modal" *ngIf="showProjectListModal">
+    <div class="modal-content large">
+      <div class="modal-header">
+        <h6>Projects of {{ selectedEmployee?.firstname }} {{ selectedEmployee?.lastname }}</h6>
+        <button class="close" (click)="closeProjectList()">×</button>
+      </div>
+
+      <div class="project-list">
+        <div *ngFor="let proj of projects" class="project-card">
+          <p><strong>Project:</strong> {{ proj.projectName }}</p>
+          <p><strong>Duration:</strong> {{ proj.projectDuration }}</p>
+          <p><strong>Location:</strong> {{ proj.location }}</p>
+          <p><strong>Client:</strong> {{ proj.clientInfo }}</p>
+          <p><strong>Vendor:</strong> {{ proj.vendorDetails }}</p>
+          <p><strong>Tech Park:</strong> {{ proj.techParkName }}</p>
+          <p><strong>Mode:</strong> {{ proj.modeOfWork }}</p>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

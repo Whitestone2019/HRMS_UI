@@ -1,45 +1,114 @@
-div {
-  font-family: Arial, sans-serif;
-  margin: 20px;
+.container {
+  max-width: 1300px;
+  margin: auto;
+  padding: 1.5rem;
+  font-family: "Segoe UI", sans-serif;
 }
-
-h2, h3, h4 {
-  color: #333;
+h5 {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 1.5rem;
 }
+.text-red-500 { color: #dc2626; }
 
-select, input, button {
-  margin: 5px;
-  padding: 5px;
+/* Employee Cards */
+.employee-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
 }
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
+.employee-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 1.2rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
-
-th, td {
-  border: 1px solid #ccc;
-  padding: 8px;
-  text-align: left;
+.employee-card h6 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
 }
-
-th {
-  background-color: #f2f2f2;
+.no-data {
+  color: #6b7280;
+  font-style: italic;
 }
-
-button {
-  background-color: #4CAF50;
-  color: white;
+.actions {
+  margin-top: 1rem;
+  display: flex;
+  gap: 0.5rem;
+}
+.btn {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  color: #fff;
+  cursor: pointer;
   border: none;
+  font-weight: 600;
+}
+.btn-blue { background: #2563eb; }
+.btn-blue:hover { background: #1e40af; }
+.btn-green { background: #059669; }
+.btn-green:hover { background: #047857; }
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 50;
+}
+.modal-content {
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-content.large { width: 800px; }
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+.close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #45a049;
+/* Form */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 1.5rem;
+}
+.form-grid .col-span-2 { grid-column: span 2; }
+input, select {
+  padding: 0.7rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  width: 100%;
+}
+.readonly {
+  background: #f3f4f6;
+  color: #6b7280;
+  cursor: not-allowed;
 }
 
-label {
-  display: block;
-  margin-top: 10px;
+/* Project Cards in Modal */
+.project-list {
+  display: grid;
+  gap: 1rem;
+}
+.project-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 1rem;
+  background: #f9fafb;
 }
