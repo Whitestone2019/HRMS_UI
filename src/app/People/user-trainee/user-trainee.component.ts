@@ -1,39 +1,62 @@
-// src/app/user-trainee/user-trainee.component.ts
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../api.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-trainee',
   templateUrl: './user-trainee.component.html',
   styleUrls: ['./user-trainee.component.css']
 })
-export class UserTraineeComponent {
-  selectedForm: string = 'user'; // default selection
-  userForm: FormGroup;
-  traineeForm: FormGroup;
+export class UserTraineeComponent implements OnInit {
+  selectedForm: string = 'user';
+  userForm!: FormGroup;
+  traineeForm!: FormGroup;
   message: string = '';
+  isEdit: boolean = false;
+  empid: string = '';
+  trngid: string = '';
 
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
-    private router: Router
-  ) {
-    // User form with empType
+    private router: Router,
+    private route: ActivatedRoute
+  ) {}
+
+  ngOnInit(): void {
+    this.initForms();
+
+    this.route.queryParams.subscribe(params => {
+      if (params['type'] === 'employee' && params['empid']) {
+        this.isEdit = true;
+        this.selectedForm = 'user';
+        this.empid = params['empid'];
+        this.loadEmployee(this.empid);
+      } else if (params['type'] === 'trainee' && params['trngid']) {
+        this.isEdit = true;
+        this.selectedForm = 'trainee';
+        this.trngid = params['trngid'];
+        this.loadTrainee(this.trngid);
+      }
+    });
+  }
+
+  initForms(): void {
     this.userForm = this.fb.group({
       empid: ['', Validators.required],
       password: ['', Validators.required],
       username: ['', Validators.required],
       firstname: ['', Validators.required],
+      repoteTo: [''],
       lastname: ['', Validators.required],
       emailid: ['', [Validators.required, Validators.email]],
       phonenumber: ['', Validators.required],
       roleid: ['', Validators.required],
-      empType: ['', Validators.required] // 👈 added Employee Type
+      empType: ['', Validators.required],
+      status: ['Active']
     });
 
-    // Trainee form
     this.traineeForm = this.fb.group({
       trngid: ['', Validators.required],
       password: ['', Validators.required],
@@ -41,46 +64,75 @@ export class UserTraineeComponent {
       emailid: ['', [Validators.required, Validators.email]],
       phonenumber: ['', Validators.required],
       roleid: ['', Validators.required],
-      empType: [''] // optional for trainee if needed later
+      empType: [''],
+      status: ['Active']
     });
   }
 
-  submitUser() {
+  loadEmployee(empid: string): void {
+    this.api.getEmployeeById(empid).subscribe({
+      next: (data) => this.userForm.patchValue(data),
+      error: () => this.message = 'Error loading employee'
+    });
+  }
+
+  loadTrainee(trngid: string): void {
+    this.api.getTraineeById(trngid).subscribe({
+      next: (data) => this.traineeForm.patchValue(data),
+      error: () => this.message = 'Error loading trainee'
+    });
+  }
+
+  submitUser(): void {
     if (this.userForm.valid) {
-      this.api.saveUser(this.userForm.value).subscribe({
-        next: () => {
-          this.message = 'User saved successfully!';
-          this.userForm.reset();
-        },
-        error: () => {
-          this.message = 'Error saving user.';
-        }
-      });
+      if (this.isEdit) {
+        this.api.updateEmployee(this.empid, this.userForm.value).subscribe({
+          next: () => {
+            this.message = 'Employee updated successfully!';
+            this.router.navigate(['/dashboard/EmpDetails']);
+          },
+          error: () => this.message = 'Error updating employee'
+        });
+      } else {
+        this.api.saveUser(this.userForm.value).subscribe({
+          next: () => {
+            this.message = 'Employee added successfully!';
+            this.router.navigate(['/dashboard/EmpDetails']);
+          },
+          error: () => this.message = 'Error saving employee'
+        });
+      }
     }
   }
 
-  submitTrainee() {
+  submitTrainee(): void {
     if (this.traineeForm.valid) {
-      this.api.saveTrainee(this.traineeForm.value).subscribe({
-        next: () => {
-          this.message = 'Trainee saved successfully!';
-          this.traineeForm.reset();
-        },
-        error: () => {
-          this.message = 'Error saving trainee.';
-        }
-      });
+      if (this.isEdit) {
+        this.api.updateTrainee(this.trngid, this.traineeForm.value).subscribe({
+          next: () => {
+            this.message = 'Trainee updated successfully!';
+            this.router.navigate(['/user-management']);
+          },
+          error: () => this.message = 'Error updating trainee'
+        });
+      } else {
+        this.api.saveTrainee(this.traineeForm.value).subscribe({
+          next: () => {
+            this.message = 'Trainee added successfully!';
+            this.router.navigate(['/user-management']);
+          },
+          error: () => this.message = 'Error saving trainee'
+        });
+      }
     }
   }
 
-  // ✅ Close form (works for both User & Trainee)
-  closeForm(type: 'user' | 'trainee') {
+  closeForm(type: 'user' | 'trainee'): void {
     if (type === 'user') {
       this.userForm.reset();
     } else {
       this.traineeForm.reset();
     }
-    this.selectedForm = ''; // hide the form
-    this.router.navigate(['/dashboard/EmpDetails']); // redirect
+    this.router.navigate(['/user-management']);
   }
 }

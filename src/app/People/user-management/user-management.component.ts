@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, TraineeMaster, Usermaintenance } from '../../api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-user-management',
@@ -20,7 +21,7 @@ export class UserManagementComponent implements OnInit {
   pageSize: number = 5;
   totalPages: number = 1;
 
-  constructor(private apiService: ApiService) {}
+  constructor(private apiService: ApiService,private router: Router) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -99,7 +100,17 @@ export class UserManagementComponent implements OnInit {
       this.updatePagination();
     }
   }
-
+editUser(user: any): void {
+  if (this.userType === 'employee') {
+    this.router.navigate(['/dashboard/useradd'], {
+      queryParams: { type: 'employee', empid: user.empid }
+    });
+  } else {
+    this.router.navigate(['/dashboard/useradd'], {
+      queryParams: { type: 'trainee', trngid: user.trngid }
+    });
+  }
+}
   updateStatus(user: any, newStatus: string): void {
     if (this.userType === 'employee') {
       this.apiService.updateEmployeeStatus(user.userid, newStatus).subscribe({

@@ -1507,7 +1507,22 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
       .pipe(finalize(() => this.loaderService.hide()));
   }
 
- 
+ getEmployeeById(empid: string): Observable<Usermaintenance> {
+  return this.http.get<Usermaintenance>(`${this.apiUrl}/employeesforEdit/${empid}`);
+}
+
+updateEmployee(empid: string, user: Usermaintenance): Observable<any> {
+  return this.http.put(`${this.apiUrl}/employees/${empid}`, user);
+}
+
+getTraineeById(trngid: string): Observable<TraineeMaster> {
+  return this.http.get<TraineeMaster>(`${this.apiUrl}/trainees/${trngid}`);
+}
+
+updateTrainee(trngid: string, trainee: TraineeMaster): Observable<any> {
+  return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee);
+}
+
 
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';

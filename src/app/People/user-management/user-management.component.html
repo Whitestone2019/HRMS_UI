@@ -43,6 +43,7 @@
                     (click)="updateStatus(employee, 'Active')">Activate</button>
             <button *ngIf="employee.status !== 'Inactive'" class="reject-btn" 
                     (click)="updateStatus(employee, 'Inactive')">Deactivate</button>
+                     <button class="edit-btn" (click)="editUser(employee)">Edit</button>
           </td>
         </tr>
       </ng-container>
@@ -53,12 +54,15 @@
           <td>{{trainee.firstname}} {{trainee.lastname}}</td>
           <td>{{trainee.emailid}}</td>
           <td>{{trainee.phonenumber}}</td>
+          <td>{{'N/A'}}</td>
           <td>{{trainee.status}}</td>
           <td>
             <button *ngIf="trainee.status !== 'Active'" class="approve-btn" 
                     (click)="updateStatus(trainee, 'Active')">Activate</button>
             <button *ngIf="trainee.status !== 'Inactive'" class="reject-btn" 
                     (click)="updateStatus(trainee, 'Inactive')">Deactivate</button>
+                    <button class="edit-btn" (click)="editUser(trainee)">Edit</button>
+           
           </td>
         </tr>
       </ng-container>

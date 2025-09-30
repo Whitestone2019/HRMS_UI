@@ -92,7 +92,7 @@
           <p><strong>Mode:</strong> {{ proj.modeOfWork }}</p>
 
           <div class="actions" *ngIf="proj.empId !== loggedInEmpId">
-            <button class="btn btn-yellow" (click)="openEditProjectForm(proj)">Edit</button>
+            <button class="edit-btn" (click)="openEditProjectForm(proj)">Edit</button>
           </div>
         </div>
       </div>
