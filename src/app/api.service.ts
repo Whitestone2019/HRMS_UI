@@ -1477,19 +1477,34 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
       .pipe(finalize(() => this.loaderService.hide()));
   }
 
- getProjectHistory(managerEmpId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/projects/${managerEmpId}`);
+ // ✅ Fetch project history for an employee
+  getProjectHistory(managerEmpId: string): Observable<any> {
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/projects/${managerEmpId}`)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  // Add project
+  // ✅ Add project
   addProject(projectData: any): Observable<any> {
-    const headers = new HttpHeaders().set('LoggedInEmpId', projectData.rcreUserId);
-    return this.http.post(`${this.apiUrl}/projects`, projectData, { headers });
+    this.loaderService.show();
+    const headers = new HttpHeaders().set('LoggedInEmpId', projectData.rcreUserId || '');
+    alert(projectData);
+    return this.http.post(`${this.apiUrl}/projects`, projectData, { headers })
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
-  // Fetch employees reporting to the manager
+  // ✅ Fetch employees reporting to the manager
   getReportingEmployees(managerEmpId: string): Observable<any> {
-    return this.http.get(`${this.apiUrl}/employees/reporting-to/${managerEmpId}`);
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/employees/reporting-to/${managerEmpId}`)
+      .pipe(finalize(() => this.loaderService.hide()));
+  }
+
+  // ✅ Update project
+  updateProject(project: any): Observable<any> {
+    this.loaderService.show();
+    return this.http.put(`${this.apiUrl}/project/${project.id}`, project)
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
  
