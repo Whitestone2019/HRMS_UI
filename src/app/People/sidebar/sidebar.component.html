@@ -35,10 +35,10 @@
   </a> -->
 
   <!-- Operations menu -->
-  <a *ngIf="isMenuVisible('settings')" routerLink="/dashboard" (click)="onMenuSelect('settings')" 
+  <!-- <a *ngIf="isMenuVisible('settings')" routerLink="/dashboard/operations" (click)="onMenuSelect('settings')" 
      [class.active]="selectedMenu === 'settings'">
     <i class="fas fa-cogs"></i> Operations
-  </a>
+  </a> -->
 
   <!-- Analytics menu -->
   <a *ngIf="isMenuVisible('report')" routerLink="/dashboard/report" (click)="onMenuSelect('report')" 
@@ -46,10 +46,10 @@
     <i class="fas fa-chart-line"></i> Report's
   </a>
 
-  <a *ngIf="isMenuVisible('travel')" routerLink="/dashboard/travel" (click)="onMenuSelect('travel')" 
+  <!-- <a *ngIf="isMenuVisible('travel')" routerLink="/dashboard/travel" (click)="onMenuSelect('travel')" 
    [class.active]="selectedMenu === 'travel'">
   <i class="fas fa-plane-departure"></i> Travel
-</a>
+</a> -->
 
 <a *ngIf="isMenuVisible('timesheet')" routerLink="/dashboard/timesheet" (click)="onMenuSelect('timesheet')" 
    [class.active]="selectedMenu === 'timesheet'">

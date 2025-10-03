@@ -1,126 +1,216 @@
+/* ========================= */
+/* Layout Base Styles        */
+/* ========================= */
+
 /* Main container to hold the sidebar and content area */
 .main-container {
   display: flex;
-  flex-direction: row;  /* Sidebar and content in a row */
-  min-height: 100vh;     /* Full height of the viewport */
-  margin-top: 40px;      /* Add margin for the fixed header */
+  flex-direction: row;      
+  min-height: 100vh;        
+  margin-top: 40px;         
+  background-color: #f9f9f9;
+  font-family: "Segoe UI", Arial, sans-serif;
 }
 
 /* Header styles */
 app-header {
-  width: 100%;           /* Full width across the top */
-  background-color: #f4f4f4;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Adds shadow to the header */
-  position: fixed;       /* Fix header to the top */
-  top: 0;                /* Position it at the top of the page */
+  width: 100%;              
+  background-color: #34495e;
+  color: #fff;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  position: fixed;          
+  top: 0;
   left: 0;
-  z-index: 1000;         /* Ensure the header stays on top of other elements */
-  height: 30px;          /* Adjust height of the header */
+  z-index: 1000;            
+  height: 40px;             
   display: flex;
-  align-items: center;   /* Center items vertically in the header */
-  padding-left: 20px;    /* Optional: Add space on the left for content */
+  align-items: center;      
+  justify-content: space-between;
   box-sizing: border-box;
 }
 
 /* Sidebar styles */
 app-sidebar {
-  width: 50px;           /* Adjust width of the sidebar */
-  background-color: #f4f4f4;
-  height: 100%;
-  padding: 10px;
-  position: fixed;       /* Sidebar is fixed */
-  top: 40px;             /* Offset the sidebar below the fixed header */
+  width: 60px;              
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  height: calc(100% - 40px);
+  padding-top: 20px;
+  position: fixed;
+  top: 40px;                
   left: 0;
-  z-index: 999;          /* Sidebar should be below the header */
+  z-index: 999;             
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Content container holds the home header and content */
-.content-container {
-  flex-grow: 2;           /* Content area takes up the remaining space */
-  display: flex;
-  flex-direction: column; /* Stack home header and content */
-  margin-left: 60px;      /* Offset content to the right of the sidebar */
-  padding: 20px;
-  margin-top: 0;          /* Remove the space caused by margin-top */
+/* Sidebar menu items */
+app-sidebar .menu-item {
+  padding: 12px;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s;
 }
-
-/* Home header specific styles */
-app-home-header {
-  display: flex;
-  background-color: #ffffff;
-  padding: 10px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  border-bottom: 1px solid #ccc;
-  margin-top: 0; /* Ensure there is no margin-top */
-}
-
-/* Content area for dynamic content and overview */
-.content {
-  flex-grow: 1; /* Content area takes up remaining space */
-  padding: 10px;
-  background-color: #fafafa;
-}
-
-/* Footer at the bottom */
-app-footer {
-  background-color: #333;
+app-sidebar .menu-item:hover {
+  background: #34495e;
   color: #fff;
-  padding: 10px;
+}
+
+/* Content container */
+.content-container {
+  flex-grow: 2;
+  display: flex;
+  flex-direction: column;
+  margin-left: 60px;        
+  padding: 0;               
+  margin-top: 0;
+}
+
+/* ========================= */
+/* Home Header (Sub Navbar)  */
+/* ========================= */
+app-home-header {
+  position: fixed;
+  top: 50px;                
+  left: 60px;               
+  right: 0;
+  height: 50px;
+  background-color: #ffffff;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 500;
+  color: #2c3e50;
+  background-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e0e0e0;
+  z-index: 900;
+  box-sizing: border-box;
+}
+
+/* Home header navigation container */
+app-home-header .nav {
+  display: flex;
+  gap: 20px;
+}
+
+/* Navigation items */
+app-home-header .nav-item {
+  cursor: pointer;
+  color: #2c3e50;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  padding-bottom: 4px;
+}
+
+/* Hover effect */
+app-home-header .nav-item:hover {
+  color: #2980b9;                     /* Blue hover */
+  border-bottom: 2px solid #2980b9;   /* Underline */
+}
+
+/* Active state */
+app-home-header .nav-item.active {
+  color: #2980b9;
+  border-bottom: 2px solid #2980b9;
+}
+
+/* ========================= */
+/* Content + Footer          */
+/* ========================= */
+
+/* Dynamic content area */
+.content {
+  flex-grow: 1;
+  padding: 20px;
+  margin-top: 60px;         
+  background-color: #fafafa;
+  border-radius: 6px;
+  min-height: calc(100vh - 100px);
+  box-sizing: border-box;
+}
+
+/* Footer */
+app-footer {
+  background-color: #2c3e50;
+  color: #bdc3c7;
+  padding: 12px;
   text-align: center;
   width: 100%;
+  font-size: 13px;
 }
 
-/* Media Queries for Responsiveness */
+/* ========================= */
+/* Responsive Design         */
+/* ========================= */
 
-/* Tablet and below (max-width: 768px) */
+/* Tablet and below */
 @media (max-width: 768px) {
   .main-container {
-    flex-direction: column;  /* Stack the sidebar and content vertically */
+    flex-direction: column;  
+    margin-top: 50px;        
   }
 
   app-sidebar {
-    width: 100%;            /* Sidebar takes full width */
-    height: auto;           /* Adjust height to content */
-    position: relative;     /* Sidebar moves out of fixed position */
-    top: 0;                 /* Reset position */
-    margin-top: 0;          /* No need for margin as the header is not fixed */
+    width: 100%;             
+    height: auto;
+    position: relative;      
+    top: 0;
+    box-shadow: none;
   }
 
   .content-container {
-    margin-left: 0;         /* Reset margin */
-    margin-top: 0;          /* No margin needed for header offset */
+    margin-left: 0;          
   }
 
-  app-header {
-    height: 50px;           /* Increase header height on small screens */
+  app-home-header {
+    top: 90px;               
+    left: 0;
+  }
+
+  .content {
+    margin-top: 70px;
     padding: 15px;
   }
 
-  .content {
-    padding: 15px;         /* Increase padding for mobile content */
+  app-header {
+    height: 50px;
+    padding: 15px;
+    font-size: 14px;
   }
 }
 
-/* Mobile devices (max-width: 480px) */
+/* Mobile devices */
 @media (max-width: 480px) {
   app-header {
-    height: 50px;           /* Ensure header is taller on smaller screens */
-    font-size: 14px;        /* Reduce font size for small devices */
+    height: 50px;
+    font-size: 13px;
+    padding: 10px;
   }
 
   app-sidebar {
-    width: 100%;            /* Sidebar takes full width */
-    position: relative;     /* Sidebar is no longer fixed */
-    height: auto;           /* Adjust sidebar height */
+    width: 100%;
+    position: relative;
+    height: auto;
+    box-shadow: none;
+  }
+
+  app-home-header {
+    top: 90px;
+    left: 0;
+    height: 45px;
+    font-size: 13px;
+    padding: 0 10px;
   }
 
   .content-container {
-    margin-left: 0;         /* Reset left margin */
-    margin-top: 50px;       /* Ensure content starts below the header */
+    margin-left: 0;
   }
 
   .content {
-    padding: 10px;          /* Reduce padding on small screens */
+    margin-top: 60px;
+    padding: 10px;
   }
 }

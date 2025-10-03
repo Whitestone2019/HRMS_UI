@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { MenuSelectionService } from '../../menu-selection.service';
 
 type MenuType = 'employee' | 'attendance' | 'payroll' | 'performance' | 'recruitment' | 'training';
+type MainMenu = 'home' | 'project' | string; // allow home/project and other dynamic menus
 
 @Component({
   selector: 'app-dashboard',
@@ -18,30 +19,30 @@ export class DashboardComponent {
     recruitment: false,
     training: false,
   };
-   selectedMenu: string = 'home';  // Default to 'home'
 
-  userRole: string | null = null; // Initialize userRole as null
+  selectedMenu: MainMenu = 'home';  // ✅ Fixed default value
 
-  constructor(private router: Router,private menuSelectionService: MenuSelectionService) {
+  userRole: string | null = null;
+
+  constructor(private router: Router, private menuSelectionService: MenuSelectionService) {
     let role = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
-  
-    console.log('Raw userRole:', role); // Debugging output
-  
-    // Normalize and check for 'Unknown Role'
+
+    console.log('Raw userRole:', role);
+
     if (!role || role.trim().toLowerCase() === 'unknown' || role.trim().toLowerCase() === 'unknown role') {
-      this.userRole = null;  // Set to null if it's 'Unknown Role'
+      this.userRole = null;
     } else {
       this.userRole = role;
     }
-  
-    console.log('Final userRole:', this.userRole); // Debugging output
+
+    console.log('Final userRole:', this.userRole);
   }
-  
-   ngOnInit(): void {
-  this.menuSelectionService.selectedMenu$.subscribe((menu) => {
-      this.selectedMenu = menu.mainMenu;   // Track the main menu
+
+  ngOnInit(): void {
+    this.menuSelectionService.selectedMenu$.subscribe((menu) => {
+      this.selectedMenu = menu.mainMenu;
     });
-   }
+  }
 
   toggleSubMenu(menuType: MenuType) {
     this.subMenuVisibility[menuType] = !this.subMenuVisibility[menuType];

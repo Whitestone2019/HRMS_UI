@@ -12,102 +12,127 @@
   </div>
 
   <!-- User Maintenance Form -->
-  <div *ngIf="selectedForm === 'user'" class="form-container">
-    <h3>User Maintenance</h3>
-    <form [formGroup]="userForm" (ngSubmit)="submitUser()">
-      <div class="form-columns">
-        <div class="column">
-          <label>Employee ID:</label>
-          <input formControlName="empid" type="text" />
+<div *ngIf="selectedForm === 'user'" class="form-container">
+  <h3>User Maintenance</h3>
+  <form [formGroup]="userForm" (ngSubmit)="submitUser()" novalidate>
+    <div class="form-columns">
+      <div class="column">
+        <label>Employee ID:</label>
+        <input formControlName="empid" type="text" />
 
-          <label>Password:</label>
-          <input formControlName="password" type="password" />
+        <label>Password:</label>
+        <input formControlName="password" type="password" />
 
-          <label>Username:</label>
-          <input formControlName="username" type="text" />
+        <label>Username:</label>
+        <input formControlName="username" type="text" />
 
-          <label>First Name:</label>
-          <input formControlName="firstname" type="text" />
+        <label>First Name:</label>
+        <input formControlName="firstname" type="text" />
 
-          <!-- 👇 Added Repote To -->
-          <label>Repote To:</label>
-          <input formControlName="repoteTo" type="text" />
-        </div>
-        <div class="column">
-          <label>Last Name:</label>
-          <input formControlName="lastname" type="text" />
-
-          <label>Email ID:</label>
-          <input formControlName="emailid" type="email" />
-
-          <label>Phone Number:</label>
-          <input formControlName="phonenumber" type="text" />
-
-          <label>Role ID:</label>
-          <input formControlName="roleid" type="text" />
-
-          <label>Employee Type:</label>
-          <select formControlName="empType" (click)="$event.stopPropagation()">
-            <option value="">-- Select Employee Type --</option>
-            <option value="Full Time">Full Time</option>
-            <option value="Contract">Contract</option>
-            <option value="Consultant">Consultant</option>
-            <option value="Full Time Remote">Full Time Remote</option>
-            <option value="Probation Period">Probation Period</option>  
-          </select>
-        </div>
+        <label>Repote To:</label>
+        <select formControlName="repoteTo" (click)="$event.stopPropagation()">
+          <option value="">-- Select Manager --</option>
+          <option *ngFor="let emp of employees" [value]="emp.employeeId">
+             {{ emp.employeeId }} - {{ emp.employeeName }}
+          </option>
+        </select>
       </div>
+      <div class="column">
+        <label>Last Name:</label>
+        <input formControlName="lastname" type="text" />
 
-      <!-- Save + Close buttons -->
-      <div class="form-actions">
-        <button type="submit">Save User</button>
-        <button type="button" (click)="closeForm('user')">Close</button>
+        <label>Email ID:</label>
+        <input formControlName="emailid" type="email" />
+
+        <label>Phone Number:</label>
+        <input formControlName="phonenumber" type="text" />
+
+          <label>Role:</label>
+        <select formControlName="roleid"  (click)="$event.stopPropagation()">
+          <option value="">-- Select Role --</option>
+          <option *ngFor="let role of roles" [value]="role.roleid">
+            {{ role.roleid }} - {{role.description}}
+          </option>
+        </select>
+
+        <label>Employee Type:</label>
+        <select formControlName="empType" (click)="$event.stopPropagation()">
+          <option value="">-- Select Employee Type --</option>
+          <option value="Full Time">Full Time</option>
+          <option value="Contract">Contract</option>
+          <option value="Consultant">Consultant</option>
+          <option value="Full Time Remote">Full Time Remote</option>
+          <option value="Probation Period">Probation Period</option>  
+        </select>
       </div>
-    </form>
-  </div>
+    </div>
 
-  <!-- Trainee Master Form -->
-  <div *ngIf="selectedForm === 'trainee'" class="form-container">
-    <h3>Trainee Master</h3>
-    <form [formGroup]="traineeForm" (ngSubmit)="submitTrainee()">
-      <div class="form-columns">
-        <div class="column">
-          <label>Trainee ID:</label>
-          <input formControlName="trngid" type="text" />
+    <div class="form-actions">
+      <button type="submit">Save User</button>
+      <button type="button" (click)="closeForm('user')">Close</button>
+    </div>
+  </form>
+</div>
 
-          <label>Password:</label>
-          <input formControlName="password" type="password" />
 
-          <label>Name:</label>
-          <input formControlName="name" type="text" />
-        </div>
-        <div class="column">
-          <label>Email ID:</label>
-          <input formControlName="emailid" type="email" />
+<!-- Trainee Master Form -->
+<div *ngIf="selectedForm === 'trainee'" class="form-container">
+  <h3>Trainee Master</h3>
+  <form [formGroup]="traineeForm" (ngSubmit)="submitTrainee()" novalidate>
+    <div class="form-columns">
+      <div class="column">
+        <label>Trainee ID:</label>
+        <input formControlName="trngid" type="text" />
 
-          <label>Phone Number:</label>
-          <input formControlName="phonenumber" type="text" />
+        <label>Password:</label>
+        <input formControlName="password" type="password" />
 
-          <label>Role ID:</label>
-          <input formControlName="roleid" type="text" />
+        <label>Username:</label>
+        <input formControlName="username" type="text" />
 
-          <label>Employee Type:</label>
-          <select formControlName="empType" (click)="$event.stopPropagation()">
-            <option value="">-- Select Employee Type --</option>
-            <option value="trainee">Trainee</option>
-            <option value="intern">Intern</option>
-            <option value="contract">Contract</option>
-          </select>
-        </div>
+        <label>First Name:</label>
+        <input formControlName="firstname" type="text" />
+
+        <label>Repote To:</label>
+        <select formControlName="repoteTo" (click)="$event.stopPropagation()">
+          <option value="">-- Select Manager --</option>
+          <option *ngFor="let emp of employees" [value]="emp.employeeId">
+            {{ emp.employeeId }} - {{ emp.employeeName }}
+          </option>
+        </select>
       </div>
+      <div class="column">
+        <label>Last Name:</label>
+        <input formControlName="lastname" type="text" />
 
-      <!-- Save + Close buttons -->
-      <div class="form-actions">
-        <button type="submit">Save Trainee</button>
-        <button type="button" (click)="closeForm('trainee')">Close</button>
+        <label>Email ID:</label>
+        <input formControlName="emailid" type="email" />
+
+        <label>Phone Number:</label>
+        <input formControlName="phonenumber" type="text" />
+
+        <label>Role:</label>
+        <select formControlName="roleid"  (click)="$event.stopPropagation()">
+          <option value="">-- Select Role --</option>
+          <option *ngFor="let role of roles" [value]="role.roleid">
+            {{ role.roleid }} - {{role.description}}
+          </option>
+        </select>
+
+        <label>Employee Type:</label>
+        <select formControlName="empType" (click)="$event.stopPropagation()">
+          <option value="">-- Select Employee Type --</option>
+          <option value="trainee">Trainee</option>
+          <option value="intern">Intern</option>
+          <option value="contract">Contract</option>
+          <option value="Probation Period">Probation Period</option> 
+        </select>
       </div>
-    </form>
-  </div>
+    </div>
 
-  <div *ngIf="message" class="message">{{ message }}</div>
+    <div class="form-actions">
+      <button type="submit">Save Trainee</button>
+      <button type="button" (click)="closeForm('trainee')">Close</button>
+    </div>
+  </form>
 </div>

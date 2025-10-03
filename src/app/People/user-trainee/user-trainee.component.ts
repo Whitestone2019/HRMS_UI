@@ -17,6 +17,9 @@ export class UserTraineeComponent implements OnInit {
   empid: string = '';
   trngid: string = '';
 
+  employees: any[] = [];   // for Repote To dropdown
+  roles: any[] = [];       // for Role dropdown
+
   constructor(
     private fb: FormBuilder,
     private api: ApiService,
@@ -27,6 +30,33 @@ export class UserTraineeComponent implements OnInit {
   ngOnInit(): void {
     this.initForms();
 
+    // load dropdowns
+    this.api.getAllEmployeeIds().subscribe({
+      next: (data) => this.employees = data,
+      error: () => console.error("Failed to load employees")
+    });
+
+    this.api.getRoles().subscribe({
+      next: (data) => this.roles = data,
+      error: () => console.error("Failed to load roles")
+    });
+
+    // if moved from trainee → prefill employee form
+    const traineeData = history.state.traineeData;
+    if (traineeData) {
+      this.selectedForm = 'user';
+      this.userForm.patchValue({
+        firstname: traineeData.firstname,
+        lastname: traineeData.lastname,
+        username: traineeData.username,
+        emailid: traineeData.emailid,
+        phonenumber: traineeData.phonenumber,
+        roleid: traineeData.roleid,
+        empType: 'Full Time'
+      });
+    }
+
+    // handle edit case
     this.route.queryParams.subscribe(params => {
       if (params['type'] === 'employee' && params['empid']) {
         this.isEdit = true;
@@ -60,11 +90,14 @@ export class UserTraineeComponent implements OnInit {
     this.traineeForm = this.fb.group({
       trngid: ['', Validators.required],
       password: ['', Validators.required],
-      name: ['', Validators.required],
+      username: ['', Validators.required],
+      firstname: ['', Validators.required],
+      repoteTo: [''],
+      lastname: ['', Validators.required],
       emailid: ['', [Validators.required, Validators.email]],
       phonenumber: ['', Validators.required],
       roleid: ['', Validators.required],
-      empType: [''],
+      empType: ['', Validators.required],
       status: ['Active']
     });
   }
@@ -111,7 +144,7 @@ export class UserTraineeComponent implements OnInit {
         this.api.updateTrainee(this.trngid, this.traineeForm.value).subscribe({
           next: () => {
             this.message = 'Trainee updated successfully!';
-            this.router.navigate(['/user-management']);
+            this.router.navigate(['/dashboard/EmpDetails']);
           },
           error: () => this.message = 'Error updating trainee'
         });
@@ -119,7 +152,7 @@ export class UserTraineeComponent implements OnInit {
         this.api.saveTrainee(this.traineeForm.value).subscribe({
           next: () => {
             this.message = 'Trainee added successfully!';
-            this.router.navigate(['/user-management']);
+            this.router.navigate(['/dashboard/EmpDetails']);
           },
           error: () => this.message = 'Error saving trainee'
         });

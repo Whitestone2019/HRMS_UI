@@ -1,13 +1,12 @@
 /* Header container */
 .header {
-  background-color: #fff;
   padding: 10px 20px;
   top: 0;
   display: flex;
   align-items: center;
   border-bottom: 1px solid #e0e0e0;
-  margin: 0; /* Remove extra space */
-  box-sizing: border-box; /* Ensures padding is considered within element's total width/height */
+  margin: 0;
+  box-sizing: border-box;
 }
 
 /* Logo image inside header */
@@ -18,15 +17,25 @@
 
 /* Navigation links */
 .header nav a {
-  margin: 0 10px;
+  margin: 0 5px;
   text-decoration: none;
   color: #333;
   font-weight: bold;
+  padding: 6px 12px;          /* Add padding for clickable area */
+  border-radius: 4px;         /* Rounded edges for button look */
+  transition: background 0.3s, color 0.3s;
+}
+
+/* Hover effect - background + color */
+.header nav a:hover {
+  background-color: #007bff;  /* Blue background */
+  color: #fff;                /* White text */
 }
 
 /* Active link styling */
 .header nav a.active {
-  color: #007bff;
+  background-color: #007bff;  /* Same as hover */
+  color: #fff;
 }
 
 /* Profile section */
@@ -43,12 +52,7 @@
   margin-right: 10px;
 }
 
-/* Additional tweaks */
-body {
-  margin: 0;  /* Remove body margin to ensure no space around the whole layout */
-}
-
-/* Optional: if you want to reduce any padding/margin for links */
+/* Reset nav margin/padding */
 .header nav {
   margin: 0;
   padding: 0;

@@ -51,9 +51,11 @@ getLeaveCounts(empId: string): void {
         const leaveTypeKey = leaveType.name.toLowerCase().replace(' ', '');
         if (leaveCounts[leaveTypeKey] !== undefined) {
           // Set available from backend response
-          leaveType.available = leaveCounts[leaveTypeKey];
+          //leaveType.available = leaveCounts[leaveTypeKey];
+          leaveType.booked = leaveCounts[leaveTypeKey];
           // Only calculate booked if available is non-zero, otherwise assume no leaves booked
-          leaveType.booked = leaveType.available > 0 ? 12 - leaveType.available : 0;
+         // leaveType.booked = leaveType.available > 0 ? 12 - leaveType.available : 0;
+         leaveType.available = leaveType.booked > 0 ? 12 - leaveType.booked : 0;
           // Override for specific leave types
           if (leaveType.name.toLowerCase() === 'earned leave' || leaveType.name.toLowerCase() === 'leavewithoutpay') {
             leaveType.available = 0;

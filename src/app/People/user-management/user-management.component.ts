@@ -15,13 +15,12 @@ export class UserManagementComponent implements OnInit {
   filteredTrainees: TraineeMaster[] = [];
   paginatedEmployees: Usermaintenance[] = [];
   paginatedTrainees: TraineeMaster[] = [];
-  displayedColumns: string[] = ['userId', 'empId', 'name', 'email', 'phone', 'status', 'actions'];
   searchQuery: string = '';
   currentPage: number = 1;
   pageSize: number = 5;
   totalPages: number = 1;
 
-  constructor(private apiService: ApiService,private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadUsers();
@@ -30,18 +29,12 @@ export class UserManagementComponent implements OnInit {
   loadUsers(): void {
     if (this.userType === 'employee') {
       this.apiService.getEmployees1().subscribe({
-        next: (data) => {
-          this.employees = data;
-          this.filterUsers();
-        },
+        next: (data) => { this.employees = data; this.filterUsers(); },
         error: (err) => console.error('Error loading employees:', err)
       });
     } else {
       this.apiService.getTrainees().subscribe({
-        next: (data) => {
-          this.trainees = data;
-          this.filterUsers();
-        },
+        next: (data) => { this.trainees = data; this.filterUsers(); },
         error: (err) => console.error('Error loading trainees:', err)
       });
     }
@@ -73,9 +66,8 @@ export class UserManagementComponent implements OnInit {
 
   updatePagination(): void {
     this.totalPages = Math.ceil(
-      this.userType === 'employee'
-        ? this.filteredEmployees.length / this.pageSize
-        : this.filteredTrainees.length / this.pageSize
+      this.userType === 'employee' ? this.filteredEmployees.length / this.pageSize
+                                   : this.filteredTrainees.length / this.pageSize
     );
     this.currentPage = Math.min(this.currentPage, this.totalPages || 1);
     const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -88,44 +80,33 @@ export class UserManagementComponent implements OnInit {
   }
 
   previousPage(): void {
-    if (this.currentPage > 1) {
-      this.currentPage--;
-      this.updatePagination();
-    }
+    if (this.currentPage > 1) { this.currentPage--; this.updatePagination(); }
   }
 
   nextPage(): void {
-    if (this.currentPage < this.totalPages) {
-      this.currentPage++;
-      this.updatePagination();
-    }
+    if (this.currentPage < this.totalPages) { this.currentPage++; this.updatePagination(); }
   }
-editUser(user: any): void {
-  if (this.userType === 'employee') {
-    this.router.navigate(['/dashboard/useradd'], {
-      queryParams: { type: 'employee', empid: user.empid }
-    });
-  } else {
-    this.router.navigate(['/dashboard/useradd'], {
-      queryParams: { type: 'trainee', trngid: user.trngid }
-    });
+
+  editUser(user: any): void {
+    const query = this.userType === 'employee' ? { type: 'employee', empid: user.empid } 
+                                               : { type: 'trainee', trngid: user.trngid };
+    this.router.navigate(['/dashboard/useradd'], { queryParams: query });
   }
-}
-  updateStatus(user: any, newStatus: string): void {
+
+  moveToEmployee(trainee: TraineeMaster): void {
+    this.router.navigate(['/dashboard/useradd'], { queryParams: { type: 'employee' }, state: { traineeData: trainee } });
+  }
+
+  toggleStatus(user: any): void {
+    const newStatus = user.status === 'Active' ? 'Inactive' : 'Active';
     if (this.userType === 'employee') {
       this.apiService.updateEmployeeStatus(user.userid, newStatus).subscribe({
-        next: () => {
-          user.status = newStatus;
-          this.loadUsers();
-        },
+        next: () => { user.status = newStatus; },
         error: (err) => console.error('Error updating employee status:', err)
       });
     } else {
       this.apiService.updateTraineeStatus(user.userid, newStatus).subscribe({
-        next: () => {
-          user.status = newStatus;
-          this.loadUsers();
-        },
+        next: () => { user.status = newStatus; },
         error: (err) => console.error('Error updating trainee status:', err)
       });
     }
