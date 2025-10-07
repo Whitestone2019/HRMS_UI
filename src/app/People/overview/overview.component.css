@@ -51,9 +51,19 @@
 
 .profile-card h2 {
   font-size: 18px;
-  font-weight: 600;
+  font-weight: 500;
   color: #1a1a1a;
+   line-height: 1.3;
   margin: 10px 0;
+}
+
+.profile-card h6 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  margin: 6px 0;
+   line-height: 1.3;
+  text-align: center;
 }
 
 .profile-card .status {
@@ -114,6 +124,9 @@
   border-bottom: 2px solid #f0f0f0;
   padding-bottom: 8px;
 }
+
+
+
 
 .reportee {
   display: flex;

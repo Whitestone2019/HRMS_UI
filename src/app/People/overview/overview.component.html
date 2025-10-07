@@ -3,6 +3,9 @@
     <img alt="Profile Picture" height="80" src="https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg" width="80"/>
     <h2>{{ employeeId }}</h2>
     <h2>{{ username }}</h2>
+    <h6>{{ userRole }}</h6>
+    <h2>Reporting To</h2>
+    <h6>{{ managerId }} - {{ managerName }}</h6>
     <div class="status" [ngClass]="{ 'in': employeeStatus === 'In', 'out': employeeStatus === 'Out' }">{{ employeeStatus }}</div>
     <div class="timer">{{ timerDisplay }}</div>
     <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>

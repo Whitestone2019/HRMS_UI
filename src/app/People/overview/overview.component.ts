@@ -18,6 +18,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
   username: string = localStorage.getItem('username') || 'Guest';
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   
+ userRole: string = localStorage.getItem('userRole') || 'Unknown';
+  managerId: string = localStorage.getItem('managerId') || 'Unknown';
+  managerName: string = localStorage.getItem('managerName') || 'Unknown';
+
+  
   // Attendance tracking
   employeeStatus: string = 'Out';
   timerDisplay: string = '00:00:00';
@@ -27,15 +32,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
   checkOutLocation: string = '';
   srlNum: number = 0;
 
-  // Team data
-  reportees = [
-    {
-      id: '10004',
-      name: 'Poovarasam Murugan',
-      status: 'Yet to check-in',
-      imageUrl: 'https://storage.googleapis.com/a1aa/image/6avEkAv3f7zSeExA5f4FG59V05MJ2kNyeTqX4YlWbU86914OB.jpg',
-    },
-  ];
+  // // Team data
+  // reportees = [
+  //   {
+  //     id: '10004',
+  //     name: 'Poovarasam Murugan',
+  //     status: 'Yet to check-in',
+  //     imageUrl: 'https://storage.googleapis.com/a1aa/image/6avEkAv3f7zSeExA5f4FG59V05MJ2kNyeTqX4YlWbU86914OB.jpg',
+  //   },
+  // ];
 
   // Attendance statistics
   yesterday_present: number = 0;

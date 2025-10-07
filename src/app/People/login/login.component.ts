@@ -32,11 +32,15 @@ export class LoginComponent {
           // Save user details
           this.userService.username = response.username;
           this.userService.employeeId = response.employeeId;
-          this.userService.role = response.role ?? ''; // Avoid null value
+          this.userService.role = response.role; // Avoid null value
+          this.userService.reportTo=response.reportTo;
+            this.userService.managerName=response.managerName;
   
           localStorage.setItem('username', response.username);
           localStorage.setItem('employeeId', response.employeeId);
           localStorage.setItem('userRole', response.role ?? '');
+          localStorage.setItem('managerId', response.reportTo ?? '');
+          localStorage.setItem('managerName', response.managerName ?? '');
   
           sessionStorage.setItem('sessionUsername', this.user.username);
           sessionStorage.setItem('sessionPassword', this.user.password);

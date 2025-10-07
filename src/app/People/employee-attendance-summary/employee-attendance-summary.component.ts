@@ -12,41 +12,36 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
   startDate: string = '';
   endDate: string = '';
   attendanceData: any[] = [];
-  paginatedAttendanceData: any[] = []; // Paginated data
-  errorMessage: string = '';
-  sortedAttendanceData: any[] = []; // Sorted data
-  
-  // Pagination variables
+  sortedAttendanceData: any[] = [];
+  filteredAttendanceData: any[] = [];
+  paginatedAttendanceData: any[] = [];
+
+  searchTerm: string = '';
+
   currentPage: number = 1;
   itemsPerPage: number = 30;
   totalRecords: number = 0;
 
   constructor(private attendanceService: AttendanceService, private apiService: ApiService) {}
 
-  ngOnInit(): void {
-    // You can initialize the date fields with default values if needed
-  }
+  ngOnInit(): void {}
 
   getAttendanceDetails(): void {
     if (this.startDate && this.endDate) {
       this.apiService.getAttendanceAll("", this.startDate, this.endDate).subscribe(
         (response) => {
-          // Store the response in attendanceData array
           this.attendanceData = response;
-          this.totalRecords = this.attendanceData.length; // Total number of records
-          
-          // Format the date fields (attendanceDate, checkInTime, checkOutTime) and sort by employeeId
           this.sortedAttendanceData = this.attendanceData.sort((a, b) =>
             a.employeeId.localeCompare(b.employeeId)
           ).map((record) => {
-            // Format dates as 'yyyy-MM-dd HH:mm:ss'
             record.attendanceDate = this.formatDate(record.date);
             record.checkIn = this.formatTime(record.checkIn);
             record.checkOut = this.formatTime(record.checkOut);
             return record;
           });
 
-          // Paginate the data
+          this.filteredAttendanceData = [...this.sortedAttendanceData]; // initial data
+          this.totalRecords = this.filteredAttendanceData.length;
           this.paginateData();
         },
         (error) => {
@@ -58,7 +53,6 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
     }
   }
 
-  // Method to format date as 'yyyy-MM-dd HH:mm:ss'
   formatDate(date: any): string {
     const formattedDate = new Date(date);
     const year = formattedDate.getFullYear();
@@ -69,24 +63,34 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
 
   formatTime(date: any): string {
     const formattedDate = new Date(date);
-    if (isNaN(formattedDate.getTime())) {
-      return 'N/A'; // Return 'N/A' if the date is invalid
-    }
+    if (isNaN(formattedDate.getTime())) return 'N/A';
     const hours = formattedDate.getHours().toString().padStart(2, '0');
     const minutes = formattedDate.getMinutes().toString().padStart(2, '0');
     const seconds = formattedDate.getSeconds().toString().padStart(2, '0');
-    
     return `${hours}:${minutes}:${seconds}`;
   }
 
-  // Method to paginate the attendance data
+  applyFilter(): void {
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) {
+      this.filteredAttendanceData = [...this.sortedAttendanceData];
+    } else {
+      this.filteredAttendanceData = this.sortedAttendanceData.filter(record =>
+        record.employeeId.toLowerCase().includes(term) ||
+        record.employeeName.toLowerCase().includes(term)
+      );
+    }
+    this.totalRecords = this.filteredAttendanceData.length;
+    this.currentPage = 1;
+    this.paginateData();
+  }
+
   paginateData(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedAttendanceData = this.sortedAttendanceData.slice(startIndex, endIndex);
+    this.paginatedAttendanceData = this.filteredAttendanceData.slice(startIndex, endIndex);
   }
 
-  // Method to go to the next page
   nextPage(): void {
     if ((this.currentPage * this.itemsPerPage) < this.totalRecords) {
       this.currentPage++;
@@ -94,7 +98,6 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
     }
   }
 
-  // Method to go to the previous page
   previousPage(): void {
     if (this.currentPage > 1) {
       this.currentPage--;
@@ -102,13 +105,6 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
     }
   }
 
-  // Method to set the current page to a specific page
-  goToPage(page: number): void {
-    this.currentPage = page;
-    this.paginateData();
-  }
-
-  // Method to calculate total pages
   get totalPages(): number {
     return Math.ceil(this.totalRecords / this.itemsPerPage);
   }

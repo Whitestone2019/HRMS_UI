@@ -9,15 +9,16 @@ export class UserService {
   private _lastActivityKey = 'lastActivity';
   private _roleKey = 'role';
   private _activeMenuKey = 'activeMenu';
+  private _reportToKey = 'reportTo'; // ✅ Added
+  private _managerNameKey = 'managerName'; // ✅ Added
   private _sessionTimeout = 30 * 60 * 1000; // 30 minutes
 
-  private adminRoles: string[] = ['HR', 'CEO', 'CTO','ACC'];
+  private adminRoles: string[] = ['HR', 'CEO', 'CTO', 'ACC'];
   private employeeRoles: string[] = ['AS', 'SAS'];
-  private managerRoles: string[] = ['TL','PM', 'HR','CEO', 'CTO','ACC']; // Add any other manager roles here
+  private managerRoles: string[] = ['TL', 'PM', 'HR', 'CEO', 'CTO', 'ACC'];
   private trainee: string[] = ['JA'];
-
-  private accountant: string[] =['ACC'];
-  private hr :string[] =['HR'];
+  private accountant: string[] = ['ACC'];
+  private hr: string[] = ['HR'];
 
   constructor() {}
 
@@ -49,6 +50,24 @@ export class UserService {
     return localStorage.getItem(this._roleKey) || '';
   }
 
+  // ✅ Report To (Manager ID)
+  set reportTo(managerId: string) {
+    localStorage.setItem(this._reportToKey, managerId);
+  }
+
+  get reportTo(): string | null {
+    return localStorage.getItem(this._reportToKey);
+  }
+
+  // ✅ Manager Name
+  set managerName(name: string) {
+    localStorage.setItem(this._managerNameKey, name);
+  }
+
+  get managerName(): string | null {
+    return localStorage.getItem(this._managerNameKey);
+  }
+
   updateLastActivity() {
     localStorage.setItem(this._lastActivityKey, Date.now().toString());
   }
@@ -74,7 +93,7 @@ export class UserService {
     return this.employeeRoles.includes(this.role);
   }
 
-   isTrainee(): boolean {
+  isTrainee(): boolean {
     return this.trainee.includes(this.role);
   }
 
@@ -100,5 +119,7 @@ export class UserService {
     localStorage.removeItem(this._lastActivityKey);
     localStorage.removeItem(this._roleKey);
     localStorage.removeItem(this._activeMenuKey);
+    localStorage.removeItem(this._reportToKey); // ✅ Added
+    localStorage.removeItem(this._managerNameKey); // ✅ Added
   }
 }

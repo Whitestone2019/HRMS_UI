@@ -18,6 +18,8 @@ interface User {
   username: string;
   employeeId: string; // Assuming employeeId is part of the login response
   role: string;
+  reportTo:string;
+  managerName:string;
 }
 interface Project {
   empId: string;
@@ -38,6 +40,7 @@ export interface TraineeMaster {
   username: string;
   firstname: string;
   lastname: string;
+  empType:string;
   emailid: string;
   phonenumber: string;
   roleid: string;
