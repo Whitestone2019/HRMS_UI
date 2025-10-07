@@ -1,7 +1,7 @@
+<!-- Main Report Table -->
 <div class="report-container" *ngIf="!showSingleReport">
   <h1>Monthly Employee Report</h1>
 
-  <!-- Dropdown for selecting month -->
   <div class="dropdown-container">
     <label for="month-select">Select Month:</label>
     <select id="month-select" (click)="$event.stopPropagation()" (change)="onMonthChange($event)">
@@ -42,20 +42,26 @@
   </div>
 </div>
 
+<!-- Single Employee Report -->
 <div class="single-report-container" *ngIf="showSingleReport">
   <button (click)="backToMainPage()" class="back-btn">Back</button>
-  <h2>Employee Report for Selected Month</h2>
-  <h3>Employee Name: {{ selectedEmployee.name }}</h3>
+  <h2>Employee Report - {{ selectedEmployee.name }} ({{ selectedMonth }})</h2>
 
-  <table class="report-table">
+  <!-- View Toggle -->
+  <div class="view-toggle">
+    <button [class.active]="viewMode==='list'" (click)="viewMode='list'">List View</button>
+    <button [class.active]="viewMode==='calendar'" (click)="viewMode='calendar'">Calendar View</button>
+  </div>
+
+  <!-- List View -->
+  <table class="report-table" *ngIf="viewMode==='list'">
     <thead>
       <tr>
         <th>Date</th>
-        <th>Attendance Status</th>
-        <th>Check-In Time</th>
-        <th>Check-Out Time</th>
+        <th>Status</th>
+        <th>Check-In</th>
+        <th>Check-Out</th>
         <th>Worked Hours</th>
-        <th>ID</th>
       </tr>
     </thead>
     <tbody>
@@ -65,13 +71,36 @@
         <td>{{ record.checkin }}</td>
         <td>{{ record.checkout }}</td>
         <td>{{ record.totalHoursWorked }}</td>
-        <td>{{ record.attendanceId }}</td>
       </tr>
     </tbody>
   </table>
 
+  <!-- Calendar View -->
+  <div class="calendar-container" *ngIf="viewMode==='calendar'">
+    <div class="calendar-header">
+      <button class="nav-button" (click)="prevMonth()">&#8249;</button>
+      <h2>{{ selectedEmployee.name }} - {{ selectedMonth }}</h2>
+      <button class="nav-button" (click)="nextMonth()">&#8250;</button>
+    </div>
+
+    <div class="calendar-grid">
+      <div class="calendar-day" *ngFor="let day of daysOfWeek">{{ day }}</div>
+      <div *ngFor="let day of calendarDays" 
+           class="calendar-date"
+           [ngClass]="{
+             'present': day.status==='Present',
+             'absent': day.status==='Absent',
+             'half-day': day.status==='Half-Day',
+             'holiday': day.isSunday
+           }">
+        <div class="date">{{ day.date }}</div>
+        <div class="status">{{ day.status!=='Absent' ? day.status : '' }}</div>
+      </div>
+    </div>
+  </div>
+
   <div class="button-container">
-    <button (click)="downloadSingleEmployeeReport()" class="download-btn">Download Employee Report</button>
-    <button (click)="generateLeaveReport()" class="leave-report-btn">Employee Leave Report</button>
+    <button class="download-btn" (click)="downloadSingleEmployeeReport()">Download Employee Report</button>
+    <button class="leave-report-btn" (click)="generateLeaveReport()">Employee Leave Report</button>
   </div>
 </div>
