@@ -116,27 +116,40 @@ export class UserTraineeComponent implements OnInit {
     });
   }
 
-  submitUser(): void {
-    if (this.userForm.valid) {
-      if (this.isEdit) {
-        this.api.updateEmployee(this.empid, this.userForm.value).subscribe({
-          next: () => {
-            this.message = 'Employee updated successfully!';
-            this.router.navigate(['/dashboard/EmpDetails']);
-          },
-          error: () => this.message = 'Error updating employee'
-        });
-      } else {
-        this.api.saveUser(this.userForm.value).subscribe({
-          next: () => {
-            this.message = 'Employee added successfully!';
-            this.router.navigate(['/dashboard/EmpDetails']);
-          },
-          error: () => this.message = 'Error saving employee'
-        });
-      }
+ submitUser(): void {
+  if (this.userForm.valid) {
+    const traineeData = history.state.traineeData; // check if coming from trainee
+
+    if (this.isEdit) {
+      this.api.updateEmployee(this.empid, this.userForm.value).subscribe({
+        next: () => {
+          this.message = 'Employee updated successfully!';
+          this.router.navigate(['/dashboard/EmpDetails']);
+        },
+        error: () => this.message = 'Error updating employee'
+      });
+    } else {
+      // Save new employee
+      this.api.saveUser(this.userForm.value).subscribe({
+        next: () => {
+          this.message = 'Employee added successfully!';
+
+          // If coming from trainee, mark trainee as Inactive
+          if (traineeData) {
+            this.api.updateTraineeStatus(traineeData.trngid, 'Inactive').subscribe({
+              next: () => console.log(`Trainee ${traineeData.trngid} set to Inactive`),
+              error: (err) => console.error('Error inactivating trainee:', err)
+            });
+          }
+
+          this.router.navigate(['/dashboard/EmpDetails']);
+        },
+        error: () => this.message = 'Error saving employee'
+      });
     }
   }
+}
+
 
   submitTrainee(): void {
     if (this.traineeForm.valid) {
