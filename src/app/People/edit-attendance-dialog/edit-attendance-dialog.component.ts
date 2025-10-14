@@ -39,32 +39,41 @@ export class EditAttendanceDialogComponent {
     });
   }
 
-  save(): void {
-    if (this.editForm.valid) {
-      const formValue = this.editForm.value;
+save(): void {
+  if (this.editForm.valid) {
+    const formValue = this.editForm.value;
+    const rmoduserid = localStorage.getItem('employeeId') || '';
 
-      const requestData = {
-        attendancedate: this.data.date,
-        status: formValue.status,
-        remarks: formValue.remarks,
-        attendanceid: this.data.employeeId,
-        employeeName: this.data.employeeName,
-        rmoduserid: localStorage.getItem('employeeId') || '', // You may dynamically fetch this if needed
-        rmodtime: this.formatDateToString(new Date())
-      };
 
-      this.apiService.updateAttendance(requestData).subscribe({
-        next: (res) => {
-          this.dialogRef.close({ success: true, data: res });
-        },
-        error: (err) => {
-          this.apiService.openDialog('Error', `Failed to update attendance: ${err.message}`);
-          console.error('Error updating attendance', err);
-          this.dialogRef.close({ success: false });
-        }
-      });
+    if (rmoduserid === this.data.employeeId) {
+      this.apiService.openDialog('Error', `You are not allowed to edit this attendance.`);
+      return; // stop execution
     }
+
+    const requestData = {
+      attendancedate: this.data.date,
+      status: formValue.status,
+      remarks: formValue.remarks,
+      attendanceid: this.data.employeeId, // Fixed, cannot be changed
+      employeeName: this.data.employeeName,
+      rmoduserid: rmoduserid,
+      rmodtime: this.formatDateToString(new Date())
+    };
+
+    this.apiService.updateAttendance(requestData).subscribe({
+      next: (res) => {
+        this.dialogRef.close({ success: true, data: res });
+      },
+      error: (err) => {
+        this.apiService.openDialog('Error', `Failed to update attendance: ${err.message}`);
+        console.error('Error updating attendance', err);
+        this.dialogRef.close({ success: false });
+      }
+    });
   }
+}
+
+
 
   cancel(): void {
     this.dialogRef.close();

@@ -22,7 +22,7 @@ export class UserManagementComponent implements OnInit {
 
   constructor(private apiService: ApiService, private router: Router) {}
 
-  ngOnInit(): void {
+  ngOnInit(): void { 
     this.loadUsers();
   }
 

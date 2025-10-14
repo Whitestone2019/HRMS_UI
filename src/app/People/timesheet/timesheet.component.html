@@ -1,6 +1,16 @@
 <div class="timesheet-container">
-  <h2>Timesheet for {{ month }}/{{ year }}</h2>
-  <table class="timesheet-table" *ngIf="timesheetData.length > 0">
+  <h2>Timesheet for {{ month + 1 }}/{{ year }}</h2>
+
+  <!-- Search box -->
+  <input
+    type="text"
+    placeholder="Search by Employee ID or Name"
+    [(ngModel)]="searchTerm"
+    (input)="onSearchChange()"
+    class="search-box"
+  />
+
+  <table class="timesheet-table" *ngIf="paginatedData.length > 0">
     <thead>
       <tr>
         <th>S.No</th>
@@ -13,7 +23,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let employee of timesheetData" (click)="onRowClick(employee)">
+      <tr *ngFor="let employee of paginatedData" (click)="onRowClick(employee)">
         <td>{{ employee.sno }}</td>
         <td>{{ employee.employeeId }}</td>
         <td>{{ employee.members }}</td>
@@ -25,7 +35,16 @@
     </tbody>
   </table>
 
-  <div *ngIf="timesheetData.length === 0">
+  <div *ngIf="paginatedData.length === 0">
     No data available or loading...
+  </div>
+
+  <!-- Pagination controls -->
+  <div class="pagination" *ngIf="totalPages > 1">
+    <button (click)="prevPage()" [disabled]="currentPage === 1">&laquo; Prev</button>
+    <button *ngFor="let page of [].constructor(totalPages); let i = index"
+            (click)="goToPage(i + 1)" 
+            [class.active]="currentPage === i + 1">{{ i + 1 }}</button>
+    <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next &raquo;</button>
   </div>
 </div>

@@ -77,14 +77,14 @@ app-home-header {
   left: 60px;               
   right: 0;
   height: 50px;
-  background-color: #ffffff;
+  background-color: #f8f3f3;
   padding: 0 20px;
   display: flex;
   align-items: center;
   font-size: 15px;
   font-weight: 500;
   color: #2c3e50;
-  background-color: rgba(0, 0, 0, 0.1);
+  /* background-color: rgba(0, 0, 0, 0.1); */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #e0e0e0;
   z-index: 900;
