@@ -18,17 +18,19 @@
   text-align: center;
 }
 
-/* Search Box */
+/* Search Box Container */
 .search-box-container {
   display: flex;
   justify-content: flex-end; /* Align to right */
   margin-bottom: 20px;
+  padding-right: 10px; /* Space from the right edge */
 }
 
+/* Search Box */
 .search-box {
   padding: 10px 15px;
   width: 100%;
-  max-width: 300px; /* Adjust as needed */
+  max-width: 300px; /* Adjust width as needed */
   border: 1px solid #ccc;
   border-radius: 25px;
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
@@ -41,7 +43,6 @@
   border-color: #007bff;
   box-shadow: 0 0 8px rgba(0,123,255,0.3);
 }
-
 
 /* Table Design */
 .timesheet-table {
@@ -124,6 +125,11 @@
     padding: 10px 12px;
   }
 
+  .search-box-container {
+    justify-content: flex-end;
+    padding-right: 5px;
+  }
+
   .search-box {
     max-width: 100%;
   }
@@ -139,5 +145,10 @@
   .pagination button {
     padding: 6px 10px;
     font-size: 12px;
+  }
+
+  .search-box-container {
+    justify-content: flex-end;
+    padding-right: 0;
   }
 }

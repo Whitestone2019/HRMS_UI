@@ -1,14 +1,16 @@
 <div class="timesheet-container">
   <h2>Timesheet for {{ month + 1 }}/{{ year }}</h2>
 
-  <!-- Search box -->
-  <input
-    type="text"
-    placeholder="Search by Employee ID or Name"
-    [(ngModel)]="searchTerm"
-    (input)="onSearchChange()"
-    class="search-box"
-  />
+  <!-- Search box wrapped in container -->
+  <div class="search-box-container">
+    <input
+      type="text"
+      placeholder="Search by Employee ID or Name"
+      [(ngModel)]="searchTerm"
+      (input)="onSearchChange()"
+      class="search-box"
+    />
+  </div>
 
   <table class="timesheet-table" *ngIf="paginatedData.length > 0">
     <thead>

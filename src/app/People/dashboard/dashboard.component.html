@@ -5,7 +5,9 @@
 
   <div class="content-container">
     <!-- Show home header only if userRole is NOT null -->
- <app-home-header *ngIf="userRole !== null && selectedMenu !== 'home'"></app-home-header>
+<app-home-header 
+  *ngIf="userRole !== null && selectedMenu !== 'home' && selectedMenu !== 'project'">
+</app-home-header>
 
     <div class="content">
       <router-outlet></router-outlet> <!-- Dynamic routed content -->
