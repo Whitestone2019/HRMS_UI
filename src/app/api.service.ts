@@ -1491,7 +1491,7 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   addProject(projectData: any): Observable<any> {
     this.loaderService.show();
     const headers = new HttpHeaders().set('LoggedInEmpId', projectData.rcreUserId || '');
-    alert(projectData);
+   // alert(projectData);
     return this.http.post(`${this.apiUrl}/projects`, projectData, { headers })
       .pipe(finalize(() => this.loaderService.hide()));
   }
