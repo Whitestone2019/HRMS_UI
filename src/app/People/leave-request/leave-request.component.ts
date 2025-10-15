@@ -26,6 +26,7 @@ export class LeaveRequestComponent implements OnInit {
   filterEmpId: string = '';
   filterName: string = '';
   private filterSubject = new Subject<void>();
+  searchTerm: string = ''; // Unified search input
 
   constructor(private router: Router, private apiService: ApiService, private location: Location) {}
 
@@ -213,4 +214,16 @@ export class LeaveRequestComponent implements OnInit {
       }
     }
   }
+  onSearchChange(): void {
+  this.currentPage = 0;
+  this.filterRequests();
+}
+
+filterRequests(): void {
+  const term = this.searchTerm.toLowerCase();
+  this.filteredRequests = this.requests.filter(request =>
+    (request.empid?.toLowerCase().includes(term) || request.name?.toLowerCase().includes(term))
+  );
+  this.updatePagination();
+}
 }

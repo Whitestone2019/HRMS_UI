@@ -1,12 +1,25 @@
 <div class="container">
-  <h5>Employee Project History</h5>
+  <!-- Header with title and search -->
+  <div class="header-bar">
+    <h5>Employee Project History</h5>
+
+    <!-- Unified Search Filter -->
+    <div class="filter-bar">
+      <input
+        type="text"
+        placeholder="Search by Employee ID, Name, or Project"
+        [(ngModel)]="searchTerm"
+        (input)="applyFilters()"
+      />
+    </div>
+  </div>
 
   <!-- Error Message -->
   <div *ngIf="error" class="text-red-500 mb-4">{{ error }}</div>
 
   <!-- Employee Cards -->
   <div class="employee-cards">
-    <div *ngFor="let emp of reportingEmployees" class="employee-card">
+    <div *ngFor="let emp of filteredEmployees" class="employee-card">
       <h6>{{ emp.firstname }} {{ emp.lastname }} ({{ emp.empid }})</h6>
 
       <div *ngIf="latestProjects[emp.empid]; else noProject">
@@ -25,8 +38,6 @@
 
       <div class="actions">
         <button class="btn btn-blue" (click)="openProjectList(emp)">View All Projects</button>
-
-        <!-- Only allow Add/Edit for subordinates -->
         <button *ngIf="emp.empid !== loggedInEmpId" class="btn btn-green" (click)="openAddProjectForm(emp)">
           Add Project
         </button>
@@ -49,7 +60,7 @@
         <input type="text" [(ngModel)]="formData.empId" name="empId" readonly class="readonly"/>
 
         <input type="text" [(ngModel)]="formData.projectName" name="projectName" placeholder="Project Name" required />
-        <input type="date" [(ngModel)]="formData.projectStartDate" name="projectStartDate" placeholder="Project Start Date" required />
+        <input type="date" [(ngModel)]="formData.projectStartDate" name="projectStartDate" required />
         <input type="date" [(ngModel)]="formData.projectEndDate" name="projectEndDate" placeholder="End Date (optional)" />
         <input type="text" [(ngModel)]="formData.location" name="location" placeholder="Location" required />
         <input type="text" [(ngModel)]="formData.clientInfo" name="clientInfo" placeholder="Client Info" required />
@@ -57,7 +68,7 @@
         <input type="text" [(ngModel)]="formData.techParkName" name="techParkName" placeholder="Tech Park Name" required />
         <input type="text" [(ngModel)]="formData.vendorName" name="vendorName" placeholder="Vendor Name" required />
 
-        <select [(ngModel)]="formData.modeOfWork" name="modeOfWork">
+        <select [(ngModel)]="formData.modeOfWork" name="modeOfWork" (click)="$event.stopPropagation()">
           <option value="Onsite">Onsite</option>
           <option value="Offsite">Offsite</option>
         </select>
@@ -82,8 +93,7 @@
           <p><strong>Project:</strong> {{ proj.projectName }}</p>
           <p>
             <strong>Duration:</strong>
-            {{ proj.projectStartDate }} -
-            {{ proj.projectEndDate ? proj.projectEndDate : 'Till Date' }}
+            {{ proj.projectStartDate }} - {{ proj.projectEndDate ? proj.projectEndDate : 'Till Date' }}
           </p>
           <p><strong>Location:</strong> {{ proj.location }}</p>
           <p><strong>Client:</strong> {{ proj.clientInfo }}</p>

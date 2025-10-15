@@ -30,14 +30,16 @@ export class EmployeeProjectHistoryComponent implements OnInit {
   projects: Project[] = [];
   reportingEmployees: Employee[] = [];
   latestProjects: { [empId: string]: Project } = {};
+  filteredEmployees: Employee[] = [];
 
   selectedEmployee: Employee | null = null;
   showAddModal = false;
   showProjectListModal = false;
-  editMode = false; // add/edit toggle
+  editMode = false;
 
   loggedInEmpId = localStorage.getItem('employeeId') || '';
   error: string | null = null;
+  searchTerm: string = '';
 
   formData: Project = {
     id: 0,
@@ -62,7 +64,6 @@ export class EmployeeProjectHistoryComponent implements OnInit {
   fetchReportingEmployees(): void {
     this.apiService.getReportingEmployees(this.loggedInEmpId).subscribe({
       next: (response: Employee[]) => {
-        // Ensure manager is first
         const managerIndex = response.findIndex(emp => emp.empid === this.loggedInEmpId);
         if (managerIndex !== -1) {
           const manager = response.splice(managerIndex, 1)[0];
@@ -71,6 +72,7 @@ export class EmployeeProjectHistoryComponent implements OnInit {
           this.reportingEmployees = response;
         }
 
+        this.filteredEmployees = [...this.reportingEmployees];
         this.reportingEmployees.forEach(emp => this.fetchLatestProject(emp.empid));
       },
       error: (err) => {
@@ -85,9 +87,22 @@ export class EmployeeProjectHistoryComponent implements OnInit {
       next: (response: any) => {
         const list = response.data;
         if (list && list.length > 0) {
-          this.latestProjects[empId] = list[0]; // assuming first is latest
+          this.latestProjects[empId] = list[0];
         }
       }
+    });
+  }
+
+  applyFilters(): void {
+    const term = this.searchTerm.toLowerCase();
+    this.filteredEmployees = this.reportingEmployees.filter(emp => {
+      const project = this.latestProjects[emp.empid];
+      return (
+        emp.empid.toLowerCase().includes(term) ||
+        emp.firstname.toLowerCase().includes(term) ||
+        emp.lastname.toLowerCase().includes(term) ||
+        (project && project.projectName.toLowerCase().includes(term))
+      );
     });
   }
 
@@ -105,16 +120,13 @@ export class EmployeeProjectHistoryComponent implements OnInit {
   }
 
   openEditProjectForm(project: Project): void {
-    alert(project.empId);
-    alert(this.loggedInEmpId);
     if (project.empId === this.loggedInEmpId) {
-       this.editMode = false;
       alert("You cannot edit your own projects.");
       return;
     }
 
     this.showProjectListModal = false;
-    this.formData = { ...project }; // pre-fill form
+    this.formData = { ...project };
     this.editMode = true;
     this.showAddModal = true;
   }
@@ -141,14 +153,14 @@ export class EmployeeProjectHistoryComponent implements OnInit {
 
   onSubmit(): void {
     if (this.editMode) {
-        if (this.formData.empId === this.loggedInEmpId) {
-      alert("You cannot edit your own projects.");
-      return;
-    }
+      if (this.formData.empId === this.loggedInEmpId) {
+        alert("You cannot edit your own projects.");
+        return;
+      }
       this.apiService.updateProject(this.formData).subscribe({
         next: () => {
           this.fetchLatestProject(this.formData.empId);
-          this.openProjectList(this.selectedEmployee!); // refresh list
+          this.openProjectList(this.selectedEmployee!);
           this.closeAddProjectForm();
         },
         error: (err) => {

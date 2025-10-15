@@ -11,11 +11,14 @@
           Permission Requests
         </label>
       </div>
-      <div class="filter-inputs">
-        <input type="text" [(ngModel)]="filterEmpId" (ngModelChange)="onFilterChange()" placeholder="Filter by Employee ID">
-        <input type="text" [(ngModel)]="filterName" (ngModelChange)="onFilterChange()" placeholder="Filter by Employee Name">
-      </div>
+       <div class="filter-inputs">
+      <input 
+        type="text" 
+        [(ngModel)]="searchTerm" 
+        (ngModelChange)="onSearchChange()" 
+        placeholder="Search by Employee ID or Name">
     </div>
+  </div>
 
     <!-- Table to display requests -->
     <div *ngIf="hasData; else noDataTemplate">
@@ -41,7 +44,7 @@
             <td>{{ request.leavereason || request.permissionreason || 'N/A' }}</td>
             <td>{{ request.noofdays != null ? request.noofdays : 'N/A' }}</td>
             <td>{{ (request.startdate ? (request.startdate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
-  <td>{{ (request.enddate ? (request.enddate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
+            <td>{{ (request.enddate ? (request.enddate | date: 'yyyy-MM-dd') : 'N/A') }}</td>
             <td>{{ request.status || 'N/A' }}</td>
             <td>
               <div *ngIf="request.entitycreflg === 'N' && (request.status === 'Pending' || request.status === '') && request.empid !== currentEmpId">

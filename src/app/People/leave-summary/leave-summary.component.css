@@ -88,8 +88,13 @@ body {
   font-size: 40px;
   margin-bottom: 10px;
   transition: all 0.3s ease-in-out;
-}
+} 
 
+h5 {
+  font-size:400 1rem / 1.5rem Roboto, sans-serif;
+  /* font-weight: bold; */
+  margin-bottom: 0;
+}
 /* .icon:hover {
   transform: rotate(360deg);
 } */
