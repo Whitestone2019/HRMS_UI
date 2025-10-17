@@ -188,39 +188,72 @@ export class AttendanceComponent implements OnInit {
   }
 
   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
-    return new Promise((resolve, reject) => {
-      // Make a request to ip-api.com to get the IP geolocation information
-      const ipInfoUrl = 'https://ipapi.co/json';  // No API key required for basic usage
-
-      fetch(ipInfoUrl)
-        .then((response) => {
-          if (!response.ok) {
-            reject('Failed to fetch location based on IP.');
-          }
-          return response.json();
-        })
-       .then((data) => {
-  if (data.status === 'fail') {
-    reject('Failed to retrieve geolocation data.');
-  } else {
-    const lat = parseFloat(data.lat);
-    const lon = parseFloat(data.lon);
-
-    // Validate latitude and longitude ranges
-    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
-      reject('Invalid geolocation data received.');
-    } else {
-     // alert(`Your Location: Latitude = ${lat}, Longitude = ${lon}`);
-      resolve({ lat, lon });
+  return new Promise((resolve, reject) => {
+    if (!navigator.geolocation) {
+      reject('Geolocation is not supported by this browser.');
+      return;
     }
-  }
-})
-        .catch((error) => {
-          console.error('Error fetching location from IP:', error);
-          reject(`Error fetching location: ${error.message}`);
-        });
-    });
-  }
+ 
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        resolve({ lat, lon });
+      },
+      (error) => {
+        switch (error.code) {
+          case error.PERMISSION_DENIED:
+            reject('User denied the request for Geolocation.');
+            break;
+          case error.POSITION_UNAVAILABLE:
+            reject('Location information is unavailable.');
+            break;
+          case error.TIMEOUT:
+            reject('The request to get user location timed out.');
+            break;
+          default:
+            reject('An unknown error occurred while retrieving location.');
+        }
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  });
+}
+
+//   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
+//     return new Promise((resolve, reject) => {
+//       // Make a request to ip-api.com to get the IP geolocation information
+//       const ipInfoUrl = 'https://ipapi.co/json';  // No API key required for basic usage
+
+//       fetch(ipInfoUrl)
+//         .then((response) => {
+//           if (!response.ok) {
+//             reject('Failed to fetch location based on IP.');
+//           }
+//           return response.json();
+//         })
+//        .then((data) => {
+//   if (data.status === 'fail') {
+//     reject('Failed to retrieve geolocation data.');
+//   } else {
+//     const lat = parseFloat(data.lat);
+//     const lon = parseFloat(data.lon);
+
+//     // Validate latitude and longitude ranges
+//     if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+//       reject('Invalid geolocation data received.');
+//     } else {
+//      // alert(`Your Location: Latitude = ${lat}, Longitude = ${lon}`);
+//       resolve({ lat, lon });
+//     }
+//   }
+// })
+//         .catch((error) => {
+//           console.error('Error fetching location from IP:', error);
+//           reject(`Error fetching location: ${error.message}`);
+//         });
+//     });
+//   }
 
   private checkTimerStatusOnLoad(): void {
     this.apiService.getCheckInStatus(this.employeeId).subscribe(
@@ -261,8 +294,10 @@ export class AttendanceComponent implements OnInit {
   }
 
   private getLocationName(lat: number, lon: number): Promise<string> {
-    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
-    return this.http.get<any>(url).toPromise().then((data) => {
+    console.log("LAT>>"+lat+"LONG>>"+lon);
+   // const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&zoom=18&addressdetails=1`;
+    const url = `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`;
+   return this.http.get<any>(url).toPromise().then((data) => {
       if (data?.display_name) {
         return data.display_name;
       } else {

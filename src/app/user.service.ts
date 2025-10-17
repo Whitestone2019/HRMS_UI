@@ -20,6 +20,8 @@ export class UserService {
   private accountant: string[] = ['ACC'];
   private hr: string[] = ['HR'];
 
+  location: string = '';
+
   constructor() {}
 
   set username(name: string) {

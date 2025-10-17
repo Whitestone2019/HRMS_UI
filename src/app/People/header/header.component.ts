@@ -12,10 +12,13 @@ export class HeaderComponent implements OnInit {
   userRole: string = ''; // Store the role of the user
   isAdmin: boolean = false;
   isTrainee: boolean=false;
+  
+  userLocation: string = ''; // ✅ Add this
 
   constructor(private router: Router,private userService: UserService) {}
 
   ngOnInit(): void {
+     this.userLocation = this.userService.location || sessionStorage.getItem('userLocation') || '';
     // Fetch role from session or service
     this.userRole = this.userService.role;
     this.isAdmin = this.userService.isAdmin();
