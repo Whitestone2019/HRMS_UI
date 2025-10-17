@@ -27,18 +27,6 @@ export class LoginComponent implements OnInit {
 
   // ✅ On page load — fetch stored location or get fresh one if not available
   async ngOnInit() {
-    const savedLocation = localStorage.getItem('userLocationName');
-    const savedLat = localStorage.getItem('userLatitude');
-    const savedLon = localStorage.getItem('userLongitude');
-
-    if (savedLocation && savedLat && savedLon) {
-      // Use stored stable location
-      this.locationName = savedLocation;
-      this.latitude = savedLat;
-      this.longitude = savedLon;
-      console.log('📍 Using stored location:', savedLocation);
-    } else {
-      // Fetch fresh device location
       try {
         const { lat, lon } = await this.getDeviceLocation();
         const locationName = await this.getLocationName(lat, lon);
@@ -59,8 +47,7 @@ export class LoginComponent implements OnInit {
         console.error('Location error:', error);
         this.locationName = 'Location unavailable';
       }
-    }
-
+    
     // Optional alert
    // alert(`📍 Your location:\n${this.locationName}`);
   }
