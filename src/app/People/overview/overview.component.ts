@@ -231,7 +231,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
     return new Promise((resolve, reject) => {
       // Make a request to ip-api.com to get the IP geolocation information
-      const ipInfoUrl = 'https://ipapi.co/json/';  // No API key required for basic usage
+      const ipInfoUrl = 'https://ipapi.co/json';  // No API key required for basic usage
 
       fetch(ipInfoUrl)
         .then((response) => {
