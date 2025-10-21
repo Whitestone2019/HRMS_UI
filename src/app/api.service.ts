@@ -281,6 +281,22 @@ export class ApiService {
     );
   }
 
+   sendOtp(employeeId: string): Observable<any> {
+    const url = `${this.apiUrl}/sendOtp?employeeId=${employeeId}`;
+    return this.http.get<any>(url);
+  }
+ changePasswordWithOtp(data: { employeeId: string; otp: string; newPassword: string }): Observable<any> {
+    const url = `${this.apiUrl}/changePasswordWithOtp`;
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    this.loaderService.show();
+
+    return this.http.post<any>(url, JSON.stringify(data), { headers }).pipe(
+      tap(() => console.log('Password changed via OTP')),
+      finalize(() => this.loaderService.hide()),
+      catchError(this.handleError.bind(this))
+    );
+  }
+
   // Fetch attendance data within a date range
   fetchAttendanceData(employeeId: string, startDate: string, endDate: string): Observable<any[]> {
     const url = `${this.apiUrl}/attendance/data?employeeId=${encodeURIComponent(employeeId)}&startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`;

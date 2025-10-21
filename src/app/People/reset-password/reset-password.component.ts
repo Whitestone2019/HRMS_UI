@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ApiService } from '../../api.service';  // Assuming you have an ApiService to handle API calls
+import { ApiService } from '../../api.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,48 +8,98 @@ import { Router } from '@angular/router';
   styleUrls: ['./reset-password.component.css']
 })
 export class ResetPasswordComponent {
+  selectedOption = 'reset'; // can be 'reset' or 'forgot'
+  otpSent = false;
+  passwordVisible = false;
+  isLoading = false;
+
   resetData = {
     employeeId: '',
     oldPassword: '',
-    newPassword: ''
+    newPassword: '',
+    otp: ''
   };
+
   errorMessage: string | null = null;
   successMessage: string | null = null;
-  isLoading = false;  // Flag to indicate loading state
-  passwordVisible = false;  // Flag to toggle password visibility
 
   constructor(private apiService: ApiService, private router: Router) {}
 
-  // Toggle the password visibility
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }
 
-  resetPassword() {
-    if (!this.resetData.employeeId || !this.resetData.oldPassword || !this.resetData.newPassword) {
-        this.errorMessage = 'Please fill in all fields.';
-        return;
-    }
+  sendOtp() {
+    this.errorMessage = null;
+    this.successMessage = null;
 
-    if (this.resetData.newPassword.length < 6) {
-        this.errorMessage = 'Password must be at least 6 characters long.';
-        return;
+    if (!this.resetData.employeeId) {
+      this.errorMessage = 'Please enter your Employee ID.';
+      return;
     }
 
     this.isLoading = true;
-
-    this.apiService.resetPassword(this.resetData).subscribe(
-        (response) => {
-            this.successMessage = response.message || 'Password reset successful!';
-            this.errorMessage = null;
-            this.isLoading = false;
-            this.router.navigate(['/login']);
-        },
-        (error) => {
-            this.isLoading = false;
-            this.errorMessage = error.error; // Error message from handleError
-            console.error('Reset password error:', error); // Log for debugging
-        }
-    );
-}
+    this.apiService.sendOtp(this.resetData.employeeId).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.otpSent = true;
+        this.successMessage = res.message || 'OTP sent to registered email.';
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.errorMessage = error.error?.error || 'Failed to send OTP.';
+      }
+    });
   }
+
+  onSubmit() {
+    this.errorMessage = null;
+    this.successMessage = null;
+
+    if (this.selectedOption === 'reset') {
+      this.resetPassword();
+    } else {
+      this.changePasswordWithOtp();
+    }
+  }
+
+  resetPassword() {
+    if (!this.resetData.employeeId || !this.resetData.oldPassword || !this.resetData.newPassword) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.apiService.resetPassword(this.resetData).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.successMessage = res.message || 'Password reset successfully.';
+        setTimeout(() => this.router.navigate(['/login']), 2000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Failed to reset password.';
+      }
+    });
+  }
+
+  changePasswordWithOtp() {
+    if (!this.resetData.employeeId || !this.resetData.otp || !this.resetData.newPassword) {
+      this.errorMessage = 'Please fill in all required fields.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.apiService.changePasswordWithOtp(this.resetData).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.successMessage = res.message || 'Password changed successfully.';
+        setTimeout(() => this.router.navigate(['/login']), 2000);
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.errorMessage = err.error?.error || 'Invalid OTP or failed to update password.';
+      }
+    });
+  }
+}
