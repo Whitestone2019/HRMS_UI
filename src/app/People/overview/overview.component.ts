@@ -7,6 +7,8 @@ import { ProfileComponent } from './profile/profile.component';
 import { WorkscheduleComponent } from './workschedule/workschedule.component';
 import { ApiService } from '../../api.service';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { IdCardPhotoComponent } from './id-card-photo/id-card-photo.component';
 
 @Component({
   selector: 'app-overview',
@@ -22,7 +24,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   managerId: string = localStorage.getItem('managerId') || 'Unknown';
   managerName: string = localStorage.getItem('managerName') || 'Unknown';
 
-  
+    hasUploaded: boolean = false;
   // Attendance tracking
   employeeStatus: string = 'Out';
   timerDisplay: string = '00:00:00';
@@ -31,6 +33,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   checkInLocation: string = '';
   checkOutLocation: string = '';
   srlNum: number = 0;
+  profilePicture: string = '';
 
   // // Team data
   // reportees = [
@@ -51,6 +54,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   today_day: string = '';
   yesterday_label: string = "Yesterday's";
   today_label: string = "Today's";
+  
 
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef, static: true })
   container!: ViewContainerRef;
@@ -59,13 +63,15 @@ export class OverviewComponent implements OnInit, OnDestroy {
     private attendanceService: AttendanceService,
     private dialog: MatDialog,
     private apiService: ApiService,
-    private http: HttpClient
+    private http: HttpClient,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
     this.subscribeToAttendanceUpdates();
     this.getAttendancePieData();
     this.checkTimerStatusOnLoad();
+     this.loadProfilePicture();
   }
 
   ngOnDestroy(): void {
@@ -75,6 +81,18 @@ export class OverviewComponent implements OnInit, OnDestroy {
   // ======================
   // CORE FUNCTIONALITY
   // ======================
+
+  loadProfilePicture() {
+  this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
+    next: (res: any) => {
+      // Assuming API returns { photoUrl: '...' } or Base64 string
+      this.profilePicture = res.photoUrl || 'assets/default-profile.png';
+    },
+    error: () => {
+      this.profilePicture = 'assets/default-profile.png'; // fallback image
+    }
+  });
+}
 
   private subscribeToAttendanceUpdates(): void {
     this.attendanceService.isCheckedIn$.subscribe((status) => {
@@ -338,6 +356,10 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.container.createComponent(component);
   }
 
+   goToIdCardForm() {
+    this.router.navigate(['dashboard/iddetails']);
+  }
+
   getAttendancePieData(): void {
     const today = new Date().toISOString().slice(0, 10);
     this.apiService.getAttendancePieData(this.employeeId, today).subscribe(
@@ -352,5 +374,27 @@ export class OverviewComponent implements OnInit, OnDestroy {
       },
       (error) => console.error('Failed to load pie chart data:', error)
     );
+  }
+
+  checkIfAlreadyUploaded() {
+    this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
+      next: (data: any) => {
+        if (data) {
+          this.hasUploaded = true; // Photo exists
+        }
+      },
+      error: () => {
+        this.hasUploaded = false;
+      }
+    });
+  }
+
+  openIdCardDialog() {
+    if (!this.hasUploaded) {
+      this.dialog.open(IdCardPhotoComponent, {
+        width: '600px',
+        disableClose: true
+      });
+    }
   }
 }

@@ -1542,7 +1542,22 @@ updateTrainee(trngid: string, trainee: TraineeMaster): Observable<any> {
   return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee);
 }
 
+getPhotoByEmpId(empId: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/photo/${empId}`);
+}
 
+
+uploadPhoto(formData: FormData): Observable<any> {
+    return this.http.post(`${this.apiUrl}/upload`, formData);
+  }
+
+  getAllPhotos(): Observable<any> {
+    return this.http.get(`${this.apiUrl}/list`);
+  }
+
+  downloadPhoto(id: number): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/download/${id}`, { responseType: 'blob' });
+  }
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
     console.error('Error occurred:', error); // Log error for debugging

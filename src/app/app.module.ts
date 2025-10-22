@@ -67,6 +67,7 @@ import { UserTraineeComponent } from './People/user-trainee/user-trainee.compone
 import { LocationAllowanceComponent } from './Payroll/components/settings/location-allowance/location-allowance.component';
 import { UserManagementComponent } from './People/user-management/user-management.component';
 import { EmployeeProjectHistoryComponent } from './People/employee-history/employee-history.component';
+import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-photo.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -114,7 +115,8 @@ import { EmployeeProjectHistoryComponent } from './People/employee-history/emplo
     UserTraineeComponent,
     LocationAllowanceComponent,
     UserManagementComponent,
-   EmployeeProjectHistoryComponent
+   EmployeeProjectHistoryComponent,
+   IdCardPhotoComponent
   ],
   imports: [
     BrowserModule,
