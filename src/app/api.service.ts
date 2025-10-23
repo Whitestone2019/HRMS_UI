@@ -1520,49 +1520,91 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   }
 
   // ✅ Update project
+ uploadPhoto(formData: FormData): Observable<any> {
+    this.loaderService.show();
+    return this.http.post(`${this.apiUrl}/upload`, formData)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
+  }
+
   updateProject(project: any): Observable<any> {
     this.loaderService.show();
     return this.http.put(`${this.apiUrl}/project/${project.id}`, project)
-      .pipe(finalize(() => this.loaderService.hide()));
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
   }
 
- getEmployeeById(empid: string): Observable<Usermaintenance> {
-  return this.http.get<Usermaintenance>(`${this.apiUrl}/employeesforEdit/${empid}`);
-}
+  getEmployeeById(empid: string): Observable<Usermaintenance> {
+    this.loaderService.show();
+    return this.http.get<Usermaintenance>(`${this.apiUrl}/employeesforEdit/${empid}`)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
+  }
 
-updateEmployee(empid: string, user: Usermaintenance): Observable<any> {
-  return this.http.put(`${this.apiUrl}/employees/${empid}`, user);
-}
+  updateEmployee(empid: string, user: Usermaintenance): Observable<any> {
+    this.loaderService.show();
+    return this.http.put(`${this.apiUrl}/employees/${empid}`, user)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
+  }
 
-getTraineeById(trngid: string): Observable<TraineeMaster> {
-  return this.http.get<TraineeMaster>(`${this.apiUrl}/trainees/${trngid}`);
-}
+  getTraineeById(trngid: string): Observable<TraineeMaster> {
+    this.loaderService.show();
+    return this.http.get<TraineeMaster>(`${this.apiUrl}/trainees/${trngid}`)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
+  }
 
-updateTrainee(trngid: string, trainee: TraineeMaster): Observable<any> {
-  return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee);
-}
+  updateTrainee(trngid: string, trainee: TraineeMaster): Observable<any> {
+    this.loaderService.show();
+    return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
+  }
 
-getPhotoByEmpId(empId: string): Observable<Blob> {
-  return this.http.get(`${this.apiUrl}/photo/${empId}`, { responseType: 'blob' });
-}
-
-
-
-uploadPhoto(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/upload`, formData);
+  getPhotoByEmpId(empId: string): Observable<Blob> {
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/photo/${empId}`, { responseType: 'blob' })
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
   }
 
   getAllPhotos(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/list`);
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/list`)
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
   }
 
   downloadPhoto(id: number): Observable<Blob> {
-    return this.http.get(`${this.apiUrl}/download/${id}`, { responseType: 'blob' });
+    this.loaderService.show();
+    return this.http.get(`${this.apiUrl}/download/${id}`, { responseType: 'blob' })
+      .pipe(
+        finalize(() => this.loaderService.hide()),
+        catchError(err => this.handleError(err))
+      );
   }
+
   private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
-    console.error('Error occurred:', error); // Log error for debugging
-    this.openDialog('Error', message); // Open dialog with error message
+    console.error('Error occurred:', error);
+    this.openDialog('Error', message);
     return throwError(() => new Error(message));
   }
 
@@ -1572,7 +1614,4 @@ uploadPhoto(formData: FormData): Observable<any> {
       data: { title, message },
     });
   }
-
-  
-
 }
