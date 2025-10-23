@@ -114,22 +114,31 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  openPhotoPopup(employeeId: string): void {
-    this.apiService.getPhotoByEmpId(employeeId).subscribe({
-      next: (blob: Blob) => {
-        if (!blob || blob.size === 0) {
-          alert('Photo not available.');
-          return;
-        }
-        const imageBlob = new Blob([blob], { type: 'image/jpeg' });
-        const url = URL.createObjectURL(imageBlob);
-        const dialogRef = this.dialog.open(PhotoDialogComponent, {
-          data: { photoUrl: url, fileName: `${employeeId}.jpg` },
-          width: '400px'
-        });
-        dialogRef.afterClosed().subscribe(() => { URL.revokeObjectURL(url); });
-      },
-      error: (err) => { console.error('Error fetching photo:', err); alert('Photo not available.'); }
-    });
-  }
+  openPhotoPopup(employee: any): void {
+  const employeeId = employee.empid || employee.trngid;
+  const employeeName = `${employee.firstname}_${employee.lastname}`;
+
+  this.apiService.getPhotoByEmpId(employeeId).subscribe({
+    next: (blob: Blob) => {
+      if (!blob || blob.size === 0) {
+        alert('Photo not available.');
+        return;
+      }
+      const imageBlob = new Blob([blob], { type: 'image/jpeg' });
+      const url = URL.createObjectURL(imageBlob);
+
+      const dialogRef = this.dialog.open(PhotoDialogComponent, {
+        data: { 
+          photoUrl: url, 
+          fileName: `${employeeId}_${employeeName}.jpg` 
+        },
+        width: '400px'
+      });
+
+      dialogRef.afterClosed().subscribe(() => { URL.revokeObjectURL(url); });
+    },
+    error: (err) => { console.error('Error fetching photo:', err); alert('Photo not available.'); }
+  });
+}
+
 }

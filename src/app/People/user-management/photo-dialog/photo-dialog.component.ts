@@ -6,7 +6,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
   template: `
     <div class="photo-dialog">
       <img [src]="data.photoUrl" alt="User Photo" class="popup-photo">
-      <a [href]="data.photoUrl" download class="download-btn">Download</a>
+      <a [href]="data.photoUrl" [attr.download]="data.fileName" class="download-btn">Download</a>
       <button mat-icon-button class="close-btn" (click)="close()">✖</button>
     </div>
   `,
@@ -20,7 +20,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 export class PhotoDialogComponent {
   constructor(
     public dialogRef: MatDialogRef<PhotoDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { photoUrl: string }
+    @Inject(MAT_DIALOG_DATA) public data: { photoUrl: string, fileName: string }
   ) {}
 
   close() {
