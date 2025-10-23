@@ -1579,7 +1579,7 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/photo/${empId}`, { responseType: 'blob' })
       .pipe(
         finalize(() => this.loaderService.hide()),
-        catchError(err => this.handleError(err))
+        //catchError(err => this.handleError(err))
       );
   }
 
