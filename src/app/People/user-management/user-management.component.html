@@ -33,11 +33,11 @@
     <!-- Employees -->
     <ng-container *ngIf="userType === 'employee' && filteredEmployees.length > 0">
       <tr *ngFor="let employee of paginatedEmployees">
-        <td>
-          <a href="javascript:void(0)" (click)="openPhotoPopup(employee.empid)">
-            <img src="assets/profile-icon.png" alt="Profile" class="profile-icon">
-          </a>
-        </td>
+       <td>
+      <a href="javascript:void(0)" (click)="openPhotoPopup(employee.empid)">
+        {{employee.firstname}} {{employee.lastname}}
+      </a>
+    </td>
         <td>{{employee.empid || 'N/A'}}</td>
         <td>{{employee.firstname}} {{employee.lastname}}</td>
         <td>{{employee.emailid}}</td>
@@ -58,11 +58,11 @@
     <!-- Trainees -->
     <ng-container *ngIf="userType === 'trainee' && filteredTrainees.length > 0">
       <tr *ngFor="let trainee of paginatedTrainees">
-        <td>
-          <a href="javascript:void(0)" (click)="openPhotoPopup(trainee.trngid)">
-            <img src="assets/profile-icon.png" alt="Profile" class="profile-icon">
-          </a>
-        </td>
+         <td>
+      <a href="javascript:void(0)" (click)="openPhotoPopup(trainee.trngid)">
+        {{trainee.firstname}} {{trainee.lastname}}
+      </a>
+    </td>
         <td>{{trainee.trngid || 'N/A'}}</td>
         <td>{{trainee.firstname}} {{trainee.lastname}}</td>
         <td>{{trainee.emailid}}</td>

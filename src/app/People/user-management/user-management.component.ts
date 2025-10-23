@@ -117,8 +117,6 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-
-
 openPhotoPopup(employeeId: string): void {
   this.apiService.getPhotoByEmpId(employeeId).subscribe({
     next: (blob: Blob) => {
