@@ -1542,9 +1542,10 @@ updateTrainee(trngid: string, trainee: TraineeMaster): Observable<any> {
   return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee);
 }
 
-getPhotoByEmpId(empId: string): Observable<any> {
-  return this.http.get(`${this.apiUrl}/photo/${empId}`);
+getPhotoByEmpId(empId: string): Observable<Blob> {
+  return this.http.get(`${this.apiUrl}/photo/${empId}`, { responseType: 'blob' });
 }
+
 
 
 uploadPhoto(formData: FormData): Observable<any> {

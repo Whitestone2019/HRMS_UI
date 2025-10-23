@@ -3,12 +3,12 @@
 
   <!-- Radio buttons -->
   <div class="radio-buttons">
-    <label>
-      <input type="radio" name="formSelect" value="user" [(ngModel)]="selectedForm" /> User Maintenance
-    </label>
-    <label>
-      <input type="radio" name="formSelect" value="trainee" [(ngModel)]="selectedForm" /> Trainee Master
-    </label>
+     <label *ngIf="!disableUserRadio">
+    <input type="radio" name="formSelect" value="user" [(ngModel)]="selectedForm" /> User Maintenance
+  </label>
+  <label *ngIf="!disableTraineeRadio">
+    <input type="radio" name="formSelect" value="trainee" [(ngModel)]="selectedForm" /> Trainee Master
+  </label>
   </div>
 
   <!-- ==================== USER FORM ==================== -->

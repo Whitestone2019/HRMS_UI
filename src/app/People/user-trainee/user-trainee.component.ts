@@ -17,8 +17,11 @@ export class UserTraineeComponent implements OnInit {
   empid: string = '';
   trngid: string = '';
 
-  employees: any[] = [];   // for Repote To dropdown
-  roles: any[] = [];       // for Role dropdown
+  employees: any[] = [];
+  roles: any[] = [];
+
+  disableUserRadio: boolean = false;
+  disableTraineeRadio: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -30,7 +33,6 @@ export class UserTraineeComponent implements OnInit {
   ngOnInit(): void {
     this.initForms();
 
-    // load dropdowns
     this.api.getAllEmployeeIds().subscribe({
       next: (data) => this.employees = data,
       error: () => console.error("Failed to load employees")
@@ -41,10 +43,10 @@ export class UserTraineeComponent implements OnInit {
       error: () => console.error("Failed to load roles")
     });
 
-    // if moved from trainee → prefill employee form
     const traineeData = history.state.traineeData;
     if (traineeData) {
       this.selectedForm = 'user';
+      this.disableTraineeRadio = true; // cannot switch back
       this.userForm.patchValue({
         firstname: traineeData.firstname,
         lastname: traineeData.lastname,
@@ -56,17 +58,20 @@ export class UserTraineeComponent implements OnInit {
       });
     }
 
-    // handle edit case
     this.route.queryParams.subscribe(params => {
       if (params['type'] === 'employee' && params['empid']) {
         this.isEdit = true;
         this.selectedForm = 'user';
         this.empid = params['empid'];
+        this.disableTraineeRadio = true;
+        this.disableUserRadio = false;
         this.loadEmployee(this.empid);
       } else if (params['type'] === 'trainee' && params['trngid']) {
         this.isEdit = true;
         this.selectedForm = 'trainee';
         this.trngid = params['trngid'];
+        this.disableUserRadio = true;
+        this.disableTraineeRadio = false;
         this.loadTrainee(this.trngid);
       }
     });
@@ -116,40 +121,35 @@ export class UserTraineeComponent implements OnInit {
     });
   }
 
- submitUser(): void {
-  if (this.userForm.valid) {
-    const traineeData = history.state.traineeData; // check if coming from trainee
+  submitUser(): void {
+    if (this.userForm.valid) {
+      const traineeData = history.state.traineeData;
 
-    if (this.isEdit) {
-      this.api.updateEmployee(this.empid, this.userForm.value).subscribe({
-        next: () => {
-          this.message = 'Employee updated successfully!';
-          this.router.navigate(['/dashboard/EmpDetails']);
-        },
-        error: () => this.message = 'Error updating employee'
-      });
-    } else {
-      // Save new employee
-      this.api.saveUser(this.userForm.value).subscribe({
-        next: () => {
-          this.message = 'Employee added successfully!';
-
-          // If coming from trainee, mark trainee as Inactive
-          if (traineeData) {
-            this.api.updateTraineeStatus(traineeData.trngid, 'Inactive').subscribe({
-              next: () => console.log(`Trainee ${traineeData.trngid} set to Inactive`),
-              error: (err) => console.error('Error inactivating trainee:', err)
-            });
-          }
-
-          this.router.navigate(['/dashboard/EmpDetails']);
-        },
-        error: () => this.message = 'Error saving employee'
-      });
+      if (this.isEdit) {
+        this.api.updateEmployee(this.empid, this.userForm.value).subscribe({
+          next: () => {
+            this.message = 'Employee updated successfully!';
+            this.router.navigate(['/dashboard/EmpDetails']);
+          },
+          error: () => this.message = 'Error updating employee'
+        });
+      } else {
+        this.api.saveUser(this.userForm.value).subscribe({
+          next: () => {
+            this.message = 'Employee added successfully!';
+            if (traineeData) {
+              this.api.updateTraineeStatus(traineeData.trngid, 'Inactive').subscribe({
+                next: () => console.log(`Trainee ${traineeData.trngid} set to Inactive`),
+                error: (err) => console.error('Error inactivating trainee:', err)
+              });
+            }
+            this.router.navigate(['/dashboard/EmpDetails']);
+          },
+          error: () => this.message = 'Error saving employee'
+        });
+      }
     }
   }
-}
-
 
   submitTrainee(): void {
     if (this.traineeForm.valid) {
@@ -179,6 +179,6 @@ export class UserTraineeComponent implements OnInit {
     } else {
       this.traineeForm.reset();
     }
-    this.router.navigate(['/user-management']);
+    this.router.navigate(['dashboard/EmpDetails']);
   }
 }

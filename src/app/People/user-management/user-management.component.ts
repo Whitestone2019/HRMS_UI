@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService, TraineeMaster, Usermaintenance } from '../../api.service';
 import { Router } from '@angular/router';
+import { MatDialog } from '@angular/material/dialog';
+import { PhotoDialogComponent } from './photo-dialog/photo-dialog.component';
 
 @Component({
   selector: 'app-user-management',
@@ -20,7 +22,7 @@ export class UserManagementComponent implements OnInit {
   pageSize: number = 5;
   totalPages: number = 1;
 
-  constructor(private apiService: ApiService, private router: Router) {}
+  constructor(private apiService: ApiService, private router: Router, private dialog: MatDialog) {}
 
   ngOnInit(): void { 
     this.loadUsers();
@@ -110,5 +112,24 @@ export class UserManagementComponent implements OnInit {
         error: (err) => console.error('Error updating trainee status:', err)
       });
     }
+  }
+
+  openPhotoPopup(employeeId: string): void {
+    this.apiService.getPhotoByEmpId(employeeId).subscribe({
+      next: (blob: Blob) => {
+        if (!blob || blob.size === 0) {
+          alert('Photo not available.');
+          return;
+        }
+        const imageBlob = new Blob([blob], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(imageBlob);
+        const dialogRef = this.dialog.open(PhotoDialogComponent, {
+          data: { photoUrl: url, fileName: `${employeeId}.jpg` },
+          width: '400px'
+        });
+        dialogRef.afterClosed().subscribe(() => { URL.revokeObjectURL(url); });
+      },
+      error: (err) => { console.error('Error fetching photo:', err); alert('Photo not available.'); }
+    });
   }
 }

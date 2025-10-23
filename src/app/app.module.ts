@@ -13,6 +13,8 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCardModule } from '@angular/material/card'; // Added for calendar card UI
+import { MatIconButton } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
 
 // Components
 import { AppComponent } from './app.component';
@@ -68,6 +70,7 @@ import { LocationAllowanceComponent } from './Payroll/components/settings/locati
 import { UserManagementComponent } from './People/user-management/user-management.component';
 import { EmployeeProjectHistoryComponent } from './People/employee-history/employee-history.component';
 import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-photo.component';
+import { PhotoDialogComponent } from './People/user-management/photo-dialog/photo-dialog.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -116,7 +119,9 @@ import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-ph
     LocationAllowanceComponent,
     UserManagementComponent,
    EmployeeProjectHistoryComponent,
-   IdCardPhotoComponent
+   IdCardPhotoComponent,
+   PhotoDialogComponent
+
   ],
   imports: [
     BrowserModule,
@@ -130,9 +135,10 @@ import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-ph
     MatInputModule,
     MatButtonModule,
     MatDialogModule,
-    MatCardModule // Added for card-based UI
-    ,
-    MatOption
+    MatCardModule,
+    MatOption,
+    MatIconButton,
+    MatIconModule
 ],
   exports: [
     AdminMenuComponent // For external use in other modules
