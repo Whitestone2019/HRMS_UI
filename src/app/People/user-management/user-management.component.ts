@@ -22,7 +22,10 @@ export class UserManagementComponent implements OnInit {
   pageSize: number = 5;
   totalPages: number = 1;
 
-  constructor(private apiService: ApiService, private router: Router, private dialog: MatDialog) {}
+  selectedPhotoUrl: string | null = null;
+  isPhotoPopupOpen: boolean = false;
+
+  constructor(private apiService: ApiService, private router: Router,private dialog: MatDialog) {}
 
   ngOnInit(): void { 
     this.loadUsers();
@@ -114,31 +117,31 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-  openPhotoPopup(employee: any): void {
-  const employeeId = employee.empid || employee.trngid;
-  const employeeName = `${employee.firstname}_${employee.lastname}`;
 
+
+openPhotoPopup(employeeId: string): void {
   this.apiService.getPhotoByEmpId(employeeId).subscribe({
     next: (blob: Blob) => {
-      if (!blob || blob.size === 0) {
-        alert('Photo not available.');
-        return;
-      }
+      // Create a new Blob with type image/jpeg
       const imageBlob = new Blob([blob], { type: 'image/jpeg' });
       const url = URL.createObjectURL(imageBlob);
 
+      // Open dialog
       const dialogRef = this.dialog.open(PhotoDialogComponent, {
-        data: { 
-          photoUrl: url, 
-          fileName: `${employeeId}_${employeeName}.jpg` 
-        },
+        data: { photoUrl: url, fileName: `${employeeId}.jpg` }, // pass filename
         width: '400px'
       });
 
-      dialogRef.afterClosed().subscribe(() => { URL.revokeObjectURL(url); });
+      dialogRef.afterClosed().subscribe(() => {
+        URL.revokeObjectURL(url); // cleanup memory
+      });
     },
-    error: (err) => { console.error('Error fetching photo:', err); alert('Photo not available.'); }
+    error: (err) => {
+      console.error('Error fetching photo:', err);
+      alert('Failed to load photo.');
+    }
   });
 }
+
 
 }
