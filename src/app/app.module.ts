@@ -71,6 +71,7 @@ import { UserManagementComponent } from './People/user-management/user-managemen
 import { EmployeeProjectHistoryComponent } from './People/employee-history/employee-history.component';
 import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-photo.component';
 import { PhotoDialogComponent } from './People/user-management/photo-dialog/photo-dialog.component';
+import { UpdateLeaveComponent } from './People/update-leave/update-leave.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -120,7 +121,8 @@ import { PhotoDialogComponent } from './People/user-management/photo-dialog/phot
     UserManagementComponent,
    EmployeeProjectHistoryComponent,
    IdCardPhotoComponent,
-   PhotoDialogComponent
+   PhotoDialogComponent,
+   UpdateLeaveComponent
 
   ],
   imports: [

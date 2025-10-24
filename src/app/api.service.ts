@@ -21,6 +21,12 @@ interface User {
   reportTo:string;
   managerName:string;
 }
+
+export interface UpdateLeavePayload {
+  empId: string;
+  leaveTaken: number;
+}
+
 interface Project {
   empId: string;
   name: string;
@@ -1599,6 +1605,10 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
         finalize(() => this.loaderService.hide()),
         catchError(err => this.handleError(err))
       );
+  }
+
+  updateLeaveTaken(payload: UpdateLeavePayload): Observable<any> {
+    return this.http.put(`${this.apiUrl}/updateLeaveTaken`, payload);
   }
 
   private handleError(error: HttpErrorResponse): Observable<never> {

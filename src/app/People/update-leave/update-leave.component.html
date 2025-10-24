@@ -1,0 +1,26 @@
+<div class="update-leave-container">
+  <h2>Update Leave Taken</h2>
+
+  <form (ngSubmit)="updateLeave()" #leaveForm="ngForm">
+
+    <!-- Employee ID -->
+    <div class="form-group">
+      <label for="empId">Employee ID:</label>
+      <input type="text" id="empId" name="empId" [(ngModel)]="empId" required />
+    </div>
+
+    <!-- Leave Taken -->
+    <div class="form-group">
+      <label for="leaveTaken">Leave Taken (Days):</label>
+      <input type="number" id="leaveTaken" name="leaveTaken" [(ngModel)]="leaveTaken" step="0.5" required />
+    </div>
+
+    <!-- Submit -->
+    <button type="submit" [disabled]="!leaveForm.form.valid">Update Leave</button>
+  </form>
+
+  <!-- Status Message -->
+  <p *ngIf="message" [ngClass]="{'success-msg': success, 'error-msg': !success}">
+    {{ message }}
+  </p>
+</div>

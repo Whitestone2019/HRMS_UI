@@ -59,6 +59,7 @@ import { LocationAllowanceComponent } from './Payroll/components/settings/locati
 import { UserManagementComponent } from './People/user-management/user-management.component';
 import { EmployeeProjectHistoryComponent } from './People/employee-history/employee-history.component';
 import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-photo.component';
+import { UpdateLeaveComponent } from './People/update-leave/update-leave.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -137,6 +138,7 @@ export const routes: Routes = [
       { path: 'useradd', component: UserTraineeComponent },
       { path: 'project', component: EmployeeProjectHistoryComponent },
       { path: 'iddetails', component: IdCardPhotoComponent },
+       { path: 'updateleave', component: UpdateLeaveComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default child route set to Overview
     ]
   },
