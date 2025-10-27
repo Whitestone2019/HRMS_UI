@@ -1576,7 +1576,7 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/trainees/${trngid}`, trainee)
       .pipe(
         finalize(() => this.loaderService.hide()),
-        catchError(err => this.handleError(err))
+       // catchError(err => this.handleError(err))
       );
   }
 
@@ -1584,7 +1584,7 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
     this.loaderService.show();
     return this.http.get(`${this.apiUrl}/photo/${empId}`, { responseType: 'blob' })
       .pipe(
-        finalize(() => this.loaderService.hide()),
+        finalize(() => this.loaderService.hide())
         //catchError(err => this.handleError(err))
       );
   }
@@ -1593,8 +1593,8 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
     this.loaderService.show();
     return this.http.get(`${this.apiUrl}/list`)
       .pipe(
-        finalize(() => this.loaderService.hide()),
-        catchError(err => this.handleError(err))
+        finalize(() => this.loaderService.hide())
+       // catchError(err => this.handleError(err))
       );
   }
 
@@ -1602,16 +1602,48 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
     this.loaderService.show();
     return this.http.get(`${this.apiUrl}/download/${id}`, { responseType: 'blob' })
       .pipe(
-        finalize(() => this.loaderService.hide()),
-        catchError(err => this.handleError(err))
+        finalize(() => this.loaderService.hide())
+        //catchError(err => this.handleError(err))
       );
   }
 
   updateLeaveTaken(payload: UpdateLeavePayload): Observable<any> {
-    return this.http.put(`${this.apiUrl}/updateLeaveTaken`, payload);
+    this.loaderService.show();
+    return this.http.put(`${this.apiUrl}/updateLeaveTaken`, payload).pipe(
+        finalize(() => this.loaderService.hide()));
   }
 
-  private handleError(error: HttpErrorResponse): Observable<never> {
+submitAttendanceChangeRequest(payload: any) {
+  console.log(payload);
+  this.loaderService.show();
+  return this.http.post(`${this.apiUrl}/attendance/requestChange`, payload).pipe(
+        finalize(() => this.loaderService.hide()),catchError(err => this.handleError(err)));
+}
+
+// Fetch pending requests for manager
+getPendingAttendanceRequests(managerId: string) {
+  this.loaderService.show();
+  return this.http.get(`${this.apiUrl}/requests/pending/${managerId}`).pipe(
+        finalize(() => this.loaderService.hide()));
+}
+
+// Approve or reject request
+updateAttendanceRequestStatus(payload: any) {
+  this.loaderService.show();
+  return this.http.post(`${this.apiUrl}/requests/approve`, payload).pipe(
+        finalize(() => this.loaderService.hide()));
+}
+
+getCheckInEligibility(employeeId: string): Observable<any> {
+  this.loaderService.show();
+  return this.http.get(`${this.apiUrl}/attendance/checkin/eligibility/${employeeId}`).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError(err => this.handleError(err))
+  );
+}
+
+
+private handleError(error: HttpErrorResponse): Observable<never> {
     const message = error.error?.message || 'An unknown error occurred.';
     console.error('Error occurred:', error);
     this.openDialog('Error', message);

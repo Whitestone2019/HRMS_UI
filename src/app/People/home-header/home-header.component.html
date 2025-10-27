@@ -11,6 +11,8 @@
     <a *ngIf="selectedMenu === 'attendance'" routerLink="/dashboard/attendance" routerLinkActive="active">Attendance Summary</a>
     <a *ngIf="selectedMenu === 'attendance'" routerLink="/dashboard/timesheet" routerLinkActive="active">TimeSheet</a>
     <a *ngIf="selectedMenu === 'attendance' && isAdmin" routerLink="/dashboard/attendanceAll" routerLinkActive="active">Employee Attendance Summary</a>
+    <a *ngIf="selectedMenu === 'attendance'"  routerLink="/dashboard/attendanceApproval" routerLinkActive="active">Attendance Approval</a>
+    
     <!-- Show tasks-related links when 'tasks' is selected -->
     <a *ngIf="selectedMenu === 'tasks'" routerLink="/tasks" routerLinkActive="active">Tasks</a>
     <!-- Show tasks-related links when 'leave tracker -->

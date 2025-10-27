@@ -1,0 +1,46 @@
+<div class="attendance-approval-container">
+  <h2>Attendance Change Requests</h2>
+
+  <table *ngIf="requests.length > 0" border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>Employee ID</th>
+        <th>Name</th>
+        <th>Requested Date</th>
+        <th>Request Status</th>
+        <th>Remarks</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let req of requests" [class.self-request]="req.employeeId === managerId">
+        <td>{{ req.employeeId }}</td>
+        <td>
+          {{ req.employeeName }}
+          <span *ngIf="req.employeeId === managerId" class="self-label">(My Request)</span>
+        </td>
+        <td>{{ req.attendanceDate | date:'dd-MM-yyyy' }}</td>
+        <td>{{ req.requestedStatus }}</td>
+        <td>{{ req.remarks }}</td>
+        <td>
+          <button 
+            (click)="approve(req)" 
+            [disabled]="processedRequests.has(req.id) || req.status !== 'Pending' || req.employeeId === managerId">
+            Approve
+          </button>
+          <button 
+            (click)="reject(req)" 
+            [disabled]="processedRequests.has(req.id) || req.status !== 'Pending' || req.employeeId === managerId">
+            Reject
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p *ngIf="requests.length === 0">No pending attendance requests.</p>
+
+  <p *ngIf="message" [ngClass]="{'success-msg': success, 'error-msg': !success}">
+    {{ message }}
+  </p>
+</div>

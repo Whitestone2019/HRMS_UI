@@ -367,14 +367,17 @@ handleDateClick(arg: any): void {
   const today = new Date();
   today.setUTCHours(0, 0, 0, 0);
 
-  const sevenDaysAgo = new Date(today);
-  sevenDaysAgo.setUTCDate(today.getUTCDate() - 7);
+  // 📅 Payroll editable range: 27th of previous month → Yesterday of current month
+  const firstEditableDate = new Date(today.getFullYear(), today.getMonth() - 1, 27);
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  yesterday.setUTCHours(0, 0, 0, 0);
 
-  // Only allow edit if clicked date is between sevenDaysAgo and today
-  if (clickedDate >= sevenDaysAgo && clickedDate <= today) {
+  // ✅ Allow edit only if clicked date is within this range
+  if (clickedDate >= firstEditableDate && clickedDate <= yesterday) {
     const clickedDateStr = clickedDate.toISOString().split('T')[0];
 
-    const event = arg.view.calendar.getEvents().find((ev: CustomEvent) => {
+    const event = arg.view.calendar.getEvents().find((ev: any) => {
       if (!ev.start) return false;
       const evDate = new Date(ev.start);
       evDate.setUTCHours(0, 0, 0, 0);
@@ -382,31 +385,32 @@ handleDateClick(arg: any): void {
     });
 
     const currentStatus = event?.extendedProps?.status || '';
-    const remarks = ''; // Add remarks if available
+    const remarks = '';
 
-  const dialogRef = this.dialog.open(EditAttendanceDialogComponent, {
-  width: '400px',
-  data: {
-    date: clickedDate,
-    currentStatus,
-    remarks,
-    employeeId: this.employeeId,
-    employeeName: this.employeeName
-  }
-});
-
+    const dialogRef = this.dialog.open(EditAttendanceDialogComponent, {
+      width: '400px',
+      data: {
+        date: clickedDate,
+        currentStatus,
+        remarks,
+        employeeId: this.employeeId,
+        employeeName: this.employeeName
+      }
+    });
 
     dialogRef.afterClosed().subscribe(result => {
       if (result?.value) {
         console.log('[Dialog Result]', result.value);
-        // Optional: Update event or make API call here
+        // TODO: Update event or trigger API call to save changes
       }
     });
+
   } else {
-    alert('You can only edit attendance for today and the last 7 days.');
+    alert('You can only edit attendance from the 27th of the previous month up to yesterday’s date.');
   }
 }
+
 goBack(): void {
-    this.router.navigate(['/timesheet']);
+    this.router.navigate(['/dashboard/timesheet']);
   }
 }

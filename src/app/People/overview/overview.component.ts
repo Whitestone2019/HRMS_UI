@@ -152,15 +152,34 @@ export class OverviewComponent implements OnInit, OnDestroy {
   // CHECK-IN/CHECK-OUT
   // ======================
 
-  checkIn(): void {
-    const dialogRef = this.dialog.open(CheckInDialogComponent);
+checkIn(): void {
+  this.apiService.getCheckInEligibility(this.employeeId).subscribe(
+    (response: any) => {
+      if (response.eligible) {
+        // 🟢 Show message (like week-off info) before check-in
+        if (response.message) {
+          alert(response.message);
+        }
 
-    dialogRef.afterClosed().subscribe((status) => {
-      if (status) {
-        this.initiateCheckInProcess(status);
+        // ✅ Open Check-In dialog
+        const dialogRef = this.dialog.open(CheckInDialogComponent);
+        dialogRef.afterClosed().subscribe((status) => {
+          if (status) {
+            this.initiateCheckInProcess(status);
+          }
+        });
+      } else {
+        this.router.navigate(['/dashboard/timesheet']);
       }
-    });
-  }
+    },
+    (error) => {
+      console.error('Error checking eligibility:', error);
+    }
+  );
+}
+
+
+
 
   private async initiateCheckInProcess(status: string): Promise<void> {
     try {
@@ -389,12 +408,20 @@ export class OverviewComponent implements OnInit, OnDestroy {
     });
   }
 
-  openIdCardDialog() {
-    if (!this.hasUploaded) {
-      this.dialog.open(IdCardPhotoComponent, {
-        width: '600px',
-        disableClose: true
-      });
-    }
+ openIdCardDialog(): void {
+  // 🚫 Temporary restriction message
+  alert('This link has expired. Please contact your administrator or HR team for assistance.');
+
+  // 🧩 Uncomment the following when you re-enable photo upload:
+  /*
+  if (!this.hasUploaded) {
+    this.dialog.open(IdCardPhotoComponent, {
+      width: '600px',
+      disableClose: true,
+      data: { employeeId: this.employeeId } // optional data pass
+    });
   }
+  */
+}
+
 }
