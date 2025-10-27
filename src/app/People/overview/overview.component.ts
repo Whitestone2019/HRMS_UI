@@ -153,10 +153,22 @@ export class OverviewComponent implements OnInit, OnDestroy {
   // ======================
 
 checkIn(): void {
+  // 🟢 If employeeId starts with "WS", skip eligibility check
+  if (this.employeeId && this.employeeId.toUpperCase().startsWith('WS')) {
+    const dialogRef = this.dialog.open(CheckInDialogComponent);
+    dialogRef.afterClosed().subscribe((status) => {
+      if (status) {
+        this.initiateCheckInProcess(status);
+      }
+    });
+    return; // Exit early — no need to call backend
+  }
+
+  // 🔍 Otherwise, proceed with eligibility check
   this.apiService.getCheckInEligibility(this.employeeId).subscribe(
     (response: any) => {
       if (response.eligible) {
-        // 🟢 Show message (like week-off info) before check-in
+        // 🟢 Show optional message before check-in
         if (response.message) {
           alert(response.message);
         }
@@ -169,6 +181,7 @@ checkIn(): void {
           }
         });
       } else {
+        // 🔴 Redirect if not eligible
         this.router.navigate(['/dashboard/timesheet']);
       }
     },
