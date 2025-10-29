@@ -150,60 +150,60 @@ export class OverviewComponent implements OnInit, OnDestroy {
 // ======================
   // CHECK-IN/CHECK-OUT without eligible
   // ======================
-  checkIn(): void {
-  // ✅ Always open the Check-In dialog (no eligibility check)
-  const dialogRef = this.dialog.open(CheckInDialogComponent);
+//   checkIn(): void {
+//   // ✅ Always open the Check-In dialog (no eligibility check)
+//   const dialogRef = this.dialog.open(CheckInDialogComponent);
 
-  dialogRef.afterClosed().subscribe((status) => {
-    if (status) {
-      this.initiateCheckInProcess(status);
-    }
-  });
-}
+//   dialogRef.afterClosed().subscribe((status) => {
+//     if (status) {
+//       this.initiateCheckInProcess(status);
+//     }
+//   });
+// }
 
 
   // ======================
   // CHECK-IN/CHECK-OUT with eligible
   // ======================
 
-// checkIn(): void {
-//   // 🟢 If employeeId starts with "WS", skip eligibility check
-//   if (this.employeeId && this.employeeId.toUpperCase().startsWith('WS')) {
-//     const dialogRef = this.dialog.open(CheckInDialogComponent);
-//     dialogRef.afterClosed().subscribe((status) => {
-//       if (status) {
-//         this.initiateCheckInProcess(status);
-//       }
-//     });
-//     return; // Exit early — no need to call backend
-//   }
+checkIn(): void {
+  // 🟢 If employeeId starts with "WS", skip eligibility check
+  if (this.employeeId && this.employeeId.toUpperCase().startsWith('WS')) {
+    const dialogRef = this.dialog.open(CheckInDialogComponent);
+    dialogRef.afterClosed().subscribe((status) => {
+      if (status) {
+        this.initiateCheckInProcess(status);
+      }
+    });
+    return; // Exit early — no need to call backend
+  }
 
-//   // 🔍 Otherwise, proceed with eligibility check
-//   this.apiService.getCheckInEligibility(this.employeeId).subscribe(
-//     (response: any) => {
-//       if (response.eligible) {
-//         // 🟢 Show optional message before check-in
-//         if (response.message) {
-//           alert(response.message);
-//         }
+  // 🔍 Otherwise, proceed with eligibility check
+  this.apiService.getCheckInEligibility(this.employeeId).subscribe(
+    (response: any) => {
+      if (response.eligible) {
+        // 🟢 Show optional message before check-in
+        if (response.message) {
+          alert(response.message);
+        }
 
-//         // ✅ Open Check-In dialog
-//         const dialogRef = this.dialog.open(CheckInDialogComponent);
-//         dialogRef.afterClosed().subscribe((status) => {
-//           if (status) {
-//             this.initiateCheckInProcess(status);
-//           }
-//         });
-//       } else {
-//         // 🔴 Redirect if not eligible
-//         this.router.navigate(['/dashboard/timesheet']);
-//       }
-//     },
-//     (error) => {
-//       console.error('Error checking eligibility:', error);
-//     }
-//   );
-// }
+        // ✅ Open Check-In dialog
+        const dialogRef = this.dialog.open(CheckInDialogComponent);
+        dialogRef.afterClosed().subscribe((status) => {
+          if (status) {
+            this.initiateCheckInProcess(status);
+          }
+        });
+      } else {
+        // 🔴 Redirect if not eligible
+        this.router.navigate(['/dashboard/timesheet']);
+      }
+    },
+    (error) => {
+      console.error('Error checking eligibility:', error);
+    }
+  );
+}
 
 
 
