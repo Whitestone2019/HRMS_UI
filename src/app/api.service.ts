@@ -200,19 +200,29 @@ export class ApiService {
     );
   }
 
+  // markAttendance(attendanceData: AttendancePayload): Observable<AttendanceResponse> {
+  //   const url = `${this.apiUrl}/checkIn`;
+  //   this.loaderService.show();
+  //   return this.http.post<AttendanceResponse>(url, attendanceData).pipe(
+  //     //tap(() => this.openDialog('Success', 'Attendance marked successfully.')),
+  //     finalize(() => this.loaderService.hide()),
+  //     catchError((error: HttpErrorResponse) => {
+  //       console.error('Error marking attendance:', error);
+  //       this.openDialog('Error', `Failed to mark attendance: ${error.error?.message || 'Unknown error'}`);
+  //       return throwError(() => new Error(error.message));
+  //     })
+  //   );
+  // }
+
   markAttendance(attendanceData: AttendancePayload): Observable<AttendanceResponse> {
-    const url = `${this.apiUrl}/checkIn`;
-    this.loaderService.show();
-    return this.http.post<AttendanceResponse>(url, attendanceData).pipe(
-      //tap(() => this.openDialog('Success', 'Attendance marked successfully.')),
-      finalize(() => this.loaderService.hide()),
-      catchError((error: HttpErrorResponse) => {
-        console.error('Error marking attendance:', error);
-        this.openDialog('Error', `Failed to mark attendance: ${error.error?.message || 'Unknown error'}`);
-        return throwError(() => new Error(error.message));
-      })
-    );
-  }
+  const url = `${this.apiUrl}/checkIn`;
+  this.loaderService.show();
+  return this.http.post<AttendanceResponse>(url, attendanceData).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError((error) => this.handleError(error))
+  );
+}
+
 
   // Check-Out API call
   checkoutAttendance(attendanceData: AttendancePayload): Observable<AttendanceResponse> {
@@ -1643,12 +1653,37 @@ getCheckInEligibility(employeeId: string): Observable<any> {
 }
 
 
-private handleError(error: HttpErrorResponse): Observable<never> {
-    const message = error.error?.message || 'An unknown error occurred.';
-    console.error('Error occurred:', error);
-    this.openDialog('Error', message);
-    return throwError(() => new Error(message));
+// private handleError(error: HttpErrorResponse): Observable<never> {
+//     const message = error.error?.message || 'An unknown error occurred.';
+//     console.error('Error occurred:', error);
+//     this.openDialog('Error', message);
+//     return throwError(() => new Error(message));
+//   }
+
+  private handleError(error: HttpErrorResponse): Observable<never> {
+  let message = 'An unknown error occurred.';
+
+  if (error.error) {
+    if (typeof error.error === 'string') {
+      // Backend might return a JSON string like "{\"error\":\"Already checked in for today\"}"
+      try {
+        const parsed = JSON.parse(error.error);
+        message = parsed.error || parsed.message || message;
+      } catch {
+        message = error.error; // fallback if it’s just plain text
+      }
+    } else if (error.error.error) {
+      message = error.error.error;
+    } else if (error.error.message) {
+      message = error.error.message;
+    }
   }
+
+  console.error('Error occurred:', error);
+  this.openDialog('Error', message);
+  return throwError(() => new Error(message));
+}
+
 
   openDialog(title: string, message: string): void {
     this.dialog.open(AlertDialogComponent, {

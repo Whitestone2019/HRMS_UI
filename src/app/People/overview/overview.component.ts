@@ -241,6 +241,10 @@ checkIn(): void {
   }
 
   checkOut(): void {
+   const confirmCheckout = confirm('Are you sure you want to check out?');
+  if (!confirmCheckout) {
+    return; // user cancelled
+  }
     const dialogRef = this.dialog.open(CheckOutDialogComponent);
 
     dialogRef.afterClosed().subscribe((status) => {
@@ -358,7 +362,7 @@ checkIn(): void {
 
   private handleCheckInError(error: any): void {
     console.error('Check-in failed:', error);
-    alert(error instanceof Error ? error.message : 'Check-in failed. Please try again.');
+   // alert(error instanceof Error ? error.message : 'Check-in failed. Please try again.');
   }
 
   private handleCheckOutError(error: any): void {
