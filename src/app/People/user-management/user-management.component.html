@@ -13,6 +13,7 @@
     <div class="filter-inputs">
       <input type="text" placeholder="Search by User ID, Emp ID, or Name" [(ngModel)]="searchQuery" (input)="filterUsers()">
     </div>
+     <button class="download-btn" (click)="downloadExcel()">⬇️ Download Excel</button>
   </div>
 
   <table class="leave-table">

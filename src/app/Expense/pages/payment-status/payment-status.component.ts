@@ -34,6 +34,7 @@ export class PaymentStatusComponent {
   isAdmin: boolean = false;
   isManager: boolean = false;
   isHr: boolean = false;
+  isAcc:boolean = false;
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   employeePaymentStatus: EmployeePaymentStatus[] = [];
   employeeName: string = localStorage.getItem('employeeName') || 'Unknown';
@@ -72,6 +73,7 @@ export class PaymentStatusComponent {
     this.isAdmin = this.userService.isAdmin();
     this.isManager = this.userService.isManager();
     this.isHr = this.userService.isHr();
+    this.isAcc = this.userService.isAccountant();
 
     if (!this.empId) {
       console.error('Error: Employee ID is missing.');

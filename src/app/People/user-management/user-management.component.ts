@@ -3,6 +3,7 @@ import { ApiService, TraineeMaster, Usermaintenance } from '../../api.service';
 import { Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { PhotoDialogComponent } from './photo-dialog/photo-dialog.component';
+import { saveAs } from 'file-saver';  // optional helper library
 
 @Component({
   selector: 'app-user-management',
@@ -22,12 +23,9 @@ export class UserManagementComponent implements OnInit {
   pageSize: number = 5;
   totalPages: number = 1;
 
-  selectedPhotoUrl: string | null = null;
-  isPhotoPopupOpen: boolean = false;
+  constructor(private apiService: ApiService, private router: Router, private dialog: MatDialog) {}
 
-  constructor(private apiService: ApiService, private router: Router,private dialog: MatDialog) {}
-
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.loadUsers();
   }
 
@@ -71,8 +69,9 @@ export class UserManagementComponent implements OnInit {
 
   updatePagination(): void {
     this.totalPages = Math.ceil(
-      this.userType === 'employee' ? this.filteredEmployees.length / this.pageSize
-                                   : this.filteredTrainees.length / this.pageSize
+      this.userType === 'employee'
+        ? this.filteredEmployees.length / this.pageSize
+        : this.filteredTrainees.length / this.pageSize
     );
     this.currentPage = Math.min(this.currentPage, this.totalPages || 1);
     const startIndex = (this.currentPage - 1) * this.pageSize;
@@ -93,8 +92,9 @@ export class UserManagementComponent implements OnInit {
   }
 
   editUser(user: any): void {
-    const query = this.userType === 'employee' ? { type: 'employee', empid: user.empid } 
-                                               : { type: 'trainee', trngid: user.trngid };
+    const query = this.userType === 'employee'
+      ? { type: 'employee', empid: user.empid }
+      : { type: 'trainee', trngid: user.trngid };
     this.router.navigate(['/dashboard/useradd'], { queryParams: query });
   }
 
@@ -117,29 +117,45 @@ export class UserManagementComponent implements OnInit {
     }
   }
 
-openPhotoPopup(employeeId: string): void {
-  this.apiService.getPhotoByEmpId(employeeId).subscribe({
-    next: (blob: Blob) => {
-      // Create a new Blob with type image/jpeg
-      const imageBlob = new Blob([blob], { type: 'image/jpeg' });
-      const url = URL.createObjectURL(imageBlob);
+  openPhotoPopup(employeeId: string): void {
+    this.apiService.getPhotoByEmpId(employeeId).subscribe({
+      next: (blob: Blob) => {
+        const imageBlob = new Blob([blob], { type: 'image/jpeg' });
+        const url = URL.createObjectURL(imageBlob);
+        const dialogRef = this.dialog.open(PhotoDialogComponent, {
+          data: { photoUrl: url, fileName: `${employeeId}.jpg` },
+          width: '400px'
+        });
+        dialogRef.afterClosed().subscribe(() => URL.revokeObjectURL(url));
+      },
+      error: (err) => {
+        console.error('Error fetching photo:', err);
+        alert('Failed to load photo.');
+      }
+    });
+  }
 
-      // Open dialog
-      const dialogRef = this.dialog.open(PhotoDialogComponent, {
-        data: { photoUrl: url, fileName: `${employeeId}.jpg` }, // pass filename
-        width: '400px'
-      });
+  // ✅ NEW: Download Excel with embedded photos
+  downloadExcel(): void {
+    const apiCall = this.userType === 'employee'
+      ? this.apiService.downloadEmployeeExcel()
+      : this.apiService.downloadTraineeExcel();
 
-      dialogRef.afterClosed().subscribe(() => {
-        URL.revokeObjectURL(url); // cleanup memory
-      });
-    },
-    error: (err) => {
-      console.error('Error fetching photo:', err);
-      alert('Failed to load photo.');
-    }
-  });
-}
-
-
+    apiCall.subscribe({
+      next: (response) => {
+        const blob = new Blob([response], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const filename = this.userType === 'employee'
+          ? 'Employee_Photos.xlsx'
+          : 'Trainee_Photos.xlsx';
+        const link = document.createElement('a');
+        link.href = window.URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+      },
+      error: (err) => {
+        console.error('Error downloading Excel:', err);
+        alert('Failed to download Excel file.');
+      }
+    });
+  }
 }

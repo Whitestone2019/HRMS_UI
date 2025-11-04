@@ -1652,6 +1652,23 @@ getCheckInEligibility(employeeId: string): Observable<any> {
   );
 }
 
+downloadEmployeeExcel(): Observable<Blob> {
+  this.loaderService.show();
+  return this.http.get(`${this.apiUrl}/download/employees/excel`, { responseType: 'blob' }).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError(err => this.handleError(err))
+  );
+}
+
+downloadTraineeExcel(): Observable<Blob> {
+  this.loaderService.show();
+  return this.http.get(`${this.apiUrl}/download/trainees/excel`, { responseType: 'blob' }).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError(err => this.handleError(err))
+  );
+}
+
+
 
 // private handleError(error: HttpErrorResponse): Observable<never> {
 //     const message = error.error?.message || 'An unknown error occurred.';

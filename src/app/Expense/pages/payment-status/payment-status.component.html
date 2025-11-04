@@ -106,7 +106,7 @@
             <div class="namimg-field">Description</div>
             <div class="naming-data">{{ selectedEmployeePaymentStatus?.description }}</div>
           </div>
-          <div class="single-item-container" *ngIf="isHr && selectedEmployeePaymentStatus">
+          <div class="single-item-container" *ngIf="isAcc && selectedEmployeePaymentStatus">
             <label class="namimg-field" for="paymentStatus">Payment Status</label>
             <ng-container *ngIf="selectedEmployeePaymentStatus.paymentStatus !== 2; else paymentDoneLabel">
               <select (click)="$event.stopPropagation()"
@@ -128,7 +128,7 @@
             </ng-template>
           </div>
           <!-- Action Buttons -->
-          <div class="details-actions" *ngIf="isHr">
+          <div class="details-actions" *ngIf="isAcc">
             <button class="btn-approve" (click)="handleApproveButton()"
               [disabled]="selectedEmployeePaymentStatus?.paymentStatus === 2">
               Submit
