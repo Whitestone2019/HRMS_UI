@@ -158,10 +158,13 @@
         <p><strong>Employee:</strong> {{ selectedExpenseOrAdvance.employeeName }}</p>
         <p *ngIf="!isAdvanceSelected"><strong>Category:</strong> {{ selectedExpenseOrAdvance.category }}</p>
         <p *ngIf="isAdvanceSelected"><strong>Purpose:</strong> {{ selectedExpenseOrAdvance.applyToTrip }}</p>
-        <p><strong>Amount:</strong> {{ selectedExpenseOrAdvance.currency }} {{ selectedExpenseOrAdvance.amount | number: '1.2-2' }}</p>
+        <p><strong>Applied Amount:</strong> {{ selectedExpenseOrAdvance.currency }} {{ selectedExpenseOrAdvance.amount | number: '1.2-2' }}</p>
         <p><strong>Status:</strong> {{ selectedExpenseOrAdvance.status | titlecase }}</p>
         <p *ngIf="selectedExpenseOrAdvance.reason"><strong>Reason:</strong> {{ selectedExpenseOrAdvance.reason }}</p>
        <!-- Reason Input -->
+        <label for="approvedAmount"><strong>Approved Amount</strong></label>
+       <input id="approvedAmount" [(ngModel)]="approvedAmount" />
+    <div  class="reason">
        <label for="reason"><strong>Reason for Approval/Rejection:</strong></label>
        <textarea id="reason" [(ngModel)]="reason" placeholder="Enter reason for approval or rejection"></textarea>
     <div  class="reason">

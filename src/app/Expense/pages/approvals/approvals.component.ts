@@ -29,6 +29,7 @@ export class ApprovalsComponent implements OnInit, OnDestroy {
   isAdvanceSelected: boolean = false;
   showReason: boolean = false;
   reason: string = '';
+  approvedAmount : number = 0;
   showApproveConfirmation: boolean = false;
   showRejectConfirmation: boolean = false;
   searchEmpName: string = '';
@@ -490,6 +491,7 @@ export class ApprovalsComponent implements OnInit, OnDestroy {
   approveExpense(expense: any) {
     const requestData = {
       status: 'approved',
+      approvedAmount:this.approvedAmount,
       reason: this.reason,
     };
 
@@ -497,6 +499,7 @@ export class ApprovalsComponent implements OnInit, OnDestroy {
       next: () => {
         expense.status = 'approved';
         expense.reason = this.reason;
+        expense.approvedAmount=this.approvedAmount;
         this.backToList();
         this.showApproveConfirmation = false;
         this.reason = '';
@@ -511,6 +514,7 @@ export class ApprovalsComponent implements OnInit, OnDestroy {
 
   approveAdvance(advance: any) {
     const requestData = {
+      approvedAmount: this.approvedAmount,
       status: 'approved',
       reason: this.reason,
     };
@@ -519,6 +523,7 @@ export class ApprovalsComponent implements OnInit, OnDestroy {
       next: () => {
         advance.status = 'approved';
         advance.reason = this.reason;
+        advance.approvedAmount=this.approvedAmount;
         this.backToList();
         this.showApproveConfirmation = false;
         this.reason = '';

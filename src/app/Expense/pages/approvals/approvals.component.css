@@ -121,6 +121,14 @@ textarea {
   margin-right: 10px;
 }
 
+input {
+  padding: 8px; /* Retained */
+  border: 1px solid #ccc; /* Retained */
+  border-radius: 4px; /* Updated to match Expenses page */
+  font-size: 14px; /* Retained */
+  width: 150px; /* Retained */
+}
+
 .approve-confirmation button:hover {
   background: linear-gradient(145deg, #00509e, #003d80);
 }
