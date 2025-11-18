@@ -12,6 +12,7 @@ interface EmployeePaymentStatus {
   expenseId?: string;
   advanceId?: string;
   amount: number;
+  approvedAmount: number;
   date: Date;
   status: string;
   paymentStatus?: number;
@@ -159,6 +160,7 @@ export class PaymentStatusComponent {
       employeeName: expense.employeeName || 'Unknown',
       paymentStatus: expense.paymentStatus !== undefined ? expense.paymentStatus : 0,
       rejectreason: expense.rejectreason,
+      approvedAmount: expense.approvedAmount,
       approver: expense.approver
     }));
 
@@ -176,6 +178,7 @@ export class PaymentStatusComponent {
       paidThrough: advance.paidThrough,
       applyToTrip: advance.applyToTrip,
       approver: advance.approver,
+      approvedAmount: advance.approvedAmount,
       description: advance.description || 'Advance payment'
     })) : [];
 

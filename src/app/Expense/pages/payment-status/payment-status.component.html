@@ -93,6 +93,9 @@
           <div class="single-item-container">
             <div class="namimg-field">Amount</div>
             <div class="naming-data">{{ selectedEmployeePaymentStatus?.amount }}</div>
+          <div class="single-item-container">
+            <div class="namimg-field">Approved Amount</div>
+            <div class="naming-data">{{ selectedEmployeePaymentStatus?.approvedAmount }}</div>
           </div>
           <div class="single-item-container" *ngIf="selectedEmployeePaymentStatus?.type === 'expense'">
             <div class="namimg-field">Category</div>

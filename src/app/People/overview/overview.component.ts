@@ -441,10 +441,10 @@ checkIn(): void {
 
  openIdCardDialog(): void {
   // 🚫 Temporary restriction message
-  alert('This link has expired. Please contact your administrator or HR team for assistance.');
+  //alert('This link has expired. Please contact your administrator or HR team for assistance.');
 
   // 🧩 Uncomment the following when you re-enable photo upload:
-  /*
+  
   if (!this.hasUploaded) {
     this.dialog.open(IdCardPhotoComponent, {
       width: '600px',
@@ -452,7 +452,7 @@ checkIn(): void {
       data: { employeeId: this.employeeId } // optional data pass
     });
   }
-  */
+  
 }
 
 }

@@ -61,10 +61,13 @@ import { EmployeeProjectHistoryComponent } from './People/employee-history/emplo
 import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-photo.component';
 import { UpdateLeaveComponent } from './People/update-leave/update-leave.component';
 import { AttendanceApprovalComponent } from './People/attendance-approval/attendance-approval.component';
+import { FingerprintComponent } from './People/fingerprint/fingerprint.component';
+import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
+   { path: 'fingerprint', component: FingerprintComponent },
   {
     path: 'expences/dashboardexp', component: ExpdashboardComponent, canActivate: [AuthGuard],
     children: [
@@ -141,6 +144,7 @@ export const routes: Routes = [
       { path: 'iddetails', component: IdCardPhotoComponent },
        { path: 'updateleave', component: UpdateLeaveComponent },
         { path: 'attendanceApproval', component: AttendanceApprovalComponent },
+       { path: 'payrollAdjustment', component: PayrollAdjustmentComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default child route set to Overview
     ]
   },

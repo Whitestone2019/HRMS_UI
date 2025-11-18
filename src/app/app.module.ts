@@ -16,6 +16,8 @@ import { MatCardModule } from '@angular/material/card'; // Added for calendar ca
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import Swal from 'sweetalert2';
+
 // Components
 import { AppComponent } from './app.component';
 import { HeaderComponent } from './People/header/header.component';
@@ -73,6 +75,8 @@ import { IdCardPhotoComponent } from './People/overview/id-card-photo/id-card-ph
 import { PhotoDialogComponent } from './People/user-management/photo-dialog/photo-dialog.component';
 import { UpdateLeaveComponent } from './People/update-leave/update-leave.component';
 import { AttendanceApprovalComponent } from './People/attendance-approval/attendance-approval.component';
+import { FingerprintComponent } from './People/fingerprint/fingerprint.component';
+import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -124,7 +128,9 @@ import { AttendanceApprovalComponent } from './People/attendance-approval/attend
    IdCardPhotoComponent,
    PhotoDialogComponent,
    UpdateLeaveComponent,
-   AttendanceApprovalComponent
+   AttendanceApprovalComponent,
+   FingerprintComponent,
+   PayrollAdjustmentComponent
 
   ],
   imports: [

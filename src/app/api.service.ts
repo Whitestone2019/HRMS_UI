@@ -22,6 +22,22 @@ interface User {
   managerName:string;
 }
 
+export interface PayrollAdjustment {
+  id: number;
+  empId: string;
+  employeeName:string;
+  month: string;
+  allowanceDays: number;
+  lopDays: number;
+  otherDeductions: number;
+  managerId: string;
+  otherDeductionsRemarks: string |null ;   // ← NEW
+  effectiveWorkingDays:string;
+  approvalStatus: string;
+  createdDate: string;
+  updatedDate: string;
+}
+
 export interface UpdateLeavePayload {
   empId: string;
   leaveTaken: number;
@@ -1094,11 +1110,24 @@ export class ApiService {
       finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
     );
   }
-  runPayroll(): Observable<any> {
+  runPayroll() {
     this.loaderService.show();
-    return this.http.post<any>(`${this.apiUrl}/Payroll`, {}).pipe(
-      finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
-    );
+    return this.http.post<any>(`${this.apiUrl}/Payroll`, {})
+      .pipe(finalize(() => this.loaderService.hide()));
+  }
+
+  /** ✅ Save Edited Payroll */
+  savePayrollData(payrollData: any[]) {
+    this.loaderService.show();
+    return this.http.post<any>(`${this.apiUrl}/PayrollUpdate`, payrollData)
+      .pipe(finalize(() => this.loaderService.hide()));
+  }
+
+  /** ✅ Get Payroll Preview */
+  previewPayroll() {
+    this.loaderService.show();
+    return this.http.get<any>(`${this.apiUrl}/PayrollPreview`, {})
+      .pipe(finalize(() => this.loaderService.hide()));
   }
 
   getEmployeeSalaryDetails(empId: string): Observable<any> {
@@ -1668,6 +1697,37 @@ downloadTraineeExcel(): Observable<Blob> {
   );
 }
 
+saveFingerprint(employeeId: string, fingerData: string): Observable<any> {
+    const body = { employeeId, fingerData };
+    return this.http.post(`${this.apiUrl}/save`, body);
+  }
+
+  fingerprintLogin(employeeId: string, fingerData: string) {
+  return this.http.post(`${this.apiUrl}/validatefinger`, {
+    employeeId,
+    fingerData
+  });
+}
+
+generateAdjustments(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/payroll-adjustments/generate`, {});
+  }
+
+  getForManager(managerId: string, month: string): Observable<PayrollAdjustment[]> {
+    return this.http.get<PayrollAdjustment[]>(`${this.apiUrl}/payroll-adjustments/manager/${managerId}/${month}`);
+  }
+
+  update(id: number, adjustment: Partial<PayrollAdjustment>): Observable<PayrollAdjustment> {
+    return this.http.put<PayrollAdjustment>(`${this.apiUrl}/payroll-adjustments/${id}`, adjustment);
+  }
+
+  approve(id: number): Observable<PayrollAdjustment> {
+    return this.http.post<PayrollAdjustment>(`${this.apiUrl}/payroll-adjustments/approve/${id}`, {});
+  }
+
+  reject(id: number): Observable<PayrollAdjustment> {
+    return this.http.post<PayrollAdjustment>(`${this.apiUrl}/payroll-adjustments/reject/${id}`, {});
+  }
 
 
 // private handleError(error: HttpErrorResponse): Observable<never> {
@@ -1700,6 +1760,8 @@ downloadTraineeExcel(): Observable<Blob> {
   this.openDialog('Error', message);
   return throwError(() => new Error(message));
 }
+
+
 
 
   openDialog(title: string, message: string): void {

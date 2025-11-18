@@ -1,0 +1,117 @@
+<div class="payroll-container">
+  <div class="card">
+    <div class="card-header">
+      <h2>Payroll Adjustments for {{ month }}</h2>
+      <div class="summary">
+        <span class="badge pending">{{ pendingCount }} Pending</span>
+        <span class="badge approved">{{ approvedCount }} Approved</span>
+      </div>
+    </div>
+
+    <!-- Search Box -->
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchText" 
+        (input)="applyFilter()"
+        placeholder="Search by Emp ID or Name..." 
+        class="search-input"
+        autofocus
+      />
+    </div>
+
+    <div class="table-container">
+      <table class="adjustment-table">
+        <thead>
+          <tr>
+            <th>Emp ID</th>
+            <th>Name</th>
+            <th>Allowance Days</th>
+            <th>Effective Working Days</th>
+            <th>LOP Days</th>
+            <th>Other Deductions</th>
+            <th style="width: 240px;">Remarks <span class="required-star">*</span></th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr 
+            *ngFor="let adj of filteredAdjustments"
+            [class.approved-row]="adj.approvalStatus === 'APPROVED'"
+            [class.pending-row]="adj.approvalStatus === 'PENDING'"
+          >
+            <td>{{ adj.empId }}</td>
+            <td><strong>{{ adj.employeeName }}</strong></td>
+
+            <td>
+              <input type="number" min="0" 
+                     [(ngModel)]="adj.allowanceDays"
+                     [disabled]="adj.approvalStatus === 'APPROVED'"
+                     (change)="updateAdjustment(adj)" />
+            </td>
+
+             <td>
+              <input type="number" min="0" step="0.5" 
+                     [(ngModel)]="adj.effectiveWorkingDays"
+                     [disabled]="adj.effectiveWorkingDays === 'APPROVED'"
+                     (change)="updateAdjustment(adj)" />
+            </td>
+
+            <td>
+              <input type="number" min="0" step="0.5" 
+                     [(ngModel)]="adj.lopDays"
+                     [disabled]="adj.approvalStatus === 'APPROVED'"
+                     (change)="updateAdjustment(adj)" />
+            </td>
+            <td>
+              <input type="number" min="0" step="0.01" 
+                     [(ngModel)]="adj.otherDeductions"
+                     [disabled]="adj.approvalStatus === 'APPROVED'"
+                     (change)="updateAdjustment(adj)" />
+            </td>
+
+            <!-- Remarks Field with Validation -->
+            <td>
+              <div class="remarks-wrapper">
+                <input 
+                  type="text" 
+                  [(ngModel)]="adj.otherDeductionsRemarks"
+                  [class.invalid]="isRemarksRequired(adj) && !adj.otherDeductionsRemarks?.trim()"
+                  placeholder="{{ isRemarksRequired(adj) ? 'Required: Enter reason' : 'Optional' }}"
+                  [disabled]="adj.approvalStatus === 'APPROVED'"
+                  (change)="updateAdjustment(adj)"
+                />
+                <small 
+                  *ngIf="isRemarksRequired(adj) && !adj.otherDeductionsRemarks?.trim()" 
+                  class="error-text">
+                  Remarks required when deduction > 0
+                </small>
+              </div>
+            </td>
+
+            <td>
+              <span class="status-badge" 
+                    [class.status-approved]="adj.approvalStatus === 'APPROVED'"
+                    [class.status-pending]="adj.approvalStatus === 'PENDING'">
+                {{ adj.approvalStatus }}
+              </span>
+            </td>
+
+            <td>
+              <button class="btn-approve" 
+                      (click)="confirmApprove(adj)"
+                      [disabled]="adj.approvalStatus === 'APPROVED'">
+                {{ adj.approvalStatus === 'APPROVED' ? 'Approved' : 'Approve' }}
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="no-data" *ngIf="filteredAdjustments.length === 0">
+        No records found
+      </div>
+    </div>
+  </div>
+</div>

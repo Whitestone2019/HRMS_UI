@@ -144,6 +144,55 @@ private async getLocationName(lat: number, lon: number): Promise<string> {
     this.router.navigate(['/reset-password']);
   }
 
+   navigateTosetfingerPrint() {
+    this.router.navigate(['/fingerprint']);
+  }
+
+  loginWithFingerprint() {
+  const employeeId = this.user.username.trim(); // using username field as employeeId for now
+  if (!employeeId) {
+    this.errorMessage = 'Please enter Employee ID before fingerprint login.';
+    return;
+  }
+
+  const pidOptions = `<?xml version="1.0"?>
+    <PidOptions ver="1.0">
+      <Opts fCount="1" fType="0" format="0" pidVer="2.0" timeout="10000" env="P" />
+    </PidOptions>`;
+
+  fetch('http://127.0.0.1:11100/rd/capture', {
+    method: 'CAPTURE',
+    body: pidOptions,
+    headers: { 'Content-Type': 'text/xml' }
+  })
+    .then(res => res.text())
+    .then(pidData => {
+      console.log('Captured Fingerprint:', pidData);
+
+      this.apiService.fingerprintLogin(employeeId, pidData).subscribe({
+        next: (response: any) => {
+          if (response.status === 'success') {
+            localStorage.setItem('authToken', response.token);
+            localStorage.setItem('employeeId', response.employeeId);
+            this.router.navigate(['/dashboard']);
+          } else {
+            this.errorMessage = response.message;
+          }
+        },
+        error: err => {
+          console.error(err);
+          this.errorMessage = 'Login failed. Please try again.';
+        }
+      });
+    })
+    .catch(err => {
+      console.error('Capture error:', err);
+      this.errorMessage = 'Failed to capture fingerprint. Check Mantra RD Service.';
+    });
+}
+
+  
+
   togglePasswordVisibility() {
     this.passwordVisible = !this.passwordVisible;
   }

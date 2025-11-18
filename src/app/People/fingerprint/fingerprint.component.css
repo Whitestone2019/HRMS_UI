@@ -1,0 +1,45 @@
+.fingerprint-container {
+  width: 420px;
+  margin: 40px auto;
+  padding: 20px;
+  border-radius: 12px;
+  background: #f9f9f9;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  text-align: center;
+}
+
+.form-group {
+  margin: 15px 0;
+}
+
+input, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+textarea {
+  height: 120px;
+  resize: none;
+}
+
+.btn-capture, .btn-save {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin: 10px 5px;
+}
+
+.btn-capture:hover, .btn-save:hover {
+  background: #0056b3;
+}
+
+.response-msg {
+  margin-top: 10px;
+  font-weight: bold;
+  color: green;
+}

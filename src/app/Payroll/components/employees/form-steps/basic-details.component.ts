@@ -36,10 +36,10 @@ import { UserService } from '../../../../user.service';
             <input type="text" formControlName="lastname" placeholder="Enter last name" readonly>
           </div>
 
-           <div class="form-group">
+           <!-- <div class="form-group">
             <label>Date of Birth</label>
            <input type="date" formControlName="dateofbirth" readonly>
-          </div>
+          </div> -->
         </div>
 
        <div class="form-row">
@@ -54,7 +54,7 @@ import { UserService } from '../../../../user.service';
         <div class="form-row">
           <div class="form-group">
             <label>Work Email*</label>
-            <input type="email" formControlName="officialemail" readonly>
+            <input type="email" formControlName="emailid" readonly>
           </div>
           <div class="form-group">
             <label>Personal Email</label>
@@ -65,7 +65,7 @@ import { UserService } from '../../../../user.service';
         <div class="form-row">
           <div class="form-group">
             <label>Mobile Number*</label>
-            <input type="tel" formControlName="mobilenumber" readonly>
+            <input type="tel" formControlName="phonenumber" readonly>
           </div>
         </div>
 
@@ -167,7 +167,7 @@ export class BasicDetailsComponent implements OnInit {
     this.apiService.getEmployeeDetails(empId).subscribe(
       (data) => {
         console.log('Loaded Employee Details:', data);
-        alert(`Raw DOB from API: ${data.dateofbirth}`); // Debugging
+        // /alert(`Raw DOB from API: ${data.dateofbirth}`); // Debugging
   
         // Ensure the date format is correct
         if (data.dateofbirth) {

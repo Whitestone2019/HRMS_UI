@@ -43,9 +43,17 @@
         <button type="submit">LOGIN</button>
         <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
 
+        <!-- <div class="reset-password">
+  <button type="button" (click)="loginWithFingerprint()">Login with Fingerprint</button>
+</div> -->
+
+
         <div class="reset-password">
           <button type="button" (click)="navigateToResetPassword()">Reset/Forgot password?</button>
         </div>
+         <!-- <div class="reset-password">
+          <button type="button" (click)="navigateTosetfingerPrint()">register fingerprint</button>
+         </div> -->
       </form>
     </div>
   </div>

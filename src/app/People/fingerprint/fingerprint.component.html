@@ -1,0 +1,21 @@
+<div class="fingerprint-container">
+  <h2>Employee Fingerprint Enrollment</h2>
+
+  <div class="form-group">
+    <label>Employee ID</label>
+    <input type="text" [(ngModel)]="employeeId" placeholder="Enter Employee ID" class="form-control" />
+  </div>
+
+  <div class="form-group">
+    <button (click)="captureFingerprint()" class="btn-capture">Capture Fingerprint</button>
+  </div>
+
+  <div *ngIf="fingerData">
+    <p><strong>Captured Fingerprint Data:</strong></p>
+    <textarea readonly class="finger-data">{{ fingerData }}</textarea>
+
+    <button (click)="saveFingerprint()" class="btn-save">Save Fingerprint</button>
+  </div>
+
+  <div *ngIf="message" class="response-msg">{{ message }}</div>
+</div>
