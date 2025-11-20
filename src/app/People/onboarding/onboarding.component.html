@@ -1,103 +1,121 @@
 <div class="content">
   <div class="main-content">
     <div class="controls">
-     
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <!-- Title with a more prominent design -->
-        <span style="font-size: 20px; font-weight: bold; color: #2c3e50; text-transform: uppercase; letter-spacing: 1px;">
-          Newly Added Candidate Details
-        </span>
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
         
-        <!-- Add Candidate button with styling changes, now aligned to the right -->
-        <button 
-          (click)="AddEmployeeDetails('A')" 
-          style="
-            padding: 12px 20px; 
-            background: linear-gradient(90deg, #ff6f61, #f15bb5); 
-            color: white; 
-            font-weight: bold; 
-            border-radius: 8px; 
-            border: none; 
-            cursor: pointer; 
-            transition: background 0.3s ease, transform 0.2s ease;
-            margin-left: 700px; /* Pushes the button to the right */
-          "
-          onmouseover="this.style.background='linear-gradient(90deg, #f15bb5, #ff6f61)'; this.style.transform='translateY(-2px)'"
-          onmouseout="this.style.background='linear-gradient(90deg, #ff6f61, #f15bb5)'; this.style.transform='translateY(0)'"
-        >
-          Add New Candidate
-        </button>
+        <!-- Title -->
+        <span style="font-size: 20px; font-weight: bold; color: #2c3e50; text-transform: uppercase; letter-spacing: 1px;">
+          Employee Profile Details
+        </span>
+
+        <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+          <!-- Search Box -->
+          <input 
+            type="text" 
+            [(ngModel)]="searchTerm" 
+            (input)="onSearch()" 
+            placeholder="Search by ID, Name or Email..." 
+            style="
+              padding: 10px 15px; 
+              border: 1px solid #ccc; 
+              border-radius: 8px; 
+              width: 320px; 
+              font-size: 14px;
+              outline: none;
+            "
+          />
+
+          <!-- Add Button -->
+          <button 
+            (click)="AddEmployeeDetails('A')" 
+            style="
+              padding: 12px 24px; 
+              background: linear-gradient(90deg, #ff6f61, #f15bb5); 
+              color: white; 
+              font-weight: bold; 
+              border-radius: 8px; 
+              border: none; 
+              cursor: pointer; 
+              transition: all 0.3s ease;
+            "
+            onmouseover="this.style.background='linear-gradient(90deg, #f15bb5, #ff6f61)'; this.style.transform='translateY(-2px)'"
+            onmouseout="this.style.background='linear-gradient(90deg, #ff6f61, #f15bb5)'; this.style.transform='translateY(0)'"
+          >
+            onboard Candidate
+          </button>
+        </div>
       </div>
-      
     </div>
 
-    <!-- Conditionally show the table if users are available -->
-    <div class="table-container">
-      <table *ngIf="users && users.length > 0">
+    <!-- Table + Pagination -->
+    <div class="table-container" *ngIf="filteredUsers.length > 0">
+      <table>
         <thead>
           <tr>
             <th class="icon-cell"><i class="fas fa-copy"></i></th>
-           <!-- <th class="checkbox-cell"><input type="checkbox"></th> -->
-            <th style="display: none;">Emp ID <i class="fas fa-sort"></i></th>
-            <th>First name <i class="fas fa-sort"></i></th>
-            <th>Last name <i class="fas fa-sort"></i></th>
-
+            <th style="display: none;">Emp ID</th>
+            <th>First Name <i class="fas fa-sort"></i></th>
+            <th>Last Name <i class="fas fa-sort"></i></th>
             <th>Email ID <i class="fas fa-sort"></i></th>
             <th>Official Email <i class="fas fa-sort"></i></th>
-            <th>Onboarding Status <i class="fas fa-sort"></i></th>
-            <th>Department <i class="fas fa-sort"></i></th>
-            <th>Source of Hire <i class="fas fa-sort"></i></th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let user of users">
+          <tr *ngFor="let user of paginatedUsers">
             <td class="icon-cell"><i class="fas fa-copy"></i></td>
-         <!--   <td class="checkbox-cell"><input type="checkbox"></td>-->
-             <!-- Navigate to Add Candidate page on click -->
-             <td (click)="LoadEmployeeDetails('B',user.empid)" style="cursor: pointer; color: blue;">
-              {{user.firstName}}
+            <td style="display: none;">{{ user.empid }}</td>
+            <td (click)="LoadEmployeeDetails('B', user.empid)" style="cursor: pointer; color: #4361ee; font-weight: 500;">
+              {{ user.firstName }}
             </td>
-            <td  style="display: none;">{{user.empid}}</td>
-            <td>{{user.lastName}}</td>
-            <td>{{user.email}}</td>
-            <td>{{user.officialEmail}}</td>
-            <td>{{user.onboardingStatus}}</td>
-            <td>{{user.department}}</td>
-            <td>{{user.sourceOfHire}}</td>
-            <td>
-              <i
-                class="fas fa-trash-alt"
-                style="color: red; cursor: pointer;"
-                title="Delete"
-                (click)="deleteUser(user.empid)"
-              ></i>
-            </td>
+            <td>{{ user.lastName }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.officialEmail }}</td>
           </tr>
         </tbody>
       </table>
 
-      <!-- Total count displayed under the last user record -->
-      <div class="total-count" *ngIf="users && users.length > 0">
-        Total Records: {{ users.length }}
+      <!-- Pagination & Record Info -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 15px; font-size: 14px;">
+        
+        <div style="color: #555; font-weight: 500;">
+          Showing {{ fromRecord }} to {{ toRecord }} of {{ filteredUsers.length }} records
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <span>Rows per page:</span>
+          <select [(ngModel)]="pageSize" (change)="onPageSizeChange()" style="padding: 6px 10px; border-radius: 6px; border: 1px solid #ccc;">
+            <option [value]="5">5</option>
+            <option [value]="10">10</option>
+            <option [value]="25">25</option>
+            <option [value]="50">50</option>
+          </select>
+
+          <button [disabled]="currentPage === 1" (click)="changePage(currentPage - 1)"
+                  style="padding: 8px 14px; border: 1px solid #ddd; background: #fff; border-radius: 6px; cursor: pointer;">
+            Previous
+          </button>
+
+          <span style="font-weight: bold; color: #2c3e50;">
+            Page {{ currentPage }} of {{ totalPages }}
+          </span>
+
+          <button [disabled]="currentPage === totalPages" (click)="changePage(currentPage + 1)"
+                  style="padding: 8px 14px; border: 1px solid #ddd; background: #fff; border-radius: 6px; cursor: pointer;">
+            Next
+          </button>
+        </div>
       </div>
+    </div>
 
-      <!-- Show this image only when no users are found -->
-      <table *ngIf="users && users.length === 0">
-        <tbody>
-          <tr>
-            <td class="no-records" colspan="9">
-              <img
-                src="https://storage.googleapis.com/a1aa/image/f8xmipNuDYWAfEXTaxjfoXp4GR6eMNWfFKJeeAW2edIoyu7tTA.jpg"
-                alt="Illustration of a robot holding a box"
-                width="150"
-                height="150"
-              />
-              <div>No records found</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- No Records Found -->
+    <div *ngIf="filteredUsers.length === 0" style="text-align: center; padding: 60px 20px; color: #6c757d;">
+      <img 
+        src="https://storage.googleapis.com/a1aa/image/f8xmipNuDYWAfEXTaxjfoXp4GR6eMNWfFKJeeAW2edIoyu7tTA.jpg"
+        alt="No records"
+        width="150"
+        height="150"
+      />
+      <div style="margin-top: 20px; font-size: 18px;">No records found</div>
     </div>
   </div>
 </div>

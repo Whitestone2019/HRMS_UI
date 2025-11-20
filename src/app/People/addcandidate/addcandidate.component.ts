@@ -1,441 +1,305 @@
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup, FormArray, Validators, NgForm } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Location } from '@angular/common';  // Import Location for navigation
+import { Location } from '@angular/common';
 import { ApiService } from '../../api.service';
-export interface Role {
-  roleid: string;
-  rolename: string;
-}
-export interface Emp {
-  empid: string;
-  firstname: string;
-}
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
+
+export interface Role { roleid: string; rolename: string; }
+export interface Emp { empid: string; firstname: string; lastname?: string; }
+
 @Component({
   selector: 'app-addcandidate',
   templateUrl: './addcandidate.component.html',
   styleUrls: ['./addcandidate.component.css']
 })
+export class AddCandidateComponent implements OnInit {
+  mode: 'add' | 'edit' | 'approve' = 'add';
+  isEditable = true;
 
-export class AddCandidateComponent implements OnInit, AfterViewInit {
+  EmployeeID = '';
+  showDocModal = false;
+  currentDocUrl: SafeResourceUrl | null = null;
+  currentDocTitle = '';
+
   roles: Role[] = [];
-  managers : Emp[]=[];
-  isEditable: boolean = true; // Default to editable mode
-  employeeRole = '';
-  reportingManager: string = '';
-  selectedRoleId: string = '';
+  managers: Emp[] = [];
+  states: string[] = ['Andhra Pradesh', 'Karnataka', 'Tamil Nadu', 'Maharashtra', 'Delhi', 'Others'];
 
-  @ViewChild('candidateForm') candidateDetailsForm!: NgForm;
-  @ViewChild('empid', { static: false }) empidElement!: ElementRef<HTMLInputElement>; // Rename ViewChild property to avoid conflict
-  form: any;
-  empid: string | null = null; // Use a different name or retain the intended purpose
-  setFocus: any;
-  mobileNumber: any;
-  dateofbirth: any;
-  bloodgroup: any;
-  parentmobnum: any;
-  aadhaarnumber: any;
-  parentname: any;
-  pannumber: any;
-  lastName: any;
-  emailid: any;
-  errorMessage: any;
-  onFileChange($event: Event) {
-    throw new Error('Method not implemented.');
-  }
-  states = ['State1', 'State2', 'State3']; // Example states
-  educationList = [
-    {
-      institution: '',
-      qualification: '',
-      regnum: '',
-      percentage: '',
-      duration: '',
-      fieldofstudy: '',
-      yearofgraduation: '',
-      additionalnotes: ''
-    }
-  ];
-  experienceList: any[] = [];
-  professionalList = [
-    {
-      organisation: '',
-      location: '',
-      orgempid: '',
-      orgdept: '',
-      orgrole: '',
-      joiningdate: '',
-      relievingdate: '',
-      ctc: '',
-      additionalinformation: '',
-      //   offerLetter: null,
-    }
-  ];
-  skillList = [
-    {
-      skill: '',
-      proficiencylevel: '',
-      certification: '',
-      yearsExperience: '',
-      lastupdated: ''
-    }
-  ];
-
-  // To store the checkbox state
-  sameAsPresentAddress: boolean = false;
-
-  // Present Address fields initialized to empty
-  presentAddress = {
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    postalCode: ''
+  candidateDetails: any = {
+    empid: '', firstName: '', lastName: '', emailid: '', mobileNumber: '', dateofbirth: '', bloodgroup: '',
+    aadhaarnumber: '', pannumber: '', uannumber: '', officialemail: '', gender: '', maritalstatus: '',
+    nationality: 'Indian', dateofjoining: '', designation: '', department: '', worklocation: '',
+    reportingmanager: '', emergencycontactname: '', emergencycontactnumber: '', emergencycontactrelation: '',
+    alternatemobilenumber: '', passportnumber: '', drivinglicense: '', esinumber: '',
+    presentaddressline1: '', presentaddressline2: '', presentcity: '', presentstate: '', presentpostalcode: '', presentcountry: 'India',
+    permanentaddressline1: '', permanentaddressline2: '', permanentcity: '', permanentstate: '', permanentpostalcode: '', permanentcountry: 'India'
   };
 
-  candidateForm: any;
-  preventFocusLoss(event: MouseEvent) {
-    event.preventDefault();
-    event.stopPropagation();
-  }
+  educationList: any[] = [this.emptyEducation()];
+  professionalList: any[] = [this.emptyProfessional()];
+  skillList: any[] = [this.emptySkill()];
 
-  // Permanent Address fields initialized to empty
-  permanentAddress = {
-    address1: '',
-    address2: '',
-    city: '',
-    state: '',
-    postalCode: ''
-  };
+  photoFile: File | null = null;
+  aadharFile: File | null = null;
+  panFile: File | null = null;
+  tenthFile: File | null = null;
+  twelfthFile: File | null = null;
+  degreeFile: File | null = null;
 
-  successMessage: string = '';  // Variable to hold the success message
+  reportingManager = '';
+  selectedRoleId = '';
+  successMessage = '';
+  sameAsPresentAddress = false;
 
-  constructor(private apiService: ApiService, private location: Location, private router: Router, private route: ActivatedRoute) { }
+  existingFiles: {
+    photo?: string; aadhar?: string; pan?: string;
+    tenth?: string; twelfth?: string; degree?: string;
+  } = {};
 
-  EmployeeID: string = '';
+  constructor(
+    private apiService: ApiService,
+    private route: ActivatedRoute,
+    private location: Location,
+    private sanitizer: DomSanitizer
+  ) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
+    this.apiService.getRoles().subscribe(data => this.roles = data);
+    this.apiService.getManagers().subscribe(data => this.managers = data);
 
-    this.apiService.getRoles().subscribe((data) => {
-      this.roles = data;
-    });
+    const empIdFromStorage = localStorage.getItem('employeeId') || localStorage.getItem('empId');
+    this.route.queryParams.subscribe(params => {
+      const empIdFromUrl = params['empId'];
+      const urlMode = params['mode'];
 
-    this.apiService.getManagers().subscribe((data) => {
-      this.managers = data;
-    });
-  
-    // Fetch the 'mode' query parameter
-    this.route.queryParams.subscribe((params) => {
-      const mode = params['mode'];
-      var empId = params['empId'];
-      console.log('mode:', mode); // Debugging the value
-      console.log('empId:', empId); // Debugging the value
+      const empId = empIdFromStorage || empIdFromUrl;
 
-      if (mode === 'A') {
-        this.isEditable = true; // Editable
-      } else if (mode === 'B') {
-        this.isEditable = false; // Read-only
+      if (empId) {
         this.EmployeeID = empId;
-        this.getEmployeeDetails(this.EmployeeID);
-      }
+        this.candidateDetails.empid = empId;
 
-      setTimeout(() => {
-        window.dispatchEvent(new Event('resize'));  // Forces a reflow
-      });
-    });
-
-  }
-  ngAfterViewInit(): void {
-
-  }
-
-  // This method is called when the "Same as Present Address" checkbox is clicked
-  toggleAddress() {
-    if (this.sameAsPresentAddress) {
-      this.permanentAddress.address1 = this.presentAddress.address1;
-      this.permanentAddress.address2 = this.presentAddress.address2;
-      this.permanentAddress.city = this.presentAddress.city;
-      this.permanentAddress.state = this.presentAddress.state;
-      this.permanentAddress.postalCode = this.presentAddress.postalCode;
-    } else {
-      this.permanentAddress = { address1: '', address2: '', city: '', state: '', postalCode: '' };
-    }
-  }
-
-  addEducation() {
-    this.educationList.push({
-      institution: '',
-      qualification: '',
-      regnum: '',
-      percentage: '',
-      duration: '',
-      fieldofstudy: '',
-      yearofgraduation: '',
-      additionalnotes: ''
-    });
-  }
-
-  addProfessional() {
-    this.professionalList.push({
-      organisation: '',
-      location: '',
-      orgempid: '',
-      orgdept: '',
-      orgrole: '',
-      joiningdate: '',
-      relievingdate: '',
-      ctc: '',
-      additionalinformation: '',
-      // offerLetter: null,
-    });
-  }
-
-  /* uploadOfferLetter(event: Event, index: number) {
-     const fileInput = event.target as HTMLInputElement;
-     if (fileInput.files && fileInput.files.length > 0) {
-       this.professionalList[index].offerLetter = fileInput.files[0];
-     }
-   }*/
-
-  addSkill() {
-    this.skillList.push({
-      skill: '',
-      proficiencylevel: '',
-      certification: '',
-      yearsExperience: '',
-      lastupdated: ''
-    });
-  }
-
-  removeProfessional(index: number) {
-    this.professionalList.splice(index, 1);
-  }
-
-  removeExp(index: number) {
-    this.experienceList.splice(index, 1); // Use the correct array
-  }
-
-  removeEdu(index: number) {
-    this.educationList.splice(index, 1); // Use the correct array
-  }
-
-  removeSkill(index: number) {
-    this.skillList.splice(index, 1); // Use the correct array
-  }
-  candidateDetails: any = {};
-
-  getEmployeeDetails(EmployeeId: string) {
-    this.apiService.getEmployeeDetailsById(EmployeeId).subscribe(
-      (response) => {
-        alert('Employee loaded successfully');
-        console.log('Employee loaded successfully', response);
-
-        // Check if response has valid data
-        if (response) {
-          this.candidateDetails = response; // Bind response to the candidateDetails object
-          console.log('Employee Details:', this.candidateDetails);
-          const employeeData = response as { education?: any[], professional?: any[],skillSet?: any[] };
-          if (employeeData.education && Array.isArray(employeeData.education)) {
-            this.educationList = employeeData.education.map((edu: any) => ({
-              institution: edu.institution || '',
-              qualification: edu.qualification || '',
-              regnum: edu.regnum || '',
-              percentage: edu.percentage || '',
-              duration: edu.duration || '',
-              fieldofstudy: edu.fieldofstudy || '',
-              yearofgraduation: edu.yearofgraduation || '',
-              additionalnotes: edu.additionalnotes || ''
-            }));
-          } else {
-            this.educationList = []; // Reset if no education data found
-          }
-          if (employeeData.professional && Array.isArray(employeeData.professional)) {
-            this.professionalList = employeeData.professional.map((prof: any) => ({
-              organisation: prof.organisation || '',
-              location: prof.location || '',
-              orgempid: prof.orgempid || '',
-              orgdept: prof.orgdept || '',
-              orgrole: prof.orgrole || '',
-              joiningdate: prof.joiningdate || '',
-              relievingdate: prof.relievingdate || '',
-              ctc: prof.ctc || '',
-              additionalinformation: prof.additionalinformation || ''
-            }));
-          } else {
-            this.professionalList = []; // Reset if no education data found
-          }
-          if (employeeData.skillSet && Array.isArray(employeeData.skillSet)) {
-            this.skillList = employeeData.skillSet.map((skill: any) => ({
-              skill: skill.skill || '',
-              proficiencylevel: skill.proficiencylevel || '',
-              certification: skill.certification || '',
-              yearsExperience: skill.yearsExperience || '',
-              lastupdated: skill.lastupdated || ''
-
-            }));
-          } else {
-            this.skillList = []; // Reset if no education data found
-          }
-        }
-      },
-      (err) => {
-        console.error('Error fetching employee details:', err);
-      }
-    );
-  }
-
-  onSubmit1(form: any) {
-
-    if (!this.candidateDetails.empid) {
-      alert('Employee ID is required. Please enter.');
-      this.empidElement.nativeElement.focus(); // Correct usage of ViewChild
-      return;
-    }  else if (!this.candidateDetails.mobileNumber) {
-      alert('phone number  is required. Please enter ');
-      this.setFocus(this.mobileNumber);
-    } else if (!this.candidateDetails.dateofbirth) {
-      alert('DOB  is required. Please enter');
-      this.setFocus(this.dateofbirth);
-    } else if (!this.candidateDetails.bloodgroup) {
-      alert('blood group  is required. Please enter ');
-      this.setFocus(this.bloodgroup);
-    } else if (!this.candidateDetails.parentmobnum) {
-      alert('Parent mobaile number  is required. Please enter ');
-      this.setFocus(this.parentmobnum);
-    }else if (!this.candidateDetails.aadhaarnumber) {
-      alert('Aadhaar is required. Please enter.');
-      this.setFocus(this.aadhaarnumber);
-    } else if (!/^[2-9]{1}[0-9]{11}$/.test(this.candidateDetails.aadhaarnumber)) {
-      alert('Invalid Aadhaar number. It must be 12 digits and should not start with 0 or 1.');
-      this.setFocus(this.aadhaarnumber);
-    } else if (!this.candidateDetails.parentname) {
-      alert('Parent name is required. Please enter.');
-      this.setFocus(this.parentname);
-    } else if (!this.candidateDetails.pannumber) {
-      alert('PAN number is required. Please enter.');
-      this.setFocus(this.pannumber);
-    } else if (!/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(this.candidateDetails.pannumber)) {
-      alert('Invalid PAN number. It must be 10 characters in the format ABCDE1234F.');
-      this.setFocus(this.pannumber);
-    }  else if (!this.candidateDetails.lastName) {
-      alert('lastName is required. Please enter ');
-      this.setFocus(this.lastName);
-    }else if (!this.candidateDetails.emailid) {
-      alert('email is required. Please enter ');
-      this.setFocus(this.emailid);
-    }
-    else {
-      alert('Form submitted successfully!');
-      // Proceed with further logic here
-    }
-
-    console.log('Form data:', form.value);
-
-    const employeeData = {
-      emailid: form.value.emailid,
-      mobilenumber: form.value.phone,
-      empid: form.value.empid,
-      uannumber: form.value.uan,
-      aadhaarnumber: form.value.aadhaar,
-      bloodgroup: form.value.blood_group,
-      dateofbirth: form.value.date_of_birth,
-      parentmobnum: form.value.parent_mob_num,
-      parentname: form.value.parent_name,
-      pannumber: form.value.pan,
-      firstname: form.value.firstName,
-      employeename: form.value.firstName,
-      lastname: form.value.lastName,
-      officialemail: form.value.officialEmail,
-      address: {
-        presentaddressline1: form.value.presentAddress1,
-        presentaddressline2: form.value.presentAddress2,
-        presentcity: form.value.city,
-        presentstate: form.value.state,
-        presentpostalcode: form.value.postalCode,
-        presentcountry: form.value.presentcountry,
-        permanentaddressline1: form.value.permanentAddress1,
-        permanentaddressline2: form.value.permanentAddress2,
-        permanentcity: form.value.permanentCity,
-        permanentstate: form.value.permanentState,
-        permanentpostalcode: form.value.permanentPostalCode,
-        permanentcountry: form.value.permanentcountry,
-      },
-      education: this.educationList,
-      professional: this.professionalList,
-      skillSet: this.skillList,
-    };
-    console.log('Employee JSON data:', JSON.stringify(employeeData, null, 2));
-    alert('Employee JSON data:' + JSON.stringify(employeeData, null, 2));
-
-    // Call API service to add the employee
-    this.apiService.addEmployee1(employeeData).subscribe(
-      response => {
-        console.log('Employee added successfully', response);
-        this.successMessage = 'Employee added successfully!';  // Set success message
-        
-        setTimeout(() => {
-          this.location.back();  // Navigate to the previous page after 3 seconds
-        }, 3000);
-      },
-      error => {
-        console.error('Error adding employee', error);
-        if (error.status === 400) {
-          // Handle specific error when employee ID already exists
-          this.errorMessage = error.error?.error || 'Employee ID already exists.';
+        if (urlMode === 'B' || urlMode === 'approve') {
+          this.mode = 'approve';
+          this.isEditable = false;
         } else {
-          // Handle generic error
-          this.errorMessage = 'Failed to add employee. Please try again later.';
+          this.mode = 'edit';
+          this.isEditable = true;
         }
-        alert(this.errorMessage); // Show an alert with the error message
+        this.loadEmployeeData(empId);
+      } else {
+        this.mode = 'add';
+        this.isEditable = true;
       }
-    );
-    
+    });
+  }
+
+  loadEmployeeData(empId: string): void {
+    this.apiService.getEmployeeDetailsById(empId).subscribe({
+      next: (res: any) => {
+        Object.assign(this.candidateDetails, res);
+
+        this.educationList = res.education?.length ? res.education : [this.emptyEducation()];
+        this.professionalList = res.professional?.length ? res.professional : [this.emptyProfessional()];
+        this.skillList = res.skillSet?.length ? res.skillSet : [this.emptySkill()];
+
+        if (res.documents) {
+          this.processDocumentsForPreview(res.documents);
+          this.existingFiles = {
+            photo: res.documents.photo?.originalname || res.documents.photo?.name,
+            aadhar: res.documents.aadhar?.originalname || res.documents.aadhar?.name,
+            pan: res.documents.pan?.originalname || res.documents.pan?.name,
+            tenth: res.documents.tenth?.originalname || res.documents.tenth?.name,
+            twelfth: res.documents.twelfth?.originalname || res.documents.twelfth?.name,
+            degree: res.documents.degree?.originalname || res.documents.degree?.name,
+          };
+        }
+      },
+      error: () => alert('Failed to load employee data')
+    });
+  }
+
+  processDocumentsForPreview(documents: any): void {
+    const keys = ['photo', 'aadhar', 'pan', 'tenth', 'twelfth', 'degree'];
+    keys.forEach(key => {
+      const doc = documents[key];
+      if (doc?.data && doc?.mime) {
+        try {
+          const binary = atob(doc.data);
+          const array = Uint8Array.from(binary, c => c.charCodeAt(0));
+          const blob = new Blob([array], { type: doc.mime });
+          documents[key].url = URL.createObjectURL(blob);
+          documents[key].name = doc.name || `${key} document`;
+        } catch (e) {
+          console.error('Blob error:', e);
+        }
+      }
+    });
+  }
+
+  onFileSelected(event: any, type: string): void {
+    const file = event.target.files[0];
+    if (file) {
+      switch (type) {
+        case 'photo': this.photoFile = file; break;
+        case 'aadhar': this.aadharFile = file; break;
+        case 'pan': this.panFile = file; break;
+        case 'tenth': this.tenthFile = file; break;
+        case 'twelfth': this.twelfthFile = file; break;
+        case 'degree': this.degreeFile = file; break;
+      }
+    }
+  }
+
+  toggleAddress(): void {
+    if (this.sameAsPresentAddress) {
+      this.candidateDetails.permanentaddressline1 = this.candidateDetails.presentaddressline1;
+      this.candidateDetails.permanentaddressline2 = this.candidateDetails.presentaddressline2;
+      this.candidateDetails.permanentcity = this.candidateDetails.presentcity;
+      this.candidateDetails.permanentstate = this.candidateDetails.presentstate;
+      this.candidateDetails.permanentpostalcode = this.candidateDetails.presentpostalcode;
+      this.candidateDetails.permanentcountry = this.candidateDetails.presentcountry;
+    } else {
+      this.clearPermanentAddress();
+    }
+  }
+
+  clearPermanentAddress(): void {
+    this.candidateDetails.permanentaddressline1 = '';
+    this.candidateDetails.permanentaddressline2 = '';
+    this.candidateDetails.permanentcity = '';
+    this.candidateDetails.permanentstate = '';
+    this.candidateDetails.permanentpostalcode = '';
+    this.candidateDetails.permanentcountry = 'India';
+  }
+
+  emptyEducation() { return { institution: '', qualification: '', regnum: '', percentage: '', duration: '', fieldofstudy: '', yearofgraduation: '', additionalnotes: '' }; }
+  emptyProfessional() { return { organisation: '', location: '', orgempid: '', orgdept: '', orgrole: '', joiningdate: '', relievingdate: '', ctc: '', additionalinformation: '' }; }
+  emptySkill() { return { skill: '', proficiencylevel: '', certification: '', yearsExperience: '', lastupdated: '' }; }
+
+  addEducation() { this.educationList.push(this.emptyEducation()); }
+  addProfessional() { this.professionalList.push(this.emptyProfessional()); }
+  addSkill() { this.skillList.push(this.emptySkill()); }
+  removeEdu(i: number) { if (this.educationList.length > 1) this.educationList.splice(i, 1); }
+  removeProfessional(i: number) { if (this.professionalList.length > 1) this.professionalList.splice(i, 1); }
+  removeSkill(i: number) { if (this.skillList.length > 1) this.skillList.splice(i, 1); }
+
+  onSubmit1(form: NgForm): void {
+    // Mark all as touched to show errors
+    Object.keys(form.controls).forEach(key => {
+      form.controls[key].markAsTouched();
+    });
+
+    if (!form.valid) {
+      alert('Please fill all required fields correctly.');
+      return;
+    }
+
+    // For ADD mode, require all files
+    if (this.mode === 'add') {
+      const required = [this.photoFile, this.aadharFile, this.panFile, this.tenthFile, this.twelfthFile, this.degreeFile];
+      if (required.some(f => !f)) {
+        alert('All documents are required when adding a new employee.');
+        return;
+      }
+    }
+
+    const payload = {
+      empid: this.candidateDetails.empid,
+      firstname: this.candidateDetails.firstName,
+      lastname: this.candidateDetails.lastName || null,
+      emailid: this.candidateDetails.emailid,
+      mobilenumber: this.candidateDetails.mobileNumber,
+      alternatemobilenumber: this.candidateDetails.alternatemobilenumber || null,
+      dateofbirth: this.candidateDetails.dateofbirth,
+      bloodgroup: this.candidateDetails.bloodgroup,
+      aadhaarnumber: this.candidateDetails.aadhaarnumber,
+      pannumber: this.candidateDetails.pannumber,
+      uannumber: this.candidateDetails.uannumber || null,
+      officialemail: this.candidateDetails.officialemail || null,
+      gender: this.candidateDetails.gender,
+      maritalstatus: this.candidateDetails.maritalstatus,
+      nationality: this.candidateDetails.nationality || 'Indian',
+      passportnumber: this.candidateDetails.passportnumber || null,
+      drivinglicense: this.candidateDetails.drivinglicense || null,
+      esinumber: this.candidateDetails.esinumber || null,
+      emergencycontactname: this.candidateDetails.emergencycontactname,
+      emergencycontactnumber: this.candidateDetails.emergencycontactnumber,
+      emergencycontactrelation: this.candidateDetails.emergencycontactrelation,
+      dateofjoining: this.candidateDetails.dateofjoining,
+      designation: this.candidateDetails.designation,
+      department: this.candidateDetails.department,
+      worklocation: this.candidateDetails.worklocation,
+      reportingmanager: this.candidateDetails.reportingmanager,
+      address: {
+        presentaddressline1: this.candidateDetails.presentaddressline1,
+        presentaddressline2: this.candidateDetails.presentaddressline2 || null,
+        presentcity: this.candidateDetails.presentcity,
+        presentstate: this.candidateDetails.presentstate,
+        presentpostalcode: this.candidateDetails.presentpostalcode,
+        presentcountry: this.candidateDetails.presentcountry || 'India',
+        permanentaddressline1: this.candidateDetails.permanentaddressline1,
+        permanentaddressline2: this.candidateDetails.permanentaddressline2 || null,
+        permanentcity: this.candidateDetails.permanentcity,
+        permanentstate: this.candidateDetails.permanentstate,
+        permanentpostalcode: this.candidateDetails.permanentpostalcode,
+        permanentcountry: this.candidateDetails.permanentcountry || 'India'
+      },
+      education: this.educationList.filter(e => e.institution.trim()),
+      professional: this.professionalList.filter(p => p.organisation.trim()),
+      skillSet: this.skillList.filter(s => s.skill.trim())
+    };
+
+    const formData = new FormData();
+    formData.append('data', JSON.stringify(payload));
+
+    if (this.photoFile) formData.append('photo', this.photoFile);
+    if (this.aadharFile) formData.append('aadharDoc', this.aadharFile);
+    if (this.panFile) formData.append('panDoc', this.panFile);
+    if (this.tenthFile) formData.append('tenthMarksheet', this.tenthFile);
+    if (this.twelfthFile) formData.append('twelfthOrDiploma', this.twelfthFile);
+    if (this.degreeFile) formData.append('degreeCertificate', this.degreeFile);
+
+    this.apiService.uploadEmployeeWithDocuments(formData).subscribe({
+      next: () => {
+        alert(this.mode === 'add' ? 'Employee added successfully!' : 'Employee updated successfully!');
+        this.location.back();
+      },
+      error: (err) => alert(err.error?.error || 'Operation failed')
+    });
+  }
+
+  verify(): void {
+    if (!this.reportingManager || !this.selectedRoleId) {
+      alert('Please select Reporting Manager and Role');
+      return;
+    }
+
+    const payload = { empid: this.EmployeeID, roleid: this.selectedRoleId, managerid: this.reportingManager };
+    this.apiService.approveEmployee(payload).subscribe({
+      next: () => {
+        alert('Employee approved successfully!');
+        this.location.back();
+      },
+      error: () => alert('Approval failed')
+    });
+  }
+
+  openDocument(doc: any) {
+    if (doc?.url) {
+      this.currentDocUrl = this.sanitizer.bypassSecurityTrustResourceUrl(doc.url);
+      this.currentDocTitle = doc.name || 'Document';
+      this.showDocModal = true;
+    }
+  }
+
+  closeDocumentModal() {
+    this.showDocModal = false;
+    this.currentDocUrl = null;
+    this.currentDocTitle = '';
   }
 
   cancelAction() {
-    // Reset the form
-    if (this.candidateForm) {
-      this.candidateForm.reset();  // Resets the form to its initial state
-    }
     this.location.back();
-    console.log('Form has been reset');
   }
-
-
-  verify(form: any) {
-    const empid = this.candidateDetails.empid;
-    const roleid = this.selectedRoleId;
-    const managerid = this.reportingManager;
-  alert();
-    if (empid) {
-      // Ensure empid is a string
-      const approveemp = { empid: empid.toString() ,roleid: roleid.toString(),managerid:managerid.toString()};  // Convert to string if it's not already
-  
-      // Create the formatted JSON string and alert it
-      const requestPayload = JSON.stringify(approveemp, null, 2);
-      alert(requestPayload);  // Displays the request as desired
-  
-      // Proceed with the API request
-      this.apiService.approveEmployee(approveemp).subscribe(
-        (response) => {
-          alert('Request successful!');
-          console.log(response);
-          this.successMessage = 'Employee approved successfully!';  // Set success message
-         
-            this.location.back();  // Navigate to the previous page after 3 seconds
-           // Delay to show the success message
-        },
-        (error) => {
-          alert('Request failed!');
-          console.error(error);
-        }
-      );
-    } else {
-      alert('Employee ID is not provided.');
-    }
-  }
-  
-  
-   
-  }
-
+}

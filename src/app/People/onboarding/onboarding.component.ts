@@ -8,65 +8,114 @@ import { ApiService } from '../../api.service';
   styleUrls: ['./onboarding.component.css']
 })
 export class OnboardingComponent implements OnInit {
-  // Delete a user by Employee ID
-  deleteUser(empid: string): void {
-    const confirmDelete = confirm('Are you sure you want to delete this user?');
 
-    if (confirmDelete) {
-      // Call the backend API to delete the user
-      this.apiService.deleteEmployee(empid).subscribe({
-        next: (response: any) => {
-          // Update the UI after successful deletion
-          this.users = this.users.filter(user => user.empid !== empid);
-          this.updateTotalRecords(); // Update the total records count
-          alert('User deleted successfully!');
-        },
-        error: (err: any) => {
-          // Handle errors from the backend
-          console.error('Error deleting user:', err);
-          alert('Failed to delete the user. Please try again.');
-        }
-      });
-    }
-  }
-  users: any[] = []; // Array to store the users' list
-  totalRecords: number = 0; // Variable to store the total record count
+  users: any[] = [];
+  filteredUsers: any[] = [];
+  paginatedUsers: any[] = [];
+
+  searchTerm: string = '';
+  currentPage: number = 1;
+  pageSize: number = 10;
 
   constructor(private apiService: ApiService, private router: Router) {}
 
   ngOnInit(): void {
-    this.fetchUsers(); // Fetch users when the component is initialized
+    this.fetchUsers();
   }
 
-  // Fetch users' data from the API
   fetchUsers(): void {
-    this.apiService.getUsers().subscribe(
-      (response) => {
-        console.log('Users fetched:', response);
-        this.users = response; // Store the fetched users' data
-        this.updateTotalRecords(); // Update the total record count
+    this.apiService.getUsers().subscribe({
+      next: (response: any[]) => {
+        this.users = response || [];
+        this.filteredUsers = [...this.users];
+        this.applyFilterAndPagination();
       },
-      (error) => {
+      error: (error) => {
         console.error('Error fetching users:', error);
+        this.users = [];
+        this.filteredUsers = [];
+        this.paginatedUsers = [];
       }
-    );
+    });
   }
 
-  // Update the total record count
-  updateTotalRecords(): void {
-    this.totalRecords = this.users.length;
+  onSearch(): void {
+    this.currentPage = 1;
+    this.applyFilterAndPagination();
   }
 
-  // Navigate to the Add Candidate page
-  navigateToAddCandidate(mode: string): void {
-    this.router.navigate(['/dashboard/addcandidate', { queryParams: { mode: 'A' } }]); // Replace with the correct path
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+    this.applyFilterAndPagination();
   }
 
-  LoadEmployeeDetails(mode: string,empId:string) {
-    this.router.navigate(['/dashboard/addcandidate'], { queryParams: { mode,empId } });
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.applyFilterAndPagination();
+    }
   }
-  
+
+  applyFilterAndPagination(): void {
+    let temp = this.users;
+
+    // Apply Search Filter
+    if (this.searchTerm?.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      temp = this.users.filter(user =>
+        (user.empid?.toString() || '').toLowerCase().includes(term) ||
+        (user.firstName || '').toLowerCase().includes(term) ||
+        (user.lastName || '').toLowerCase().includes(term) ||
+        (user.email || '').toLowerCase().includes(term) ||
+        (user.officialEmail || '').toLowerCase().includes(term)
+      );
+    }
+
+    this.filteredUsers = temp;
+
+    // Apply Pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedUsers = this.filteredUsers.slice(start, end);
+  }
+
+  // Computed Getters
+  get fromRecord(): number {
+    return this.filteredUsers.length === 0 ? 0 : (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get toRecord(): number {
+    const end = this.currentPage * this.pageSize;
+    return end < this.filteredUsers.length ? end : this.filteredUsers.length;
+  }
+
+  get totalPages(): number {
+    return this.filteredUsers.length === 0 ? 1 : Math.ceil(this.filteredUsers.length / this.pageSize);
+  }
+
+  // Navigation
+  LoadEmployeeDetails(mode: string, empId: string) {
+    this.router.navigate(['/dashboard/addcandidate'], { queryParams: { mode, empId } });
+  }
+
   AddEmployeeDetails(mode: string) {
     this.router.navigate(['/dashboard/useradd'], { queryParams: { mode } });
+  }
+
+  // Optional: Delete user
+  deleteUser(empid: string): void {
+    if (confirm('Are you sure you want to delete this employee?')) {
+      this.apiService.deleteEmployee(empid).subscribe({
+        next: () => {
+          this.users = this.users.filter(u => u.empid !== empid);
+          this.applyFilterAndPagination();
+          alert('Employee deleted successfully!');
+        },
+        error: (err) => {
+          console.error(err);
+          alert('Failed to delete employee.');
+        }
+      });
+    }
   }
 }

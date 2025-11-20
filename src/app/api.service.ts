@@ -1761,7 +1761,10 @@ generateAdjustments(): Observable<any> {
   return throwError(() => new Error(message));
 }
 
-
+uploadEmployeeWithDocuments(formData: FormData): Observable<any> {
+  return this.http.post(`${this.apiUrl}/onboard`, formData).pipe(
+        finalize(() => this.loaderService.hide()));
+}
 
 
   openDialog(title: string, message: string): void {

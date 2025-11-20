@@ -439,6 +439,10 @@ checkIn(): void {
     });
   }
 
+  PersonalDetails(){
+    this.router.navigate(['dashboard/addcandidate']);
+  }
+
  openIdCardDialog(): void {
   // 🚫 Temporary restriction message
   //alert('This link has expired. Please contact your administrator or HR team for assistance.');

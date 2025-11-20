@@ -1,443 +1,877 @@
-<!-- Radio Buttons -->
-<div class="form-mode-toggle" style="display: none;">
-  <label>
-    <input type="radio" name="mode" [(ngModel)]="isEditable" [value]="true" /> A (Editable)
-  </label>
-  <label>
-    <input type="radio" name="mode" [(ngModel)]="isEditable" [value]="false" /> B (Read-only)
-  </label>
-</div>
+  <!-- Radio Buttons -->
+  <div class="form-mode-toggle" style="display: none;">
+    <label>
+      <input type="radio" name="mode" [(ngModel)]="isEditable" [value]="true" /> A (Editable)
+    </label>
+    <label>
+      <input type="radio" name="mode" [(ngModel)]="isEditable" [value]="false" /> B (Read-only)
+    </label>
+  </div>
 
-<!-- Display success message -->
-    <div *ngIf="successMessage" class="alert alert-success">
-      {{ successMessage }}
-    </div>
-<form #candidateForm="ngForm"  (ngSubmit)="onSubmit1(candidateForm)">
+  <!-- Display success message -->
+      <div *ngIf="successMessage" class="alert alert-success">
+        {{ successMessage }}
+      </div>
+  <form #candidateForm="ngForm"  (ngSubmit)="onSubmit1(candidateForm)">
 
 
-  <div class="form-section1">
-  <div class="form-section">
-    <h2>Candidate Details</h2>
+    <div class="form-section1">
+    <div class="form-section">
+      <h2>Profile Details</h2>
 
     <div class="form-row">
-      <!-- Employee ID -->
-      <div class="form-column">
-        <!-- <label for="employeeId">Employee ID <span class="mandatory">*</span></label>
-        <input type="text" id="employeeId" name="employeeId" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.empid" /> -->
-        <label for="employeeId">Employee ID <span class="mandatory">*</span></label>
-        <input type="text" id="empid" name="empid" [(ngModel)]="candidateDetails.empid"
-        [disabled]="!isEditable"
-        class="form-control" />
-        <p>Value of Employee ID: {{ candidateDetails.empid }}</p>
+        <div class="form-column">
+          <label>Employee ID <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.empid" name="empid" [disabled]="!isEditable" required />
+        </div>
+        <div class="form-column">
+          <label>Full Name (Auto)</label>
+          <input type="text" [value]="candidateDetails.firstName + ' ' + candidateDetails.lastName" disabled />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>First Name <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.firstName" name="firstName" [disabled]="!isEditable" required />
+        </div>
+        <div class="form-column">
+          <label>Last Name <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.lastName" name="lastName" [disabled]="!isEditable" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Date of Birth <span class="mandatory">*</span></label>
+          <input type="date" [(ngModel)]="candidateDetails.dateofbirth" name="dateofbirth" [disabled]="!isEditable" required />
+        </div>
+        <div class="form-column">
+          <label>Blood Group <span class="mandatory">*</span></label>
+          <select  (click)="$event.stopPropagation()" [(ngModel)]="candidateDetails.bloodgroup" name="bloodgroup" [disabled]="!isEditable" required>
+            <option value="">Select</option>
+            <option value="A+">A+</option><option value="A-">A-</option>
+            <option value="B+">B+</option><option value="B-">B-</option>
+            <option value="O+">O+</option><option value="O-">O-</option>
+            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Gender <span class="mandatory">*</span></label>
+          <select (click)="$event.stopPropagation()" [(ngModel)]="candidateDetails.gender" name="gender" [disabled]="!isEditable" required>
+            <option value="">Select</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="form-column">
+          <label>Marital Status <span class="mandatory">*</span></label>
+          <select (click)="$event.stopPropagation()" [(ngModel)]="candidateDetails.maritalstatus" name="maritalstatus" [disabled]="!isEditable" required>
+            <option value="">Select</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Divorced">Divorced</option>
+            <option value="Widowed">Widowed</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Nationality</label>
+          <input type="text" [(ngModel)]="candidateDetails.nationality" name="nationality" value="Indian" [disabled]="!isEditable" />
+        </div>
+        <div class="form-column">
+          <label>UAN Number</label>
+          <input type="text" [(ngModel)]="candidateDetails.uannumber" name="uannumber" [disabled]="!isEditable" />
+        </div>
+      </div>
+
+    <div class="form-row">
+        <div class="form-column">
+          <label>Aadhaar Number <span class="mandatory">*</span></label>
+          <input type="text" 
+                [(ngModel)]="candidateDetails.aadhaarnumber" 
+                name="aadhaarnumber" 
+                [disabled]="!isEditable" 
+                required 
+                maxlength="12"
+                placeholder="1234 5678 9012" />
+        </div>
+        <div class="form-column">
+          <label>PAN Number <span class="mandatory">*</span></label>
+          <input type="text" 
+                [(ngModel)]="candidateDetails.pannumber" 
+                name="pannumber" 
+                [disabled]="!isEditable" 
+                required 
+                maxlength="10"
+                placeholder="ABCDE1234F" />
+        </div>
+      </div>
+
+      <!-- Passport, Driving License, ESI – Visible in BOTH modes -->
+      <div class="form-row">
+        <div class="form-column">
+          <label>Passport Number</label>
+
+          <!-- Editable mode → input -->
+          <input *ngIf="isEditable"
+                type="text"
+                [(ngModel)]="candidateDetails.passportnumber"
+                name="passportnumber"
+                placeholder="e.g. A1234567"
+                style="text-transform: uppercase;" />
+
+          <!-- Read-only mode → display value -->
+          <span *ngIf="!isEditable">
+            {{ candidateDetails.passportnumber || 'Not Provided' }}
+          </span>
+        </div>
+
+        <div class="form-column">
+          <label>Driving License Number</label>
+
+          <input *ngIf="isEditable"
+                type="text"
+                [(ngModel)]="candidateDetails.drivinglicense"
+                name="drivinglicense"
+                placeholder="e.g. TN0720230012345" />
+
+          <span *ngIf="!isEditable">
+            {{ candidateDetails.drivinglicense || 'Not Provided' }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>ESI Number</label>
+
+          <input *ngIf="isEditable"
+                type="text"
+                [(ngModel)]="candidateDetails.esinumber"
+                name="esinumber"
+                placeholder="e.g. 1234567890" />
+
+          <span *ngIf="!isEditable">
+            {{ candidateDetails.esinumber || 'Not Provided' }}
+          </span>
+        </div>
+      </div>
+      </div>
+
+    <!-- Contact Details -->
+    <div class="form-section">
+      <h2>Contact Information</h2>
+      <div class="form-row">
+        <div class="form-column">
+          <label>Personal Email <span class="mandatory">*</span></label>
+          <input type="email" [(ngModel)]="candidateDetails.emailid" name="emailid" [disabled]="!isEditable" required />
+        </div>
+        <div class="form-column">
+          <label>Personal Mobile <span class="mandatory">*</span></label>
+          <input type="tel" [(ngModel)]="candidateDetails.mobileNumber" name="mobileNumber" [disabled]="!isEditable" required />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Alternate Mobile</label>
+          <input type="tel" [(ngModel)]="candidateDetails.alternatemobilenumber" name="alternatemobnum" [disabled]="!isEditable" />
+        </div>
+        <div class="form-column">
+          <label>Official Email</label>
+          <input type="email" [(ngModel)]="candidateDetails.officialemail" name="officialemail" [disabled]="!isEditable" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Emergency Contact -->
+    <div class="form-section">
+      <h2>Emergency Contact</h2>
+      <div class="form-row">
+        <div class="form-column">
+          <label>Name <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.emergencycontactname" name="emergencyname" required [disabled]="!isEditable" />
+        </div>
+        <div class="form-column">
+          <label>Number <span class="mandatory">*</span></label>
+          <input type="tel" [(ngModel)]="candidateDetails.emergencycontactnumber" name="emergencynum" required [disabled]="!isEditable" />
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-column">
+          <label>Relationship <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.emergencycontactrelation" name="emergencyrelation" required [disabled]="!isEditable" />
+        </div>
+      </div>
+    </div>
+
+    <!-- Employment Details -->
+    <div class="form-section">
+      <h2>Employment Details</h2>
+      <div class="form-row">
+        <div class="form-column">
+          <label>Date of Joining <span class="mandatory">*</span></label>
+          <input type="date" [(ngModel)]="candidateDetails.dateofjoining" name="dateofjoining" required [disabled]="!isEditable" />
+        </div>
+        <div class="form-column">
+          <label>Designation <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.designation" name="designation" required [disabled]="!isEditable" />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Department / Project <span class="mandatory">*</span></label>
+          <input type="text" [(ngModel)]="candidateDetails.department" name="department" required [disabled]="!isEditable" />
+        </div>
+        <div class="form-column">
+          <label>Work Location <span class="mandatory">*</span></label>
+          <select (click)="$event.stopPropagation()" [(ngModel)]="candidateDetails.worklocation" name="worklocation" required [disabled]="!isEditable">
+            <option value="">Select</option>
+            <option value="Onsite">Onsite</option>
+            <option value="Offsite">Offsite</option>
+            <option value="Hybrid">Hybrid</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-column">
+          <label>Reporting Manager <span class="mandatory">*</span></label>
+          <select [(ngModel)]="candidateDetails.reportingmanager" name="reportingmanager" required [disabled]="!isEditable">
+            <option value="">Select Manager</option>
+            <option *ngFor="let mgr of managers" [value]="mgr.empid">
+              {{ mgr.firstname }} {{ mgr.lastname || '' }} ({{ mgr.empid }})
+            </option>
+          </select>
+        </div>
+      </div>
+
+
+      <!-- Reporting Manager Dropdown (Visible in Read-only) -->
+  <!-- <div class="form-row">
+    <div class="form-column">
+      <div *ngIf="!isEditable">
+        <label for="manager">Reporting Manager</label>
+        <select
+        id="manager"
+        [(ngModel)]="reportingManager"
+        name="manager"
+        (click)="$event.stopPropagation()"
+      >
+        <option *ngFor="let emp of managers" [value]="emp.empid">
+          {{ emp.firstname }}
+        </option>
+      </select>
       </div>
     </div>
     
-    <div class="form-row">
-      <!-- Email -->
-      <div class="form-column">
-        <label for="emailid">Email ID <span class="mandatory">*</span></label>
-        <input type="email" id="emailid" name="emailid" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.emailid" />
-      </div>
-    
-      <!-- Phone -->
-      <div class="form-column">
-        <label for="phone">Phone <span class="mandatory">*</span></label>
-        <input type="tel" id="phone" name="phone" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.mobileNumber"/>
-      </div>
+
+    <div class="form-column">
+    <div *ngIf="!isEditable"> 
+      <label for="role">employeeRole</label>
+      <select id="role" [(ngModel)]="selectedRoleId" name="employeeRole" (click)="$event.stopPropagation()">
+        <option *ngFor="let role of roles" [value]="role.roleid">{{ role.rolename }}</option>
+      </select>
+        <select id="role" [(ngModel)]="employeeRole" name="employeeRole" (click)="$event.stopPropagation()">
+          <option value="admin">Admin</option>
+          <option value="manager">Manager</option>
+          <option value="developer">Developer</option>
+        </select> 
+      </div> 
     </div>
+  </div> -->
 
-    <div class="form-row">
+      <!-- Address Details (Present Address) -->
+     <!-- ======================= PRESENT ADDRESS ======================= -->
 
+  <h3>Present Address</h3>
 
-      <div class="form-column">
-        <label for="date_of_birth">Date of Birth <span class="mandatory">*</span></label>
-        <input type="date" id="date_of_birth" name="date_of_birth" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.dateofbirth" />
+  <div class="form-row">
+    <div class="form-column">
+      <label>Address Line 1 <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.presentaddressline1" 
+             name="presentaddressline1" 
+             required 
+             [disabled]="!isEditable" 
+             placeholder="House No, Street, Area" />
     </div>
+    <div class="form-column">
+      <label>Address Line 2</label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.presentaddressline2" 
+             name="presentaddressline2" 
+             [disabled]="!isEditable" 
+             placeholder="Landmark (Optional)" />
     </div>
-
-    <div class="form-row">
-      <div class="form-column">
-        <label for="blood_group">Blood Group <span class="mandatory">*</span></label>
-        <select id="blood_group" name="blood_group" (click)="$event.stopPropagation()" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.bloodgroup">
-          <option value="" disabled selected>Select Blood Group</option>
-          <option value="A+">A+</option>
-          <option value="A-">A-</option>
-          <option value="B+">B+</option>
-          <option value="B-">B-</option>
-          <option value="O+">O+</option>
-          <option value="O-">O-</option>
-          <option value="AB+">AB+</option>
-          <option value="AB-">AB-</option>
-        </select>
-      </div>
-      <div class="form-column">
-          <label for="parent_mob_num">Parent Mobile Number <span class="mandatory">*</span></label>
-          <input type="tel" id="parent_mob_num" name="parent_mob_num" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.parentmobnum" />
-      </div>
   </div>
 
   <div class="form-row">
     <div class="form-column">
-        <label for="parent_name">Parent Name <span class="mandatory">*</span></label>
-        <input type="text" id="parent_name" name="parent_name" ngModel required [disabled]="!isEditable"  [(ngModel)]="candidateDetails.parentname"/>
+      <label>City / Town <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.presentcity" 
+             name="presentcity" 
+             required 
+             [disabled]="!isEditable" />
     </div>
-</div>
-    
-    <div class="form-row">
-      <!-- UAN Number -->
-      <div class="form-column">
-        <label for="uan">UAN Number</label>
-        <input type="text" id="uan" name="uan" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.uannumber" />
-      </div>
-    
-      <!-- Aadhaar Card Number -->
-      <div class="form-column">
-        <label for="aadhaar">Aadhaar Card Number<span class="mandatory">*</span></label>
-        <input type="text" id="aadhaar" name="aadhaar" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.aadhaarnumber" />
-      </div>
-    </div>
-    
-    <div class="form-row">
-      <!-- PAN Card Number -->
-      <div class="form-column">
-        <label for="pan">PAN Card Number<span class="mandatory">*</span></label>
-        <input type="text" id="pan" name="pan" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.pannumber"/>
-      </div>
-    
-      <!-- Photo -->
-      <div class="form-column">
-        <label for="photo">Photo</label>
-        <input type="file" id="photo" name="photo" ngModel required [disabled]="!isEditable" (change)="onFileChange($event)" />
-      </div>
-    </div>
-    
-    <div class="form-row">
-      <!-- First Name -->
-      <div class="form-column">
-        <label for="firstName">First Name <span class="mandatory">*</span></label>
-        <input type="text" id="firstName" name="firstName" ngModel required [disabled]="!isEditable"[ngModel]="candidateDetails.firstName" />
-      </div>
-
-      <!-- Last Name -->
-      <div class="form-column">
-        <label for="lastName">Last Name <span class="mandatory">*</span></label>
-        <input type="text" id="lastName" name="lastName" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.lastName"/>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <!-- Official Email -->
-      <div class="form-column">
-        <label for="officialEmail">Official Email</label>
-        <input type="email" id="officialEmail" name="officialEmail" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.officialemail" />
-      </div>
-    </div>
-
-    <!-- Reporting Manager Dropdown (Visible in Read-only) -->
-<div class="form-row">
-  <div class="form-column">
-    <div *ngIf="!isEditable">
-      <label for="manager">Reporting Manager</label>
-      <select
-      id="manager"
-      [(ngModel)]="reportingManager"
-      name="manager"
-      (click)="$event.stopPropagation()"
-    >
-      <option *ngFor="let emp of managers" [value]="emp.empid">
-        {{ emp.firstname }}
-      </option>
-    </select>
+    <div class="form-column">
+      <label>State <span class="mandatory">*</span></label>
+      <select [(ngModel)]="candidateDetails.presentstate" 
+              name="presentstate" 
+              required 
+              [disabled]="!isEditable"
+              (click)="$event.stopPropagation()">
+        <option value="">Select State</option>
+        <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+      </select>
     </div>
   </div>
-  
 
-  <div class="form-column">
-   <div *ngIf="!isEditable"> 
-    <label for="role">employeeRole</label>
-    <select id="role" [(ngModel)]="selectedRoleId" name="employeeRole" (click)="$event.stopPropagation()">
-      <option *ngFor="let role of roles" [value]="role.roleid">{{ role.rolename }}</option>
-    </select>
-      <!-- <select id="role" [(ngModel)]="employeeRole" name="employeeRole" (click)="$event.stopPropagation()">
-        <option value="admin">Admin</option>
-        <option value="manager">Manager</option>
-        <option value="developer">Developer</option>
-      </select> -->
-    </div> 
+  <div class="form-row">
+    <div class="form-column">
+      <label>Postal Code / PIN <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.presentpostalcode" 
+             name="presentpostalcode" 
+             required 
+             maxlength="6" 
+             [disabled]="!isEditable" />
+    </div>
+    <div class="form-column">
+      <label>Country</label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.presentcountry" 
+             name="presentcountry" 
+             value="India" 
+             [disabled]="true" />
+    </div>
   </div>
 </div>
 
-    <!-- Address Details (Present Address) -->
-    <h3>Present Address</h3>
-    <div class="form-row">
-      <div class="form-column">
-        <label for="presentAddress1">Address Line 1</label>
-        <input type="text" id="presentAddress1" name="presentAddress1" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.presentaddressline1"/>
-      </div>
+<!-- ======================= SAME AS PRESENT ADDRESS CHECKBOX ======================= -->
+<div class="form-section" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
+  <label style="font-weight: bold; cursor: pointer;">
+    <input type="checkbox" 
+           [(ngModel)]="sameAsPresentAddress" 
+           name="sameAsPresentAddress" 
+           (change)="toggleAddress()" 
+           [disabled]="!isEditable" />
+    <span style="margin-left: 8px; color: #2c3e50;">Same as Present Address</span>
+  </label>
+</div>
 
-      <div class="form-column">
-        <label for="presentAddress2">Address Line 2</label>
-        <input type="text" id="presentAddress2" name="presentAddress2" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.presentaddressline2"/>
-      </div>
+<!-- ======================= PERMANENT ADDRESS ======================= -->
+<div class="form-section">
+  <h3>Permanent Address</h3>
+
+  <div class="form-row">
+    <div class="form-column">
+      <label>Address Line 1 <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.permanentaddressline1" 
+             name="permanentaddressline1" 
+             required 
+             [disabled]="!isEditable" 
+             placeholder="House No, Street, Area" />
     </div>
-
-    <div class="form-row">
-      <!-- City -->
-      <div class="form-column">
-        <label for="city">City</label>
-        <input type="text" id="city" name="city" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.presentcity"/>
-      </div>
-
-      <!-- State -->
-      <div class="form-column">
-        <label for="state">Select State</label>
-        <select
-  id="state"
-  name="state" ngModel required [disabled]="!isEditable"
-  [(ngModel)]="candidateDetails.presentstate"
-  (click)="$event.stopPropagation()">
-  <option *ngFor="let state of states" [value]="state">{{ state }}</option>
-</select>      
-      </div>
+    <div class="form-column">
+      <label>Address Line 2</label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.permanentaddressline2" 
+             name="permanentaddressline2" 
+             [disabled]="!isEditable" 
+             placeholder="Landmark (Optional)" />
     </div>
+  </div>
 
-    <div class="form-row">
-      <!-- Postal Code -->
-      <div class="form-column">
-        <label for="postalCode">Postal Code</label>
-        <input type="text" id="postalCode" name="postalCode" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.presentpostalcode"/>
-      </div>
-
-      <div class="form-column">
-        <label for="city">Country</label>
-        <input type="text" id="presentcountry" name="presentcountry" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.presentcountry"/>
-      </div>
+  <div class="form-row">
+    <div class="form-column">
+      <label>City / Town <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.permanentcity" 
+             name="permanentcity" 
+             required 
+             [disabled]="!isEditable" />
     </div>
-
-    <!-- Permanent Address -->
-    <h3>Permanent Address</h3>
-    <div class="form-row">
-      <div class="form-column">
-        <label for="permanentAddress1">Address Line 1</label>
-        <input type="text" id="permanentAddress1" name="permanentAddress1" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentaddressline1" />
-      </div>
-
-      <div class="form-column">
-        <label for="permanentAddress2">Address Line 2</label>
-        <input type="text" id="permanentAddress2" name="permanentAddress2" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentaddressline2" />
-      </div>
+    <div class="form-column">
+      <label>State <span class="mandatory">*</span></label>
+      <select [(ngModel)]="candidateDetails.permanentstate" 
+              name="permanentstate" 
+              required 
+              [disabled]="!isEditable"
+              (click)="$event.stopPropagation()">
+        <option value="">Select State</option>
+        <option *ngFor="let state of states" [value]="state">{{ state }}</option>
+      </select>
     </div>
+  </div>
 
-    <div class="form-row">
-      <!-- Permanent City -->
-      <div class="form-column">
-        <label for="permanentCity">City</label>
-        <input type="text" id="permanentCity" name="permanentCity" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentcity" />
-      </div>
+  <div class="form-row">
+    <div class="form-column">
+      <label>Postal Code / PIN <span class="mandatory">*</span></label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.permanentpostalcode" 
+             name="permanentpostalcode" 
+             required 
+             maxlength="6" 
+             [disabled]="!isEditable" />
+    </div>
+    <div class="form-column">
+      <label>Country</label>
+      <input type="text" 
+             [(ngModel)]="candidateDetails.permanentcountry" 
+             name="permanentcountry" 
+             value="India" 
+             [disabled]="true" />
+    </div>
+  </div>
+</div>
 
-      <!-- Permanent State -->
-      <div class="form-column">
-        <label for="permanentState">Select State</label>
-        <select (click)="$event.stopPropagation()" id="permanentState" name="permanentState" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentstate">
-          <option *ngFor="let state of states" [value]="state">{{ state }}</option>
-        </select>
+    <!-- Education Section -->
+    <div class="form-section">
+      <h3>Education</h3>
+      <button type="button" (click)="addEducation()">Add Row</button>
+      <table>
+        <tr>
+          <th>Institution Name</th>
+          <th>Qualification</th>
+          <th>Register No</th>
+          <th>Percentage</th>
+          <th>Duration</th>
+          <th>Field(s) of Study</th>
+          <th>Year of Graduation</th>
+          <th>Additional Notes</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let edu of educationList; let i = index">
+  <td><input type="text" [(ngModel)]="edu.institution"      name="edu_inst_{{i}}"      required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.qualification"   name="edu_qual_{{i}}"      required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.regnum"           name="edu_reg_{{i}}"       required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.percentage"       name="edu_perc_{{i}}"      required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.duration"         name="edu_dur_{{i}}"       required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.fieldofstudy"     name="edu_field_{{i}}"     required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.yearofgraduation" name="edu_year_{{i}}"      required [disabled]="!isEditable" /></td>
+  <td><input type="text" [(ngModel)]="edu.additionalnotes"  name="edu_notes_{{i}}"     [disabled]="!isEditable" /></td>
+  <td><button type="button" (click)="removeEdu(i)" class="icon-button delete-icon">X</button></td>
+</tr>
         
-      </div>
+      </table>
     </div>
 
-    <div class="form-row">
-      <!-- Permanent Postal Code -->
-      <div class="form-column">
-        <label for="permanentPostalCode">Postal Code</label>
-        <input type="text" id="permanentPostalCode" name="permanentPostalCode" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentpostalcode" />
-      </div>
+    <!-- Experience Section -->
+    <!-- <div class="form-section">
+      <h3>Experience</h3>
+      <button type="button" (click)="addExperience()">Add Row</button>
+      <table>
+        <tr>
+          <th>Occupation</th>
+          <th>Company</th>
+          <th>Summary</th>
+          <th>Duration</th>
+          <th>Currently Work Here</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let exp of experienceList; let i = index">
+          <td><input type="text" [(ngModel)]="exp.occupation" name="occupation{{i}}" /></td>
+          <td><input type="text" [(ngModel)]="exp.company" name="company{{i}}" /></td>
+          <td><input type="text" [(ngModel)]="exp.summary" name="summary{{i}}" /></td>
+          <td><input type="text" [(ngModel)]="exp.duration" name="duration{{i}}" /></td>
+          <td><input type="checkbox" [(ngModel)]="exp.currentlyWorkHere" name="currentlyWorkHere{{i}}" /></td>
+          <td>
+            <button type="button" (click)="removeExp(i)"class="icon-button delete-icon">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </table>
+    </div> -->
 
-      <div class="form-column">
-        <label for="city">Country</label>
-        <input type="text" id="permanentcountry" name="permanentcountry" ngModel required [disabled]="!isEditable" [(ngModel)]="candidateDetails.permanentcountry"/>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-column">
-        <label for="sameAsPresent">
-          <input type="checkbox" id="sameAsPresent" name="sameAsPresent" ngModel required [disabled]="!isEditable" [(ngModel)]="sameAsPresentAddress" (change)="toggleAddress()"/> Same as Present Address
-        </label>        
-      </div>
-    </div>
-  </div>
-
-  <!-- Education Section -->
-  <div class="form-section">
-    <h3>Education</h3>
-    <button type="button" (click)="addEducation()">Add Row</button>
-    <table>
-      <tr>
-        <th>Institution Name</th>
-        <th>Qualification</th>
-        <th>Register No</th>
-        <th>Percentage</th>
-        <th>Duration</th>
-        <th>Field(s) of Study</th>
-        <th>Year of Graduation</th>
-        <th>Additional Notes</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let edu of educationList; let i = index">
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.institution" name="institution{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.qualification" name="qualification{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.regnum" name="regnum{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.percentage" name="percentage{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.duration" name="duration{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.fieldofstudy" name="fieldOfStudy{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.yearofgraduation" name="yearOfGraduation{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="edu.additionalnotes" name="additionalNotes{{i}}" /></td>
-        <td>
-          <button type="button" (click)="removeEdu(i)" class="icon-button delete-icon">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
+    <!-- Professional Details Section -->
+    <div class="form-section">
+      <h3>Professional Details</h3>
+      <button type="button" (click)="addProfessional()">Add Row</button>
+      <table>
+        <tr>
+          <th>Organization</th>
+          <th>Location</th>
+          <th>Org Emp ID</th>
+          <th>Org Dept</th>
+          <th>Org Role</th>
+          <th>Joining Date</th>
+          <th>Relieving Date</th>
+          <th>CTC</th>
+          <th>Additional Information</th>
+          <!-- <th>Offer Letter</th> -->
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let prof of professionalList; let i = index">
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.organisation" name="organisation{{i}}" /></td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.location" name="location{{i}}" /></td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgempid" name="orgempid{{i}}" /></td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgdept" name="orgdept{{i}}" /></td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgrole" name="orgrole{{i}}" /></td>
+          <td>
+            <input type="date" [(ngModel)]="prof.joiningdate" name="joiningDate{{i}}" />
+          </td>
+          <td>
+            <input type="date" [(ngModel)]="prof.relievingdate" name="relievingDate{{i}}" />
+          </td>
+          <td><input type="text" [(ngModel)]="prof.ctc" name="ctc{{i}}" /></td>
+          <td>
+            <textarea [(ngModel)]="prof.additionalinformation" name="additionalInfo{{i}}"></textarea>
+          </td>
+          <!--<td>
+            <input
+              type="file"
+              (change)="uploadOfferLetter($event, i)" 
+              name="offerLetter{{i}}"
+            /> 
+          </td>-->
+          <td>
+            <button type="button" (click)="removeProfessional(i)" class="icon-button delete-icon">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </table>
       
-    </table>
-  </div>
-
-  <!-- Experience Section -->
-  <!-- <div class="form-section">
-    <h3>Experience</h3>
-    <button type="button" (click)="addExperience()">Add Row</button>
-    <table>
-      <tr>
-        <th>Occupation</th>
-        <th>Company</th>
-        <th>Summary</th>
-        <th>Duration</th>
-        <th>Currently Work Here</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let exp of experienceList; let i = index">
-        <td><input type="text" [(ngModel)]="exp.occupation" name="occupation{{i}}" /></td>
-        <td><input type="text" [(ngModel)]="exp.company" name="company{{i}}" /></td>
-        <td><input type="text" [(ngModel)]="exp.summary" name="summary{{i}}" /></td>
-        <td><input type="text" [(ngModel)]="exp.duration" name="duration{{i}}" /></td>
-        <td><input type="checkbox" [(ngModel)]="exp.currentlyWorkHere" name="currentlyWorkHere{{i}}" /></td>
-        <td>
-          <button type="button" (click)="removeExp(i)"class="icon-button delete-icon">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </table>
-  </div> -->
-
-  <!-- Professional Details Section -->
-  <div class="form-section">
-    <h3>Professional Details</h3>
-    <button type="button" (click)="addProfessional()">Add Row</button>
-    <table>
-      <tr>
-        <th>Organization</th>
-        <th>Location</th>
-        <th>Org Emp ID</th>
-        <th>Org Dept</th>
-        <th>Org Role</th>
-        <th>Joining Date</th>
-        <th>Relieving Date</th>
-        <th>CTC</th>
-        <th>Additional Information</th>
-        <th>Offer Letter</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let prof of professionalList; let i = index">
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.organisation" name="organisation{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.location" name="location{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgempid" name="orgempid{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgdept" name="orgdept{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgrole" name="orgrole{{i}}" /></td>
-        <td>
-          <input type="date" [(ngModel)]="prof.joiningdate" name="joiningDate{{i}}" />
-        </td>
-        <td>
-          <input type="date" [(ngModel)]="prof.relievingdate" name="relievingDate{{i}}" />
-        </td>
-        <td><input type="text" [(ngModel)]="prof.ctc" name="ctc{{i}}" /></td>
-        <td>
-          <textarea [(ngModel)]="prof.additionalinformation" name="additionalInfo{{i}}"></textarea>
-        </td>
-        <!--<td>
-          <input
-            type="file"
-            (change)="uploadOfferLetter($event, i)" 
-            name="offerLetter{{i}}"
-          /> 
-        </td>-->
-        <td>
-          <button type="button" (click)="removeProfessional(i)" class="icon-button delete-icon">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </table>
-    
-  </div>
-  <div class="form-section">
-    <h3>Skill Set</h3>
-    <button type="button" (click)="addSkill()">Add Row</button>
-    <table>
-      <tr>
-        <th>Skill</th>
-        <th>Proficiency</th>
-        <th>Certification</th>
-        <th>Years of Experience</th>
-        <th>Last Update</th>
-        <th>Actions</th>
-      </tr>
-      <tr *ngFor="let skill of skillList; let i = index">
-        <td><input type="text" [(ngModel)]="skill.skill" name="skill{{i}}" /></td>
-        <td>
-          <select [(ngModel)]="skill.proficiencylevel" ngModel required [disabled]="!isEditable" name="proficiencylevel{{i}}" (click)="$event.stopPropagation()">
-            <option value="" disabled selected>Select</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-            <option value="Expert">Expert</option>
-          </select>
-        </td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.certification" name="certification{{i}}" /></td>
-        <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.yearsExperience" name="yearsExperience{{i}}" /></td>
-        <td><input type="date" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.lastupdated" name="lastupdated{{i}}" /></td>
-        <td>
-          <button type="button" (click)="removeSkill(i)" class="icon-button delete-icon">
-            <i class="fas fa-trash"></i>
-          </button>
-        </td>
-      </tr>
-    </table>
-  </div>
-
-  <!-- Submit Button -->
-  
-  
-  
-  
-  
-  <!-- <div class="form-actions">
-    [disabled]="!candidateForm.form.valid" 
-    <div>      
-      <button *ngIf="isEditable" type="submit">Submit</button> <!-- Show Submit if Editable 
-      <button *ngIf="!isEditable" type="button" (click)="verify()">Verify</button> <!-- Show Verify if Read-only 
+    </div>
+    <div class="form-section">
+      <h3>Skill Set</h3>
+      <button type="button" (click)="addSkill()">Add Row</button>
+      <table>
+        <tr>
+          <th>Skill</th>
+          <th>Proficiency</th>
+          <th>Certification</th>
+          <th>Years of Experience</th>
+          <th>Last Update</th>
+          <th>Actions</th>
+        </tr>
+        <tr *ngFor="let skill of skillList; let i = index">
+          <td><input type="text" [(ngModel)]="skill.skill" name="skill{{i}}" /></td>
+          <td>
+            <select [(ngModel)]="skill.proficiencylevel" ngModel required [disabled]="!isEditable" name="proficiencylevel{{i}}" (click)="$event.stopPropagation()">
+              <option value="" disabled selected>Select</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+              <option value="Expert">Expert</option>
+            </select>
+          </td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.certification" name="certification{{i}}" /></td>
+          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.yearsExperience" name="yearsExperience{{i}}" /></td>
+          <td><input type="date" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.lastupdated" name="lastupdated{{i}}" /></td>
+          <td>
+            <button type="button" (click)="removeSkill(i)" class="icon-button delete-icon">
+              <i class="fas fa-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </table>
     </div>
 
-    <button type="button" (click)="cancelAction()">Cancel</button>
+    <!-- Submit Button -->
+    
+    
+    
+    
+    
+    <!-- <div class="form-actions">
+      [disabled]="!candidateForm.form.valid" 
+      <div>      
+        <button *ngIf="isEditable" type="submit">Submit</button>  Show Submit if Editable 
+        <button *ngIf="!isEditable" type="button" (click)="verify()">Verify</button>  Show Verify if Read-only 
+      </div>
+
+      <button type="button" (click)="cancelAction()">Cancel</button>
+    </div>
+    </div> -->
+
+  <!-- ==================== DOCUMENT UPLOADS (Editable Mode) ==================== -->
+  <div class="form-section" *ngIf="isEditable">
+    <h2>Document Uploads <span class="mandatory">*</span></h2>
+
+    <div class="form-row">
+      <div class="form-column">
+        <label>Passport Size Photo <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'photo')" accept="image/*" />
+        <small *ngIf="photoFile?.name" class="uploaded-file-name">Uploaded: {{ photoFile?.name }}</small>
+      </div>
+      <div class="form-column">
+        <label>Aadhar Card <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'aadhar')" accept=".pdf,image/*" />
+        <small *ngIf="aadharFile?.name" class="uploaded-file-name">Uploaded: {{ aadharFile?.name }}</small>
+      </div>
+      <div class="form-column">
+        <label>PAN Card <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'pan')" accept=".pdf,image/*" />
+        <small *ngIf="panFile?.name" class="uploaded-file-name">Uploaded: {{ panFile?.name }}</small>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-column">
+        <label>10th Marksheet <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'tenth')" accept=".pdf,image/*" />
+        <small *ngIf="tenthFile?.name" class="uploaded-file-name">Uploaded: {{ tenthFile?.name }}</small>
+      </div>
+      <div class="form-column">
+        <label>12th / Diploma Marksheet <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'twelfth')" accept=".pdf,image/*" />
+        <small *ngIf="twelfthFile?.name" class="uploaded-file-name">Uploaded: {{ twelfthFile?.name }}</small>
+      </div>
+      <div class="form-column">
+        <label>Degree Certificate (UG/PG) <span class="mandatory">*</span></label>
+        <input type="file" (change)="onFileSelected($event, 'degree')" accept=".pdf,image/*" />
+        <small *ngIf="degreeFile?.name" class="uploaded-file-name">Uploaded: {{ degreeFile?.name }}</small>
+      </div>
+    </div>
   </div>
-  </div> -->
+
+  <!-- ==================== EXISTING DOCUMENT PREVIEWS (Edit Mode) ==================== -->
+<div class="form-section" *ngIf="isEditable && candidateDetails?.documents">
+  <h2>Currently Uploaded Documents</h2>
+  <p class="text-muted">You can replace any document by uploading a new one below.</p>
+
+  <div class="documents-grid">
+
+    <!-- Photo -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.photo?.url">
+      <div class="doc-header">
+        <i class="fas fa-user"></i> Passport Size Photo
+      </div>
+      <div class="doc-body">
+        <img [src]="candidateDetails.documents.photo.url" class="photo-preview" alt="Current Photo">
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">View</button>
+        <small>Current: {{ existingFiles.photo || 'photo.jpg' }}</small>
+      </div>
+    </div>
+
+    <!-- Aadhar -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.aadhar?.url">
+      <div class="doc-header">
+        <i class="fas fa-id-card"></i> Aadhar Card
+      </div>
+      <div class="doc-body pdf-preview">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">View</button>
+        <small>Current: {{ existingFiles.aadhar || 'aadhar.pdf' }}</small>
+      </div>
+    </div>
+
+    <!-- PAN -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.pan?.url">
+      <div class="doc-header">
+        <i class="fas fa-credit-card"></i> PAN Card
+      </div>
+      <div class="doc-body pdf-preview">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">View</button>
+        <small>Current: {{ existingFiles.pan || 'pan.pdf' }}</small>
+      </div>
+    </div>
+
+    <!-- 10th -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.tenth?.url">
+      <div class="doc-header">
+        <i class="fas fa-certificate"></i> 10th Marksheet
+      </div>
+      <div class="doc-body pdf-preview">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">View</button>
+        <small>Current: {{ existingFiles.tenth || '10th.pdf' }}</small>
+      </div>
+    </div>
+
+    <!-- 12th -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.twelfth?.url">
+      <div class="doc-header">
+        <i class="fas fa-graduation-cap"></i> 12th / Diploma
+      </div>
+      <div class="doc-body pdf-preview">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">View</button>
+        <small>Current: {{ existingFiles.twelfth || '12th.pdf' }}</small>
+      </div>
+    </div>
+
+    <!-- Degree -->
+    <div class="doc-card" *ngIf="candidateDetails.documents.degree?.url">
+      <div class="doc-header">
+        <i class="fas fa-award"></i> Degree Certificate
+      </div>
+      <div class="doc-body pdf-preview">
+        <i class="fas fa-file-pdf"></i>
+      </div>
+      <div class="doc-footer">
+        <button class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">View</button>
+        <small>Current: {{ existingFiles.degree || 'degree.pdf' }}</small>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  <!-- ==================== DOCUMENT VIEWER (Approval Mode Only) ==================== -->
+  <div class="form-section" *ngIf="!isEditable && candidateDetails?.documents">
+    <h2>Uploaded Documents</h2>
+    <div class="documents-grid">
+
+      <!-- Passport Photo -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.photo?.url">
+        <div class="doc-header">
+          <i class="fas fa-user"></i> Passport Size Photo
+        </div>
+        <div class="doc-body">
+          <img [src]="candidateDetails.documents.photo.url" class="photo-preview" alt="Passport Photo">
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">View</button>
+          <a [href]="candidateDetails.documents.photo.url" download="passport_photo.jpg" class="btn-download">Download</a>
+        </div>
+      </div>
+
+      <!-- Aadhar Card -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.aadhar?.url">
+        <div class="doc-header">
+          <i class="fas fa-id-card"></i> Aadhar Card
+        </div>
+        <div class="doc-body pdf-preview">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">View</button>
+          <a [href]="candidateDetails.documents.aadhar.url" download="aadhar.pdf" class="btn-download">Download</a>
+        </div>
+      </div>
+
+      <!-- PAN Card -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.pan?.url">
+        <div class="doc-header">
+          <i class="fas fa-credit-card"></i> PAN Card
+        </div>
+        <div class="doc-body pdf-preview">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">View</button>
+          <a [href]="candidateDetails.documents.pan.url" download="pan.pdf" class="btn-download">Download</a>
+        </div>
+      </div>
+
+      <!-- 10th Marksheet -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.tenth?.url">
+        <div class="doc-header">
+          <i class="fas fa-certificate"></i> 10th Marksheet
+        </div>
+        <div class="doc-body pdf-preview">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">View</button>
+          <a [href]="candidateDetails.documents.tenth.url" download="10th_marksheet.pdf" class="btn-download">Download</a>
+        </div>
+      </div>
+
+      <!-- 12th / Diploma -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.twelfth?.url">
+        <div class="doc-header">
+          <i class="fas fa-graduation-cap"></i> 12th / Diploma Marksheet
+        </div>
+        <div class="doc-body pdf-preview">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">View</button>
+          <a [href]="candidateDetails.documents.twelfth.url" download="12th_marksheet.pdf" class="btn-download">Download</a>
+        </div>
+      </div>
+
+      <!-- Degree Certificate -->
+      <div class="doc-card" *ngIf="candidateDetails.documents.degree?.url">
+        <div class="doc-header">
+          <i class="fas fa-award"></i> Degree Certificate (UG/PG)
+        </div>
+        <div class="doc-body pdf-preview">
+          <i class="fas fa-file-pdf"></i>
+        </div>
+        <div class="doc-footer">
+          <button class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">View</button>
+          <a [href]="candidateDetails.documents.degree.url" download="degree_certificate.pdf" class="btn-download">Download</a>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ==================== DOCUMENT PREVIEW MODAL ==================== -->
+  <div class="modal-overlay" *ngIf="showDocModal" (click)="closeDocumentModal()"></div>
+  <div class="document-modal" *ngIf="showDocModal">
+    <div class="modal-header">
+      <h3>{{ currentDocTitle }}</h3>
+      <button class="close-modal" (click)="closeDocumentModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe [src]="currentDocUrl" frameborder="0"></iframe>
+    </div>
+  </div>
 
   <div class="form-actions">
     <div class="button-group">
-      <button *ngIf="isEditable" type="submit">Submit</button> <!-- Show Submit if Editable -->
-      <button *ngIf="!isEditable" type="button" (click)="verify(form)">APPROVE</button> <!-- Show Verify if Read-only -->
-      <button type="button" (click)="cancelAction()">CANCEL</button>
+      <!-- Submit / Update Button -->
+      <button *ngIf="isEditable" type="submit" class="btn-primary">
+        {{ mode === 'add' ? 'Submit New Employee' : 'Update Employee' }}
+      </button>
+
+      <!-- Approve Button (Only in approve mode) -->
+      <button *ngIf="mode === 'approve'" type="button" (click)="verify()" class="btn-success">
+        APPROVE EMPLOYEE
+      </button>
+
+      <!-- Reporting Manager & Role Selection (Only in approve mode) -->
+      <div *ngIf="mode === 'approve'" class="approval-section">
+        <div class="form-row">
+          <div class="form-column">
+            <label>Assign Reporting Manager <span class="mandatory">*</span></label>
+            <select [(ngModel)]="reportingManager" name="approvalManager" required>
+              <option value="">Select Manager</option>
+              <option *ngFor="let m of managers" [value]="m.empid">
+                {{ m.firstname }} {{ m.lastname || '' }} ({{ m.empid }})
+              </option>
+            </select>
+          </div>
+          <div class="form-column">
+            <label>Assign Role <span class="mandatory">*</span></label>
+            <select [(ngModel)]="selectedRoleId" name="approvalRole" required>
+              <option value="">Select Role</option>
+              <option *ngFor="let r of roles" [value]="r.roleid">{{ r.rolename }}</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" (click)="cancelAction()" class="btn-cancel">CANCEL / CLOSE</button>
     </div>
   </div>
-  </div>
-</form>
+    </div>
+  </form>
