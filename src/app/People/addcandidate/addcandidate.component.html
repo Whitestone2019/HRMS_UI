@@ -844,11 +844,11 @@
       </button>
 
       <!-- Approve Button (Only in approve mode) -->
-      <button *ngIf="mode === 'approve'" type="button" (click)="verify()" class="btn-success">
+      <!-- <button *ngIf="mode === 'approve'" type="button" (click)="verify()" class="btn-success">
         APPROVE EMPLOYEE
       </button>
 
-      <!-- Reporting Manager & Role Selection (Only in approve mode) -->
+     
       <div *ngIf="mode === 'approve'" class="approval-section">
         <div class="form-row">
           <div class="form-column">
@@ -868,7 +868,7 @@
             </select>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <button type="button" (click)="cancelAction()" class="btn-cancel">CANCEL / CLOSE</button>
     </div>
