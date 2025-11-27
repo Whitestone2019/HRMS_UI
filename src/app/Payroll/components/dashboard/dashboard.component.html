@@ -41,7 +41,7 @@
             <input type="text" placeholder="Search Name / Emp ID" [(ngModel)]="searchTerm" (input)="applyFilters()"
               class="form-control form-control-sm" style="width: 250px;">
 
-            <select [(ngModel)]="sortBy" (change)="applyFilters()" class="form-select form-select-sm">
+            <select [(ngModel)]="sortBy" (click)="$event.stopPropagation()" (change)="applyFilters()" class="form-select form-select-sm">
               <option value="name">Sort by Name</option>
               <option value="empId">Sort by Emp ID</option>
               <option value="netPay">Sort by Net Pay</option>
@@ -155,123 +155,152 @@
           </div>
         </div>
 
-        <!-- PAYROLL ADJUSTMENTS MODAL - FINAL CLEAN VERSION -->
-<!-- PAYROLL ADJUSTMENTS MODAL - 100% FIXED -->
- <!-- PAYROLL ADJUSTMENTS MODAL - FINAL VERSION WITH PAGINATION -->
+    <!-- PAYROLL ADJUSTMENTS MODAL - FINAL FIXED (NO OVERLAP) -->
 <div *ngIf="showPayrollAdjTable">
-  <div class="modal fade" id="adjustmentsAdminModal" tabindex="-1"
-       data-bs-backdrop="static" data-bs-keyboard="false"
-       (shown.bs.modal)="onModalShown()" (hidden.bs.modal)="onModalHidden()">
+  <div class="modal fade" 
+       id="adjustmentsAdminModal" 
+       tabindex="-1"
+       data-bs-backdrop="static" 
+       data-bs-keyboard="false"
+       (shown.bs.modal)="onModalShown()" 
+       (hidden.bs.modal)="onModalHidden()">
+
     <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
       <div class="modal-content shadow-lg">
 
-        <div class="modal-header bg-primary text-white">
+        <!-- Header -->
+        <div class="modal-header bg-primary text-white position-sticky top-0 z-1030">
           <h5 class="modal-title fw-bold">
             Payroll Adjustments - Admin Review
             <span *ngIf="adjustmentsMonth"> ({{ adjustmentsMonth }})</span>
           </h5>
-          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
 
+        <!-- Body -->
         <div class="modal-body p-4">
+
+          <!-- Loading -->
           <div *ngIf="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
             <p class="mt-3 fs-5">Loading adjustments...</p>
           </div>
 
+          <!-- Content -->
           <div *ngIf="!isLoading">
+            <!-- Search -->
             <div class="mb-4">
-              <input type="text" class="form-control form-control-lg"
+              <input type="text" 
+                     class="form-control form-control-lg" 
                      placeholder="Search Employee, Emp ID or Manager..."
-                     [(ngModel)]="adjSearchTerm" (input)="filterAndPaginateAdjustments()">
+                     [(ngModel)]="adjSearchTerm" 
+                     (input)="filterAndPaginateAdjustments()">
             </div>
 
-            <div class="table-responsive" style="max-height: 60vh;">
-              <table class="table table-sm table-hover table-bordered align-middle">
-                <thead class="table-dark sticky-top">
-                  <tr>
-                    <th>Emp ID</th>
-                    <th>Name</th>
-                    <th>Manager</th>
-                    <th>Allowance Days</th>
-                    <th>Working Days</th>
-                    <th>LOP</th>
-                    <th>Deduction</th>
-                    <th>Remarks</th>
-                    <th>HR Remarks</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let adj of displayedAdjustments">
-                    <td>{{ adj.empId }}</td>
-                    <td><strong>{{ adj.employeeName }}</strong></td>
-                    <td><small>{{ adj.managerId || '-' }}</small></td>
-                    <td>{{ adj.allowanceDays }}</td>
-                    <td>{{ adj.effectiveWorkingDays }}</td>
-                    <td class="text-danger fw-bold">{{ adj.lopDays }}</td>
-                    <td class="text-danger fw-bold">₹{{ adj.otherDeductions | number:'1.2-2' }}</td>
-                    <td><small>{{ adj.otherDeductionsRemarks || '-' }}</small></td>
-                    <td><small class="text-danger">{{ adj.payrollRejectRemarks || '-' }}</small></td>
-                    <td>
-                      <span class="badge fw-bold"
-                            [ngClass]="{
-                              'bg-success': adj.approvalStatus === 'APPROVED',
-                              'bg-warning text-dark': adj.approvalStatus === 'PENDING',
-                              'bg-danger': adj.approvalStatus === 'REJECTED'
-                            }">
-                        {{ adj.approvalStatus || 'PENDING' }}
-                      </span>
-                    </td>
-                    <td>
-                      <div class="btn-group btn-group-sm">
-                        <!-- <button class="btn btn-success btn-sm"
-                                (click)="adminApprove(adj)"
-                                [disabled]="adj.approvalStatus === 'APPROVED'">
-                          Approve
-                        </button> -->
-                        <button class="btn btn-danger btn-sm ms-1"
-                                (click)="adminReject(adj)"
-                                [disabled]="adj.approvalStatus === 'REJECTED' || adj.approvalStatus === 'PENDING'">
-                          Reject
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <!-- Table Container -->
+            <div class="table-container border rounded overflow-hidden">
+              <div class="table-responsive" style="max-height: 58vh;">
+                <table class="table table-sm table-hover table-bordered align-middle mb-0">
+                  <thead class="table-dark sticky-top top-0" style="z-index: 1020;">
+                    <tr>
+                      <th>Emp ID</th>
+                      <th>Name</th>
+                      <th>Manager</th>
+                      <th>Allowance Days</th>
+                      <th>Working Days</th>
+                      <th>LOP</th>
+                      <th>Deduction</th>
+                      <th>Remarks</th>
+                      <th>HR Remarks</th>
+                      <th>Status</th>
+                      <th width="140">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let adj of displayedAdjustments">
+                      <td>{{ adj.empId }}</td>
+                      <td><strong>{{ adj.employeeName }}</strong></td>
+                      <td><small>{{ adj.managerId || '-' }}</small></td>
+                      <td>{{ adj.allowanceDays }}</td>
+                      <td>{{ adj.effectiveWorkingDays }}</td>
+                      <td class="text-danger fw-bold">{{ adj.lopDays }}</td>
+                      <td class="text-danger fw-bold">₹{{ adj.otherDeductions | number:'1.2-2' }}</td>
+                      <td><small>{{ adj.otherDeductionsRemarks || '-' }}</small></td>
+                      <td><small class="text-danger">{{ adj.payrollRejectRemarks || '-' }}</small></td>
+                      <td>
+                        <span class="badge fw-bold"
+                              [ngClass]="{
+                                'bg-success': adj.approvalStatus === 'APPROVED',
+                                'bg-warning text-dark': adj.approvalStatus === 'PENDING',
+                                'bg-danger': adj.approvalStatus === 'REJECTED'
+                              }">
+                          {{ adj.approvalStatus || 'PENDING' }}
+                        </span>
+                      </td>
+                      <td>
+                        <div class="btn-group btn-group-sm" role="group">
+                          <!-- <button class="btn btn-success btn-sm"
+                                  (click)="adminApprove(adj)"
+                                  [disabled]="adj.approvalStatus === 'APPROVED'"
+                                  title="Approve this adjustment">
+                            <i class="bi bi-check-lg"></i>
+                          </button> -->
+                          <button class="btn btn-danger btn-sm ms-1"
+                                  (click)="adminReject(adj)"
+                                  [disabled]="adj.approvalStatus !== 'APPROVED' && adj.approvalStatus !== 'PENDING'"
+                                  title="Can only reject PENDING or APPROVED adjustments">
+                            <i class="bi bi-x-lg"></i>
+                            Decline
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
+              <!-- No Data -->
               <div *ngIf="displayedAdjustments.length === 0" class="text-center py-5 text-muted">
                 <h5>No adjustments found</h5>
+                <p *ngIf="adjSearchTerm">Try adjusting your search term.</p>
               </div>
             </div>
 
             <!-- Pagination -->
-            <div class="d-flex justify-content-between align-items-center mt-4"
-                 *ngIf="totalAdjPages > 1">
-              <div class="text-muted">
+            <div class="d-flex justify-content-between align-items-center mt-3 px-2" 
+                 *ngIf="totalAdjPages > 1 || filteredAdminAdjustments.length > 0">
+              <div class="text-muted small">
                 Showing {{ displayedAdjustments.length }} of {{ filteredAdminAdjustments.length }} records
               </div>
-              <div>
-                <button class="btn btn-sm btn-outline-primary me-2"
+              <div class="d-flex align-items-center gap-2">
+                <button class="btn btn-sm btn-outline-primary"
                         (click)="changeAdjPage(currentAdjPage - 1)"
-                        [disabled]="currentAdjPage === 1">Previous</button>
-                <span class="px-3 fw-medium">Page {{ currentAdjPage }} of {{ totalAdjPages }}</span>
-                <button class="btn btn-sm btn-outline-primary ms-2"
+                        [disabled]="currentAdjPage === 1">
+                  Previous
+                </button>
+                <span class="px-3 fw-medium">
+                  Page {{ currentAdjPage }} of {{ totalAdjPages || 1 }}
+                </span>
+                <button class="btn btn-sm btn-outline-primary"
                         (click)="changeAdjPage(currentAdjPage + 1)"
-                        [disabled]="currentAdjPage === totalAdjPages">Next</button>
+                        [disabled]="currentAdjPage === totalAdjPages">
+                  Next
+                </button>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="modal-footer bg-light border-top">
-          <button type="button" class="btn btn-lg btn-secondary"
-                  data-bs-dismiss="modal" (click)="onModalHidden()">
+        <!-- Footer - Fixed at bottom, no overlap -->
+        <div class="modal-footer bg-light border-top position-sticky bottom-0" style="z-index: 1030;">
+          <button type="button" 
+                  class="btn btn-lg btn-secondary px-5"
+                  data-bs-dismiss="modal" 
+                  (click)="onModalHidden()">
             Close & Return to Payroll
           </button>
         </div>
+
       </div>
     </div>
   </div>

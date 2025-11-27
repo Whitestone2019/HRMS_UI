@@ -1,208 +1,317 @@
 /* =============================
-   🧾 Payroll Dashboard Styles
+   PAYROLL DASHBOARD - FULL STYLES
    ============================= */
 .dashboard {
   padding: 20px;
   background-color: #f7f8fa;
   min-height: 100vh;
-  font-family: 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* ✅ Dashboard Header */
+/* Dashboard Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: #ffffff;
-  padding: 12px 18px;
-  border-radius: 10px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  padding: 14px 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
 }
 
-/* ✅ Header Action Buttons */
+.dashboard-header h4 {
+  margin: 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Action Buttons */
 .actions {
   display: flex;
-  gap: 14px; /* ⬆️ Increased spacing between buttons */
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .actions .btn {
   font-size: 13px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 8px;
+  transition: all 0.25s ease;
+  white-space: nowrap;
 }
 
-.actions .btn:hover {
-  transform: scale(1.05);
+.actions .btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-/* ✅ Button Colors */
-.btn-warning {
-  color: #f9faf9;
-  background-color: #ff8f07;
+.actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
-.btn-warning:hover {
-  background-color: #ff0500;
-}
+
+/* Button Colors */
 .btn-primary {
-  background-color: #007bff;
-  color: #fff;
+  background: linear-gradient(135deg, #007bff, #0056b3);
+  border: none;
 }
 .btn-primary:hover {
-  background-color: #042950;
-}
-.btn-success {
-  background-color: #28a745;
-  color: #fff;
-}
-.btn-success:hover {
-  background-color: #218838;
-}
-.btn-secondary {
-  background-color: #67adea;
-  color: #fff;
-}
-.btn-secondary:hover {
-  background-color: #e6d54e;
+  background: linear-gradient(135deg, #0056b3, #64b8fd);
 }
 
-/* ✅ Filter Bar */
+.btn-success { background: linear-gradient(135deg, #28a745, #1e7e34); border: none; }
+.btn-success:hover { background: linear-gradient(135deg, #1e7e34, #19692c); }
+
+.btn-warning { background: linear-gradient(135deg, #ffc107, #e0a800); border: none; color: #212529; }
+.btn-warning:hover { background: linear-gradient(135deg, #e0a800, #d39e00); }
+
+.btn-secondary {
+  background: linear-gradient(135deg, #fd7803, #fb0303);
+  border: none;
+  color: #dee2e6;
+}
+.btn-secondary:hover { background: linear-gradient(135deg, #fb0303, #f93d03); }
+
+/* Info Alert */
+.alert-info {
+  background: linear-gradient(135deg, #d1ecf1, #b8e2ea);
+  border: 1px solid #a6dcef;
+  color: #0c5460;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 14px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
+
+/* Filter Bar */
 .filter-bar {
-  margin-top: 10px;
+  background: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
   display: flex;
-  justify-content: space-between;
+  gap: 16px;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
 }
 
 .filter-bar input,
 .filter-bar select {
   font-size: 13px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  padding: 5px 8px;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  transition: all 0.2s;
 }
 
-/* ⬇️ Reduced search input width */
 .filter-bar input {
-  width: 200px;   /* reduced from auto to fixed compact width */
-  min-width: 160px;
+  width: 260px;
+  min-width: 200px;
 }
 
 .filter-bar input:focus,
 .filter-bar select:focus {
   border-color: #007bff;
   outline: none;
-  box-shadow: 0 0 4px rgba(0, 123, 255, 0.25);
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
 }
 
-/* ✅ Scrollable Table Container */
-.table-container {
-  max-height: 70vh;
-  overflow-y: auto;
-  overflow-x: auto;
+/* Table Container */
+.table-responsive {
   border-radius: 10px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.08);
-  background-color: #fff;
-  margin-top: 15px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(1, 1, 70, 0.08);
+  background: white;
 }
 
-/* ✅ Payroll Table */
 .payroll-table {
-  font-size: 13px;
-  width: 100%;
-  border-collapse: collapse;
+  margin: 0;
+  font-size: 13.5px;
 }
+
 .payroll-table th {
-  background-color: #f1f3f4;
+  background: linear-gradient(135deg, #011e3b, #243446);
+  color: white;
   font-weight: 600;
   text-align: center;
+  padding: 12px 10px;
   white-space: nowrap;
-  border-bottom: 2px solid #dee2e6;
   position: sticky;
   top: 0;
-  z-index: 2;
-  padding: 6px 10px;
+  z-index: 10;
+  border-bottom: none;
 }
+
 .payroll-table td {
+  padding: 10px;
   vertical-align: middle;
   text-align: right;
-  white-space: nowrap;
-  padding: 6px 10px;
-  border-bottom: 1px solid #f0f0f0;
-}
-.payroll-table tbody tr:nth-child(even) {
-  background-color: #fcfcfc;
-}
-.payroll-table tbody tr:hover {
-  background-color: #eaf4ff;
 }
 
-/* ✅ Compact input fields inside table */
+.payroll-table tbody tr:hover {
+  background-color: #f8f9fa;
+  transition: background-color 0.2s;
+}
+
+.payroll-table tbody tr:nth-child(even) {
+  background-color: #fdfdfe;
+}
+
+/* Input inside table */
 .form-control-sm {
   font-size: 12px;
-  height: 26px;
-  padding: 2px 6px;
+  height: 32px;
+  padding: 4px 8px;
   text-align: right;
+  border-radius: 6px;
 }
 
-/* ✅ Pagination Controls */
-.pagination-controls {
-  margin-top: 15px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
+/* Pagination */
+.d-flex.justify-content-center .btn,
+.d-flex.justify-content-between .btn {
+  border-radius: 8px;
+  font-weight: 500;
 }
-.pagination-controls span {
+
+.d-flex.justify-content-between .text-muted {
   font-size: 13px;
-  color: #555;
 }
-.pagination-controls button {
+
+/* =============================
+   ADJUSTMENTS MODAL - FULLY FIXED
+   ============================= */
+#adjustmentsAdminModal .modal-content {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(8, 1, 76, 0.2);
+}
+
+#adjustmentsAdminModal .modal-header {
+  background: linear-gradient(135deg, #e0e2e5, #e5eaf0);
+  padding: 16px 24px;
+  border-bottom: none;
+  position: sticky;
+  top: 0;
+  z-index: 1050 !important;
+}
+
+#adjustmentsAdminModal .modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+#adjustmentsAdminModal .btn-close-white {
+  filter: brightness(0) invert(1);
+  opacity: 0.9;
+}
+
+#adjustmentsAdminModal .modal-body {
+  padding: 0;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+#adjustmentsAdminModal .modal-body > div {
+  padding: 20px 24px;
+}
+
+/* Search in Modal */
+#adjustmentsAdminModal .form-control-lg {
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table Container in Modal */
+.table-container {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+}
+
+#adjustmentsAdminModal .table {
+  margin-bottom: 0;
+  font-size: 13.5px;
+}
+
+#adjustmentsAdminModal .table th {
+   background: linear-gradient(135deg, #011e3b, #243446);
+  color: white;
+  padding: 12px 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1020;
+}
+
+#adjustmentsAdminModal .table tbody td {
+  padding: 10px 12px;
+  vertical-align: middle;
+}
+
+/* Fix: Prevent close button & footer from overlapping table */
+#adjustmentsAdminModal .modal-header,
+#adjustmentsAdminModal .modal-footer {
+  z-index: 1050 !important;
+}
+
+#adjustmentsAdminModal .modal-footer {
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  position: sticky;
+  bottom: 0;
+  z-index: 1050 !important;
+}
+
+#adjustmentsAdminModal .modal-footer .btn {
+  padding: 10px 30px;
+  font-size: 15px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+/* Badge Styling */
+.badge {
   font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  transition: all 0.2s ease;
-}
-.pagination-controls button:hover:not(:disabled) {
-  background-color: #007bff;
-  color: #fff;
-  transform: scale(1.05);
-}
-.pagination-controls button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-weight: 600;
 }
 
-/* ✅ Info message */
-.alert-info {
-  font-size: 13px;
-  border-radius: 6px;
-  background-color: #e8f4ff;
-  color: #004085;
-  padding: 8px 10px;
-  margin-top: 10px;
-}
-
-/* ✅ Responsive Adjustments */
-@media (max-width: 768px) {
-  .dashboard {
-    padding: 10px;
-  }
-  .filter-bar {
+/* Responsive */
+@media (max-width: 992px) {
+  .actions {
     flex-direction: column;
     align-items: stretch;
+  }
+  .actions .btn {
+    width: 100%;
   }
   .filter-bar input {
     width: 100%;
   }
-  .actions {
-    gap: 8px; /* reduce gap for mobile */
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    padding: 12px;
   }
-  .actions .btn {
-    font-size: 12px;
-    padding: 4px 8px;
+  .dashboard-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+  .table-container,
+  .table-responsive {
+    font-size: 12.5px;
+  }
+  #adjustmentsAdminModal .modal-dialog {
+    margin: 10px;
   }
 }
