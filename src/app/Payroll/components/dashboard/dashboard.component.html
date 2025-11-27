@@ -8,215 +8,259 @@
         <div class="dashboard-header d-flex justify-content-between align-items-center mb-3">
           <h4>Payroll Dashboard</h4>
           <div class="actions">
-            <!-- <button class="btn btn-warning me-2" (click)="enableEditing()" [disabled]="isEditing || isLoading">
-              Edit
-            </button>
-            <button class="btn btn-success me-2" *ngIf="isEditing" (click)="savePayroll()">Save</button> -->
-             <button class="btn me-2" (click)="generateAdjustments()" [disabled]="isEditing">
+            <button class="btn btn-primary" (click)="generateAdjustments()" [disabled]="isEditing">
               Generate payroll adjustment
             </button>
-            <button class="btn  me-2" (click)="runPayroll()" [disabled]="isEditing">
+
+            <!-- FIXED BUTTON -->
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#adjustmentsAdminModal"
+              (click)="prepareAdjustmentsModal()">
+              View Payroll Adjustments
+            </button>
+
+            <button class="btn btn-primary" (click)="runPayroll()" [disabled]="isEditing">
               Run Payroll
             </button>
-            <button class="btn btn-secondary" (click)="exportPayroll()">
+            <button class="btn btn-primary" (click)="exportPayroll()">
               Export
             </button>
           </div>
         </div>
 
-        <!-- Payroll Info -->
-        <div class="alert alert-info small mb-3" *ngIf="payrollPeriod">
-          <strong>Payroll Month:</strong> {{ payrollPeriod }} <br>
-          <strong>Period:</strong> 27th {{ getPreviousMonthName() }} to 26th {{ payrollPeriod }} 
-          ({{ totalPeriodDays }} days)
+        <!-- MAIN PAYROLL TABLE - HIDDEN WHEN MODAL IS OPEN -->
+        <div *ngIf="showMainPayrollTable">
+          <!-- Payroll Info -->
+          <div class="alert alert-info small mb-3" *ngIf="payrollPeriod">
+            <strong>Payroll Month:</strong> {{ payrollPeriod }} <br>
+            <strong>Period:</strong> 27th {{ getPreviousMonthName() }} to 26th {{ payrollPeriod }}
+            ({{ totalPeriodDays }} days)
+          </div>
+
+          <!-- Filters -->
+          <div class="filter-bar mb-3 d-flex gap-3 align-items-center">
+            <input type="text" placeholder="Search Name / Emp ID" [(ngModel)]="searchTerm" (input)="applyFilters()"
+              class="form-control form-control-sm" style="width: 250px;">
+
+            <select [(ngModel)]="sortBy" (change)="applyFilters()" class="form-select form-select-sm">
+              <option value="name">Sort by Name</option>
+              <option value="empId">Sort by Emp ID</option>
+              <option value="netPay">Sort by Net Pay</option>
+            </select>
+          </div>
+
+          <!-- Loading Main Payroll -->
+          <div *ngIf="isLoading" class="text-center py-5">
+            <div class="spinner-border text-primary"></div>
+            <p>Loading payroll data...</p>
+          </div>
+
+          <!-- Payroll Table -->
+          <div class="table-responsive" *ngIf="!isLoading && displayedData.length">
+            <table class="table table-bordered table-hover table-striped payroll-table">
+              <thead class="table-dark">
+                <tr>
+                  <th>Emp ID</th>
+                  <th>Name</th>
+                  <th>Base Salary</th>
+                  <th>PG Rent</th>
+                  <th>Per Day Rate</th>
+                  <th>Allowance Days</th>
+                  <th>Allowance Amount</th>
+                  <th>LOP Days</th>
+                  <th>Effective Days</th>
+                  <th>Per Day Salary</th>
+                  <th>LOP Deduction</th>
+                  <th class="text-danger">Other Deduction</th>
+                  <th class="text-success fw-bold">Net Pay</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let emp of displayedData">
+                  <td>{{ emp.empId }}</td>
+                  <td><strong>{{ emp.name }}</strong></td>
+                  <td class="fw-bold text-primary">{{ emp.baseSalary | number:'1.2-2' }}</td>
+                  <td>{{ emp.pgRentAllowance | number:'1.2-2' }}</td>
+                  <td>
+                    <span class="badge" [class.bg-success]="emp.perDayRate > 0"
+                      [class.bg-secondary]="emp.perDayRate == 0">
+                      {{ emp.perDayRate | number:'1.2-2' }}
+                    </span>
+                  </td>
+                  <td>
+                    <input *ngIf="isEditing && emp.hasAllowance" type="number" min="0" [max]="totalPeriodDays"
+                      [(ngModel)]="emp.allowanceDays" (input)="recalcNetPay(emp)" class="form-control form-control-sm">
+                    <span *ngIf="!isEditing || !emp.hasAllowance">
+                      {{ emp.allowanceDays }}
+                      <small *ngIf="emp.hasAllowance && emp.allowanceDays < totalPeriodDays" class="text-danger ms-1">
+                        (-{{ totalPeriodDays - emp.allowanceDays }} day)
+                      </small>
+                      <small *ngIf="!emp.hasAllowance" class="text-muted ms-1">(N/A)</small>
+                    </span>
+                  </td>
+                  <td>
+                    <strong *ngIf="emp.hasAllowance" class="text-success">
+                      {{ emp.totalAllowanceAmount | number:'1.2-2' }}
+                    </strong>
+                    <span *ngIf="!emp.hasAllowance" class="text-muted">0.00</span>
+                  </td>
+                  <td>
+                    <input *ngIf="isEditing" type="number" min="0" step="0.5" [(ngModel)]="emp.lopDays"
+                      (input)="recalcNetPay(emp)" class="form-control form-control-sm">
+                    <span *ngIf="!isEditing" [class]="emp.lopDays > 0 ? 'text-danger fw-bold' : ''">
+                      {{ emp.lopDays || 0 }}
+                    </span>
+                  </td>
+                  <td>
+                    <input *ngIf="isEditing" type="number" min="1" [(ngModel)]="emp.effectiveWorkingDays"
+                      (input)="recalcNetPay(emp)" class="form-control form-control-sm">
+                    <span *ngIf="!isEditing">{{ emp.effectiveWorkingDays }}</span>
+                  </td>
+                  <td><small class="text-muted">₹{{ emp.perDaySalary | number:'1.2-2' }}</small></td>
+                  <td class="text-danger fw-bold">-{{ emp.lopDeduction | number:'1.2-2' }}</td>
+                  <td>
+                    <input *ngIf="isEditing" type="number" min="0" step="100" [(ngModel)]="emp.otherDeduction"
+                      (focus)="openDeductionRemarksModal(emp)" (blur)="validateDeduction(emp)"
+                      class="form-control form-control-sm" placeholder="0">
+                    <span *ngIf="!isEditing">
+                      <span class="text-danger fw-bold" *ngIf="emp.otherDeduction > 0">
+                        -{{ emp.otherDeduction | number:'1.2-2' }}
+                        <small class="text-muted ms-1" (click)="showRemarks(emp)"
+                          style="cursor: pointer; text-decoration: underline;">(view)</small>
+                      </span>
+                      <span *ngIf="!emp.otherDeduction || emp.otherDeduction == 0">0.00</span>
+                    </span>
+                  </td>
+                  <td class="fw-bold text-success fs-5">
+                    ₹{{ emp.netPay | number:'1.2-2' }}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div class="d-flex justify-content-center mt-4" *ngIf="totalPages > 1">
+            <button class="btn btn-sm btn-outline-primary me-3" (click)="changePage(currentPage - 1)"
+              [disabled]="currentPage === 1">Previous</button>
+            <span class="align-self-center fw-medium">
+              Page {{ currentPage }} of {{ totalPages }}
+            </span>
+            <button class="btn btn-sm btn-outline-primary ms-3" (click)="changePage(currentPage + 1)"
+              [disabled]="currentPage === totalPages">Next</button>
+          </div>
+
+          <!-- No Data -->
+          <div *ngIf="!isLoading && !displayedData.length" class="text-center py-5">
+            <p class="text-muted">No payroll data found for this period.</p>
+          </div>
         </div>
 
-        <!-- Filters -->
-        <div class="filter-bar mb-3 d-flex gap-3 align-items-center">
-          <input type="text" placeholder="Search Name / Emp ID" [(ngModel)]="searchTerm" (input)="applyFilters()"
-                 class="form-control form-control-sm" style="width: 250px;">
+        <!-- PAYROLL ADJUSTMENTS MODAL - FINAL CLEAN VERSION -->
+<!-- PAYROLL ADJUSTMENTS MODAL - 100% FIXED -->
+  <div *ngIf="showPayrollAdjTable">
+<div class="modal fade" 
+     id="adjustmentsAdminModal" 
+     tabindex="-1" 
+     data-bs-backdrop="static" 
+     data-bs-keyboard="false"
+     (shown.bs.modal)="onModalShown()"
+     (hidden.bs.modal)="onModalHidden()">
 
-          <select (click)="$event.stopPropagation()" [(ngModel)]="sortBy" (change)="applyFilters()" class="form-select form-select-sm">
-            <option value="name">Sort by Name</option>
-            <option value="empId">Sort by Emp ID</option>
-            <option value="netPay">Sort by Net Pay</option>
-          </select>
-        </div>
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content shadow-lg">
+
+      <!-- THIS WILL NEVER SHOW () AGAIN -->
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title fw-bold">
+          Payroll Adjustments - Admin Review 
+          <span *ngIf="adjustmentsMonth">({{ adjustmentsMonth }})</span>
+          <span *ngIf="!adjustmentsMonth" class="text-white-50">(Current Month)</span>
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body p-4">
 
         <!-- Loading -->
         <div *ngIf="isLoading" class="text-center py-5">
-          <div class="spinner-border text-primary"></div>
-          <p>Loading payroll data...</p>
+          <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;"></div>
+          <p class="mt-3 fs-5">Loading adjustments...</p>
         </div>
 
-        <!-- Table -->
-        <div class="table-responsive" *ngIf="!isLoading && displayedData.length">
-          <table class="table table-bordered table-hover table-striped payroll-table">
-            <thead class="table-dark">
-              <tr>
-                <th>Emp ID</th>
-                <th>Name</th>
-                <th>Base Salary</th>
-                <th>PG Rent</th>
-                <th>Per Day Rate</th>
-                <th>Allowance Days</th>
-                <th>Allowance Amount</th>
-                <th>LOP Days</th>
-                <th>Effective Days</th>
-                <th>Per Day Salary</th>
-                <th>LOP Deduction</th>
-                <th class="text-danger">Other Deduction</th>
-                <th class="text-success fw-bold">Net Pay</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let emp of displayedData">
-                <td>{{ emp.empId }}</td>
-                <td><strong>{{ emp.name }}</strong></td>
-                <td class="fw-bold text-primary">{{ emp.baseSalary | number:'1.2-2' }}</td>
-                <td>{{ emp.pgRentAllowance | number:'1.2-2' }}</td>
-                <td>
-                  <span class="badge" 
-                        [class.bg-success]="emp.perDayRate > 0" 
-                        [class.bg-secondary]="emp.perDayRate == 0">
-                    {{ emp.perDayRate | number:'1.2-2' }}
-                  </span>
-                </td>
+        <!-- Content -->
+        <div *ngIf="!isLoading">
+          <div class="mb-4">
+            <input type="text" 
+                   class="form-control form-control-lg" 
+                   placeholder="Search Employee / Emp ID..."
+                   [(ngModel)]="adjSearchTerm" 
+                   (input)="filterAdjustments()">
+          </div>
 
-                <!-- Allowance Days -->
-                <td>
-                  <input *ngIf="isEditing && emp.hasAllowance" 
-                         type="number" min="0" [max]="totalPeriodDays"
-                         [(ngModel)]="emp.allowanceDays" (input)="recalcNetPay(emp)"
-                         class="form-control form-control-sm">
-                  <span *ngIf="!isEditing || !emp.hasAllowance">
-                    {{ emp.allowanceDays }}
-                    <small *ngIf="emp.hasAllowance && emp.allowanceDays < totalPeriodDays" 
-                           class="text-danger ms-1">
-                      (-{{ totalPeriodDays - emp.allowanceDays }} day)
-                    </small>
-                    <small *ngIf="!emp.hasAllowance" class="text-muted ms-1">(N/A)</small>
-                  </span>
-                </td>
-
-                <!-- Allowance Amount -->
-                <td>
-                  <strong *ngIf="emp.hasAllowance" class="text-success">
-                    {{ emp.totalAllowanceAmount | number:'1.2-2' }}
-                  </strong>
-                  <span *ngIf="!emp.hasAllowance" class="text-muted">0.00</span>
-                </td>
-
-                <!-- LOP Days -->
-                <td>
-                  <input *ngIf="isEditing" type="number" min="0" step="0.5"
-                         [(ngModel)]="emp.lopDays" (input)="recalcNetPay(emp)"
-                         class="form-control form-control-sm">
-                  <span *ngIf="!isEditing" 
-                        [class]="emp.lopDays > 0 ? 'text-danger fw-bold' : ''">
-                    {{ emp.lopDays || 0 }}
-                  </span>
-                </td>
-
-                <!-- Effective Days -->
-                <td>
-                  <input *ngIf="isEditing" type="number" min="1"
-                         [(ngModel)]="emp.effectiveWorkingDays" (input)="recalcNetPay(emp)"
-                         class="form-control form-control-sm">
-                  <span *ngIf="!isEditing">{{ emp.effectiveWorkingDays }}</span>
-                </td>
-
-                <td><small class="text-muted">₹{{ emp.perDaySalary | number:'1.2-2' }}</small></td>
-                <td class="text-danger fw-bold">-{{ emp.lopDeduction | number:'1.2-2' }}</td>
-
-                <!-- Other Deduction -->
-                <td>
-                  <input *ngIf="isEditing" 
-                         type="number" min="0" step="100"
-                         [(ngModel)]="emp.otherDeduction" 
-                         (focus)="openDeductionRemarksModal(emp)"
-                         (blur)="validateDeduction(emp)"
-                         class="form-control form-control-sm"
-                         placeholder="0">
-                  <span *ngIf="!isEditing">
-                    <span class="text-danger fw-bold" *ngIf="emp.otherDeduction > 0">
-                      -{{ emp.otherDeduction | number:'1.2-2' }}
-                      <small class="text-muted ms-1" 
-                             (click)="showRemarks(emp)" 
-                             style="cursor: pointer; text-decoration: underline;">
-                        (view)
-                      </small>
+          <div class="table-responsive" style="max-height: 65vh;">
+            <table class="table table-sm table-hover table-bordered align-middle">
+              <thead class="table-dark sticky-top">
+                <tr>
+                  <th>Emp ID</th>
+                  <th>Name</th>
+                  <th>Manager</th>
+                  <th>Allowance Days</th>
+                  <th>Working Days</th>
+                  <th>LOP</th>
+                  <th>Deduction</th>
+                  <th>Remarks</th>
+                  <th>HR Remarks</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let adj of filteredAdminAdjustments">
+                  <td>{{ adj.empId }}</td>
+                  <td><strong>{{ adj.employeeName }}</strong></td>
+                  <td><small>{{ adj.managerId }}</small></td>
+                  <td>{{ adj.allowanceDays }}</td>
+                  <td>{{ adj.effectiveWorkingDays }}</td>
+                  <td class="text-danger fw-bold">{{ adj.lopDays }}</td>
+                  <td class="text-danger fw-bold">₹{{ adj.otherDeductions }}</td>
+                  <td><small>{{ adj.otherDeductionsRemarks || '-' }}</small></td>
+                  <td><small class="text-danger">{{ adj.payrollRejectRemarks || '-' }}</small></td>
+                  <td>
+                    <span class="badge fw-bold"
+                          [ngClass]="{
+                            'bg-success': adj.approvalStatus === 'APPROVED',
+                            'bg-warning text-dark': adj.approvalStatus === 'PENDING',
+                            'bg-danger': adj.approvalStatus === 'REJECTED'
+                          }">
+                      {{ adj.approvalStatus }}
                     </span>
-                    <span *ngIf="!emp.otherDeduction || emp.otherDeduction == 0">0.00</span>
-                  </span>
-                </td>
+                  </td>
+                  <td>
+                    <div class="btn-group btn-group-sm">
+                      <!-- <button class="btn btn-success" (click)="adminApprove(adj)"
+                              [disabled]="adj.approvalStatus === 'APPROVED'">Approve</button> -->
+                      <button class="btn btn-danger" (click)="adminReject(adj)"
+                              [disabled]="adj.approvalStatus === 'REJECTED'">Reject</button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-                <td class="fw-bold text-success fs-5">
-                  ₹{{ emp.netPay | number:'1.2-2' }}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-4" *ngIf="totalPages > 1">
-          <button class="btn btn-sm btn-outline-primary me-3"
-                  (click)="changePage(currentPage - 1)" [disabled]="currentPage === 1">
-            Previous
-          </button>
-          <span class="align-self-center fw-medium">
-            Page {{ currentPage }} of {{ totalPages }}
-          </span>
-          <button class="btn btn-sm btn-outline-primary ms-3"
-                  (click)="changePage(currentPage + 1)" [disabled]="currentPage === totalPages">
-            Next
-          </button>
-        </div>
-
-        <!-- No Data -->
-        <div *ngIf="!isLoading && !displayedData.length" class="text-center py-5">
-          <p class="text-muted">No payroll data found for this period.</p>
+            <div *ngIf="filteredAdminAdjustments.length === 0" class="text-center py-5 text-muted">
+              <h5>No pending adjustments found</h5>
+            </div>
+          </div>
         </div>
       </div>
-    </main>
-  </div>
-</div>
 
-<!-- Deduction Remarks Modal -->
-<!-- Only the modal part changed – rest remains same -->
-<div class="modal fade" id="deductionRemarksModal" tabindex="-1" data-bs-backdrop="static">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">
-          Deduction Remarks - 
-          {{ selectedEmp ? selectedEmp.name : 'Loading...' }} 
-          ({{ selectedEmp ? selectedEmp.empId : '' }})
-        </h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label>Deduction Amount</label>
-          <input type="number" class="form-control" [value]="tempDeduction" disabled>
-        </div>
-        <div class="mb-3">
-          <label>Remarks <span class="text-danger">*</span></label>
-          <textarea #remarksInput class="form-control" rows="5" 
-                    [(ngModel)]="tempRemarks" 
-                    placeholder="e.g., Late coming 5 days, Mobile damage, Uniform not returned..."
-                    required></textarea>
-        </div>
-      </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <button type="button" class="btn btn-primary" 
-                (click)="saveRemarks()" 
-                [disabled]="!tempRemarks.trim()">
-          Save Remarks
+        <button class="btn btn-lg btn-warning" data-bs-dismiss="modal"  (click)="onModalHidden()">
+          Close & Return to Payroll
         </button>
+      </div>
       </div>
     </div>
   </div>
+</div>
 </div>

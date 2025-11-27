@@ -32,6 +32,7 @@ export interface PayrollAdjustment {
   otherDeductions: number;
   managerId: string;
   otherDeductionsRemarks: string |null ;   // ← NEW
+  payrollRejectRemarks: string|null;
   effectiveWorkingDays:string;
   approvalStatus: string;
   createdDate: string;
@@ -1728,6 +1729,18 @@ generateAdjustments(): Observable<any> {
   reject(id: number): Observable<PayrollAdjustment> {
     return this.http.post<PayrollAdjustment>(`${this.apiUrl}/payroll-adjustments/reject/${id}`, {});
   }
+
+  getAllPayrollAdjustments(): Observable<PayrollAdjustment[]> {
+  return this.http.get<PayrollAdjustment[]>(`${this.apiUrl}/payroll-adjustments/all`);
+}
+
+adminApproveAdjustment(id: number): Observable<any> {
+  return this.http.post(`${this.apiUrl}/payroll-adjustments/admin-approve/${id}`, {});
+}
+
+adminRejectAdjustment(id: number, remarks: string): Observable<any> {
+  return this.http.post(`${this.apiUrl}/payroll-adjustments/admin-reject/${id}`, { remarks });
+}
 
 
 // private handleError(error: HttpErrorResponse): Observable<never> {

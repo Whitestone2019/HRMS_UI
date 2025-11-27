@@ -31,6 +31,7 @@
             <th>LOP Days</th>
             <th>Other Deductions</th>
             <th style="width: 240px;">Remarks <span class="required-star">*</span></th>
+            <th>Remarks from HR</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -89,7 +90,7 @@
                 </small>
               </div>
             </td>
-
+            <td><strong>{{ adj.payrollRejectRemarks }}</strong></td>
             <td>
               <span class="status-badge" 
                     [class.status-approved]="adj.approvalStatus === 'APPROVED'"

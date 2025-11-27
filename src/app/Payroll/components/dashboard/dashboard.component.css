@@ -38,18 +38,18 @@
 
 /* ✅ Button Colors */
 .btn-warning {
-  color: #2495f8;
-  background-color: #ffc107;
+  color: #f9faf9;
+  background-color: #ff8f07;
 }
 .btn-warning:hover {
-  background-color: #e0a800;
+  background-color: #ff0500;
 }
 .btn-primary {
   background-color: #007bff;
   color: #fff;
 }
 .btn-primary:hover {
-  background-color: #0056b3;
+  background-color: #042950;
 }
 .btn-success {
   background-color: #28a745;
@@ -59,11 +59,11 @@
   background-color: #218838;
 }
 .btn-secondary {
-  background-color: #6c757d;
+  background-color: #67adea;
   color: #fff;
 }
 .btn-secondary:hover {
-  background-color: #5a6268;
+  background-color: #e6d54e;
 }
 
 /* ✅ Filter Bar */
