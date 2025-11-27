@@ -34,30 +34,39 @@ interface PayrollEmployee {
 })
 export class DashboardComponentPayroll {
   @ViewChild('remarksInput') remarksInput!: ElementRef<HTMLTextAreaElement>;
-  showMainPayrollTable: boolean = true;
-  showPayrollAdjTable: boolean = false;
-  adminAdjustments: PayrollAdjustment[] = [];
-  filteredAdminAdjustments: PayrollAdjustment[] = [];
-  adjSearchTerm = '';
-  adjustmentsMonth = '';
 
+  // Main Payroll Table
+  showMainPayrollTable = true;
+  showPayrollAdjTable = false;
+
+  // Payroll Data
   payrollData: PayrollEmployee[] = [];
   filteredData: PayrollEmployee[] = [];
   displayedData: PayrollEmployee[] = [];
+  searchTerm = '';
+  sortBy = 'name';
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
 
+  // Adjustments Table (Modal)
+  adminAdjustments: PayrollAdjustment[] = [];
+  filteredAdminAdjustments: PayrollAdjustment[] = [];
+  displayedAdjustments: PayrollAdjustment[] = [];
+  adjSearchTerm = '';
+  adjustmentsMonth = '';
+
+  currentAdjPage = 1;
+  itemsPerAdjPage = 15;
+  totalAdjPages = 0;
+
+  // General
   isEditing = false;
   isLoading = false;
   payrollPeriod = '';
   totalPeriodDays = 0;
 
-  currentPage = 1;
-  itemsPerPage = 10;
-  totalPages = 0;
-
-  searchTerm = '';
-  sortBy = 'name';
-
-  // Modal state
+  // Modal
   selectedEmp: PayrollEmployee | null = null;
   tempDeduction = 0;
   tempRemarks = '';
@@ -77,9 +86,7 @@ export class DashboardComponentPayroll {
 
         this.payrollData = (response.previewData || []).map((emp: any): PayrollEmployee => {
           const baseSalary = emp.basesalary || 0;
-          const perDaySalary = emp.effectiveWorkingDays > 0
-            ? baseSalary / emp.effectiveWorkingDays
-            : 0;
+          const perDaySalary = emp.effectiveWorkingDays > 0 ? baseSalary / emp.effectiveWorkingDays : 0;
 
           return {
             empId: emp.empId || '',
@@ -110,16 +117,13 @@ export class DashboardComponentPayroll {
       },
       error: () => {
         this.isLoading = false;
-        alert('Failed to load payroll data.');
+        Swal.fire('Error', 'Failed to load payroll data.', 'error');
       }
     });
   }
 
   recalcNetPay(emp: PayrollEmployee) {
-    const perDaySalary = emp.effectiveWorkingDays > 0
-      ? emp.baseSalary / emp.effectiveWorkingDays
-      : 0;
-
+    const perDaySalary = emp.effectiveWorkingDays > 0 ? emp.baseSalary / emp.effectiveWorkingDays : 0;
     emp.perDaySalary = this.round(perDaySalary);
     emp.lopDeduction = this.round(perDaySalary * emp.lopDays);
 
@@ -148,9 +152,7 @@ export class DashboardComponentPayroll {
     this.tempRemarks = emp.deductionRemarks;
 
     setTimeout(() => {
-      const modal = new (window as any).bootstrap.Modal(
-        document.getElementById('deductionRemarksModal')
-      );
+      const modal = new (window as any).bootstrap.Modal(document.getElementById('deductionRemarksModal'));
       modal.show();
       setTimeout(() => this.remarksInput?.nativeElement.focus(), 300);
     }, 100);
@@ -164,7 +166,7 @@ export class DashboardComponentPayroll {
 
   saveRemarks() {
     if (!this.tempRemarks.trim()) {
-      alert('Remarks are required for deduction.');
+      Swal.fire('Required', 'Remarks are required for deduction.', 'warning');
       return;
     }
 
@@ -181,7 +183,7 @@ export class DashboardComponentPayroll {
 
   showRemarks(emp: PayrollEmployee) {
     const remarks = emp.deductionRemarks.trim();
-    alert(remarks ? `Remarks:\n${remarks}` : 'No remarks added.');
+    Swal.fire('Remarks', remarks || 'No remarks added.', 'info');
   }
 
   applyFilters() {
@@ -215,19 +217,16 @@ export class DashboardComponentPayroll {
 
   enableEditing() {
     if (!this.payrollData.length) {
-      alert('No data to edit.');
+      Swal.fire('Empty', 'No data to edit.', 'info');
       return;
     }
     this.isEditing = true;
   }
 
   savePayroll() {
-    const invalid = this.payrollData.some(emp =>
-      emp.otherDeduction > 0 && !emp.deductionRemarks.trim()
-    );
-
+    const invalid = this.payrollData.some(emp => emp.otherDeduction > 0 && !emp.deductionRemarks.trim());
     if (invalid) {
-      alert('Please add remarks for all employees with "Other Deduction".');
+      Swal.fire('Missing Remarks', 'Please add remarks for all employees with "Other Deduction".', 'error');
       return;
     }
 
@@ -244,60 +243,41 @@ export class DashboardComponentPayroll {
 
     this.apiService.savePayrollData(payload).subscribe({
       next: () => {
-        alert('Payroll updated successfully!');
+        Swal.fire('Success', 'Payroll updated successfully!', 'success');
         this.isEditing = false;
         this.loadPayrollPreview();
       },
-      error: () => alert('Save failed.')
+      error: () => Swal.fire('Error', 'Save failed.', 'error')
     });
   }
 
   runPayroll() {
-     this.showPayrollAdjTable = false;
+    this.showPayrollAdjTable = false;
     this.showMainPayrollTable = true;
     this.apiService.runPayroll().subscribe({
       next: (response: any) => {
-        // Success case
         const msg = response.status || response.message || 'Payroll processed successfully!';
-        alert(msg);
+        Swal.fire('Success', msg, 'success');
         this.loadPayrollPreview();
       },
       error: (error: any) => {
-        // Extract real backend error message
-        let errorMessage = 'Run failed.';
-
-        if (error?.error) {
-          // Spring Boot returns error in error.error
-          if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          } else if (error.error.error) {
-            errorMessage = error.error.error;
-          } else if (error.error.status) {
-            errorMessage = error.error.status;
-          }
-        } else if (error?.message) {
-          errorMessage = error.message;
-        }
-
-        // Show exact message from backend
-        alert('Payroll Failed: ' + errorMessage);
-        console.error('Payroll Error:', error);
+        const msg = error?.error?.error || error?.error || error.message || 'Run failed.';
+        Swal.fire('Payroll Failed', msg, 'error');
       }
     });
   }
 
-  generateAdjustments(): void {
+  generateAdjustments() {
     this.showPayrollAdjTable = true;
     this.showMainPayrollTable = false;
-
     this.apiService.generateAdjustments().subscribe({
       next: (res: any) => {
-        alert(res.status || 'Drafts generated successfully!');
-        this.prepareAdjustmentsModal()
+        Swal.fire('Success', res.status || 'Drafts generated successfully!', 'success');
+        this.prepareAdjustmentsModal();
       },
       error: (err) => {
-        alert('Error: ' + (err.error?.error || err.message));
-      },
+        Swal.fire('Error', err.error?.error || 'Generation failed', 'error');
+      }
     });
   }
 
@@ -331,26 +311,26 @@ export class DashboardComponentPayroll {
     return formatDate(date, 'MMM yyyy', 'en-US');
   }
 
-  // CALL THIS ON BUTTON CLICK
+  // === ADJUSTMENTS MODAL LOGIC ===
   prepareAdjustmentsModal() {
     this.showPayrollAdjTable = true;
     this.showMainPayrollTable = false;
     this.isLoading = true;
     this.adjSearchTerm = '';
+    this.currentAdjPage = 1;
 
-    // SET DEFAULT MONTH IMMEDIATELY → NO BLANK ()
     this.adjustmentsMonth = formatDate(new Date(), 'MMM yyyy', 'en-US');
 
     this.apiService.getAllPayrollAdjustments().subscribe({
-      next: (data: any[]) => {
+      next: (data: PayrollAdjustment[]) => {
         this.adminAdjustments = data;
         this.filteredAdminAdjustments = [...data];
 
-        // Only override if API gives a real month
         if (data.length > 0 && data[0]?.month) {
           this.adjustmentsMonth = formatDate(data[0].month + '-01', 'MMM yyyy', 'en-US');
         }
 
+        this.filterAndPaginateAdjustments();
         this.isLoading = false;
       },
       error: () => {
@@ -359,6 +339,31 @@ export class DashboardComponentPayroll {
         Swal.fire('Error', 'Failed to load adjustments', 'error');
       }
     });
+  }
+
+  filterAndPaginateAdjustments() {
+    const term = this.adjSearchTerm.toLowerCase();
+    this.filteredAdminAdjustments = this.adminAdjustments.filter(a =>
+      a.empId.toLowerCase().includes(term) ||
+      a.employeeName.toLowerCase().includes(term) ||
+      (a.managerId && a.managerId.toLowerCase().includes(term))
+    );
+
+    this.totalAdjPages = Math.ceil(this.filteredAdminAdjustments.length / this.itemsPerAdjPage);
+    this.currentAdjPage = 1;
+    this.updateDisplayedAdjustments();
+  }
+
+  updateDisplayedAdjustments() {
+    const start = (this.currentAdjPage - 1) * this.itemsPerAdjPage;
+    const end = start + this.itemsPerAdjPage;
+    this.displayedAdjustments = this.filteredAdminAdjustments.slice(start, end);
+  }
+
+  changeAdjPage(page: number) {
+    if (page < 1 || page > this.totalAdjPages) return;
+    this.currentAdjPage = page;
+    this.updateDisplayedAdjustments();
   }
 
   onModalShown() {
@@ -370,37 +375,27 @@ export class DashboardComponentPayroll {
     this.showPayrollAdjTable = false;
     this.isLoading = false;
     this.adjSearchTerm = '';
+    this.currentAdjPage = 1;
   }
 
-  filterAdjustments() {
-    const term = this.adjSearchTerm.toLowerCase();
-    this.filteredAdminAdjustments = this.adminAdjustments.filter(a =>
-      a.empId.toLowerCase().includes(term) ||
-      a.employeeName.toLowerCase().includes(term) ||
-      a.managerId.toLowerCase().includes(term)
-    );
-  }
-
-  // Admin Approve
   adminApprove(adj: PayrollAdjustment) {
     if (confirm(`Approve adjustment for ${adj.employeeName}?`)) {
       this.apiService.adminApproveAdjustment(adj.id!).subscribe({
         next: () => {
           adj.approvalStatus = 'APPROVED';
-          alert('Approved successfully');
+          Swal.fire('Approved', 'Adjustment approved successfully', 'success');
         },
-        error: (err) => alert('Error: ' + (err.error?.error || 'Approval failed'))
+        error: (err) => Swal.fire('Error', err.error?.error || 'Approval failed', 'error')
       });
     }
   }
 
-  // Admin Reject with Remarks + Email
   adminReject(adj: PayrollAdjustment) {
     Swal.fire({
       title: 'Reject Adjustment',
       input: 'textarea',
-      inputLabel: 'Rejection Remarks (will be sent to manager)',
-      inputPlaceholder: 'Enter reason for rejection...',
+      inputLabel: 'Rejection Remarks (sent to manager)',
+      inputPlaceholder: 'Enter reason...',
       showCancelButton: true,
       confirmButtonText: 'Reject & Notify',
       confirmButtonColor: '#dc3545',
@@ -415,10 +410,10 @@ export class DashboardComponentPayroll {
         this.apiService.adminRejectAdjustment(adj.id!, result.value).subscribe({
           next: () => {
             adj.approvalStatus = 'REJECTED';
-            adj.otherDeductionsRemarks = '[REJECTED BY ADMIN] ' + result.value;
-            alert('Rejected and email sent to manager');
+            adj.payrollRejectRemarks = '[REJECTED BY ADMIN] ' + result.value;
+            Swal.fire('Rejected', 'Adjustment rejected and manager notified', 'success');
           },
-          error: (err) => alert('Error: ' + (err.error?.error || 'Rejection failed'))
+          error: (err) => Swal.fire('Error', err.error?.error || 'Rejection failed', 'error')
         });
       }
     });
