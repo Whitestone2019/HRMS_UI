@@ -125,7 +125,7 @@
   display: block;
   width: 100%;
   overflow-x: auto;
-  overflow-y: visible;
+  overflow-y: auto;
   -webkit-overflow-scrolling: touch;
   border-radius: 12px;
   box-shadow: 0 4px 15px rgba(0,0,0,0.1);
@@ -200,14 +200,14 @@
    ADJUSTMENTS MODAL - CLEAN SCROLL (NO STICKY COLUMNS)
    ============================= */
 #adjustmentsAdminModal .modal-content {
-  border-radius: 16px;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 15px 50px rgba(0,0,0,0.25);
 }
 
 #adjustmentsAdminModal .modal-header {
   background: linear-gradient(135deg, #011e3b, #243446);
-  padding: 18px 28px;
+  padding: 8px 20px;
   border-bottom: none;
   position: sticky;
   top: 0;
@@ -215,9 +215,10 @@
 }
 
 #adjustmentsAdminModal .modal-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: white;
+  font-size: 1.0rem;
+  font-weight: 500;
+  color: rgb(3, 1, 46);
+      padding: 20px 0px 0px 30px;
 }
 
 #adjustmentsAdminModal .btn-close-white {
@@ -242,7 +243,7 @@
 #adjustmentsAdminModal .table {
   min-width: 1400px;
   margin-bottom: 0;
-  font-size: 13.5px;
+  font-size: 16.5px;
 }
 
 #adjustmentsAdminModal .table th {
@@ -267,7 +268,7 @@
   padding: 12px 40px;
   font-size: 16px;
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 500;
 }
 
 /* Responsive */
