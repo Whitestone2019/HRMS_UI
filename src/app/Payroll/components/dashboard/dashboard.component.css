@@ -1,5 +1,5 @@
 /* =============================
-   PAYROLL DASHBOARD - FULL STYLES
+   PAYROLL DASHBOARD - FINAL CLEAN CSS (FULL HORIZONTAL SCROLL, NO STICKY)
    ============================= */
 .dashboard {
   padding: 20px;
@@ -8,7 +8,7 @@
   font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-/* Dashboard Header */
+/* Header */
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -58,7 +58,7 @@
   border: none;
 }
 .btn-primary:hover {
-  background: linear-gradient(135deg, #0056b3, #64b8fd);
+  background: linear-gradient(135deg, #0056b3, #0069d9);
 }
 
 .btn-success { background: linear-gradient(135deg, #28a745, #1e7e34); border: none; }
@@ -70,19 +70,19 @@
 .btn-secondary {
   background: linear-gradient(135deg, #fd7803, #fb0303);
   border: none;
-  color: #dee2e6;
+  color: white;
 }
 .btn-secondary:hover { background: linear-gradient(135deg, #fb0303, #f93d03); }
 
 /* Info Alert */
 .alert-info {
-  background: linear-gradient(135deg, #d1ecf1, #b8e2ea);
-  border: 1px solid #a6dcef;
-  color: #0c5460;
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  color: #01579b;
   border-radius: 10px;
   padding: 12px 16px;
   font-size: 14px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
 }
 
 /* Filter Bar */
@@ -90,7 +90,7 @@
   background: white;
   padding: 12px 16px;
   border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   margin-bottom: 20px;
   display: flex;
   gap: 16px;
@@ -104,7 +104,6 @@
   padding: 8px 12px;
   border-radius: 8px;
   border: 1px solid #ced4da;
-  transition: all 0.2s;
 }
 
 .filter-bar input {
@@ -116,202 +115,171 @@
 .filter-bar select:focus {
   border-color: #007bff;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(0,123,255,0.15);
 }
 
-/* Table Container */
+/* =============================
+   MAIN PAYROLL TABLE - PURE HORIZONTAL SCROLL (NO STICKY)
+   ============================= */
 .table-responsive {
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 15px rgba(1, 1, 70, 0.08);
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
   background: white;
+  margin-bottom: 20px;
+  white-space: nowrap;
 }
 
+/* Force table to be wide enough so scroll appears */
 .payroll-table {
-  margin: 0;
+  min-width: 1800px;        /* This forces horizontal scroll */
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
   font-size: 13.5px;
+  margin: 0;
 }
 
+/* Header */
 .payroll-table th {
   background: linear-gradient(135deg, #011e3b, #243446);
   color: white;
   font-weight: 600;
   text-align: center;
-  padding: 12px 10px;
+  padding: 14px 12px;
   white-space: nowrap;
   position: sticky;
   top: 0;
   z-index: 10;
-  border-bottom: none;
 }
 
+/* Body */
 .payroll-table td {
-  padding: 10px;
+  padding: 12px;
   vertical-align: middle;
   text-align: right;
+  background: white;
 }
 
 .payroll-table tbody tr:hover {
-  background-color: #f8f9fa;
-  transition: background-color 0.2s;
+  background-color: #f5f9ff !important;
 }
 
 .payroll-table tbody tr:nth-child(even) {
   background-color: #fdfdfe;
 }
 
-/* Input inside table */
+/* Net Pay Column - Just highlighted, NOT sticky */
+.payroll-table td:last-child {
+  font-weight: 700;
+  color: #28a745;
+  font-size: 1.15rem;
+  background: #f8fff8 !important;
+}
+
+/* Input fields */
 .form-control-sm {
   font-size: 12px;
-  height: 32px;
+  height: 34px;
   padding: 4px 8px;
   text-align: right;
   border-radius: 6px;
 }
 
 /* Pagination */
-.d-flex.justify-content-center .btn,
-.d-flex.justify-content-between .btn {
-  border-radius: 8px;
-  font-weight: 500;
-}
-
-.d-flex.justify-content-between .text-muted {
-  font-size: 13px;
+.d-flex.justify-content-center,
+.d-flex.justify-content-between {
+  padding: 12px 0;
 }
 
 /* =============================
-   ADJUSTMENTS MODAL - FULLY FIXED
+   ADJUSTMENTS MODAL - CLEAN SCROLL (NO STICKY COLUMNS)
    ============================= */
 #adjustmentsAdminModal .modal-content {
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 40px rgba(8, 1, 76, 0.2);
+  box-shadow: 0 15px 50px rgba(0,0,0,0.25);
 }
 
 #adjustmentsAdminModal .modal-header {
-  background: linear-gradient(135deg, #e0e2e5, #e5eaf0);
-  padding: 16px 24px;
+  background: linear-gradient(135deg, #011e3b, #243446);
+  padding: 18px 28px;
   border-bottom: none;
   position: sticky;
   top: 0;
-  z-index: 1050 !important;
+  z-index: 1050;
 }
 
 #adjustmentsAdminModal .modal-title {
-  font-size: 1.4rem;
+  font-size: 1.5rem;
   font-weight: 700;
+  color: white;
 }
 
 #adjustmentsAdminModal .btn-close-white {
   filter: brightness(0) invert(1);
-  opacity: 0.9;
 }
 
 #adjustmentsAdminModal .modal-body {
-  padding: 0;
+  padding: 24px;
   max-height: 80vh;
-  overflow-y: auto;
-}
-
-#adjustmentsAdminModal .modal-body > div {
-  padding: 20px 24px;
-}
-
-/* Search in Modal */
-#adjustmentsAdminModal .form-control-lg {
-  border-radius: 12px;
-  padding: 12px 16px;
-  font-size: 15px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Table Container in Modal */
-.table-container {
-  background: white;
-  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.table-container {
+  max-height: 58vh;
+  overflow: auto;
+  border-radius: 12px;
   border: 1px solid #e0e0e0;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  background: white;
 }
 
 #adjustmentsAdminModal .table {
+  min-width: 1400px;
   margin-bottom: 0;
   font-size: 13.5px;
 }
 
 #adjustmentsAdminModal .table th {
-   background: linear-gradient(135deg, #011e3b, #243446);
+  background: linear-gradient(135deg, #011e3b, #243446);
   color: white;
-  padding: 12px 10px;
+  padding: 14px 12px;
   position: sticky;
   top: 0;
-  z-index: 1020;
-}
-
-#adjustmentsAdminModal .table tbody td {
-  padding: 10px 12px;
-  vertical-align: middle;
-}
-
-/* Fix: Prevent close button & footer from overlapping table */
-#adjustmentsAdminModal .modal-header,
-#adjustmentsAdminModal .modal-footer {
-  z-index: 1050 !important;
+  z-index: 10;
 }
 
 #adjustmentsAdminModal .modal-footer {
-  padding: 16px 24px;
+  padding: 18px 28px;
   background: #f8f9fa;
   border-top: 1px solid #dee2e6;
   position: sticky;
   bottom: 0;
-  z-index: 1050 !important;
+  z-index: 1050;
 }
 
 #adjustmentsAdminModal .modal-footer .btn {
-  padding: 10px 30px;
-  font-size: 15px;
-  border-radius: 10px;
-  font-weight: 600;
-}
-
-/* Badge Styling */
-.badge {
-  font-size: 12px;
-  padding: 6px 10px;
-  border-radius: 20px;
+  padding: 12px 40px;
+  font-size: 16px;
+  border-radius: 12px;
   font-weight: 600;
 }
 
 /* Responsive */
 @media (max-width: 992px) {
-  .actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .actions .btn {
-    width: 100%;
-  }
-  .filter-bar input {
-    width: 100%;
-  }
+  .actions { flex-direction: column; }
+  .actions .btn { width: 100%; }
+  .filter-bar input { width: 100%; }
+  .payroll-table { min-width: 1400px; font-size: 12.5px; }
 }
 
 @media (max-width: 768px) {
-  .dashboard {
-    padding: 12px;
-  }
-  .dashboard-header {
-    flex-direction: column;
-    text-align: center;
-    gap: 12px;
-  }
-  .table-container,
-  .table-responsive {
-    font-size: 12.5px;
-  }
-  #adjustmentsAdminModal .modal-dialog {
-    margin: 10px;
-  }
+  .dashboard { padding: 12px; }
+  .dashboard-header { flex-direction: column; text-align: center; gap: 15px; }
+  #adjustmentsAdminModal .modal-dialog { margin: 8px; }
 }
