@@ -88,8 +88,20 @@
     <form [formGroup]="traineeForm" (ngSubmit)="submitTrainee()" novalidate>
       <div class="form-columns">
         <div class="column">
-          <label>Trainee ID:</label>
-          <input formControlName="trngid" type="text" [readonly]="isEdit" />
+          <label>Trainee ID: <span class="required">*</span></label>
+          <input 
+            formControlName="trngid" 
+            type="text" 
+            [readonly]="!isEdit" 
+            placeholder="{{ isEdit ? 'Can be updated' : 'Auto-generated (WSxxx)' }}"
+            class="trainee-id-input"
+          />
+          <small *ngIf="!isEdit" class="info-text">
+            Trainee ID will be auto-generated (e.g., WS048)
+          </small>
+          <small *ngIf="isEdit" class="info-text">
+            You can update the Trainee ID if needed
+          </small>
 
           <!-- Hide password field in edit mode -->
           <div *ngIf="!isEdit">
