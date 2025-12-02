@@ -103,7 +103,8 @@ export interface Usermaintenance {
   rvfytime: Date;
 }
 
-interface Timesheet {
+// src/app/models/timesheet.model.ts
+export interface Timesheet {
   sno: number;
   employeeId: string;
   members: string;
@@ -111,6 +112,10 @@ interface Timesheet {
   present: number;
   absent: number;
   missPunch: number;
+  od: number;
+  compoff: number;
+  holiday: number;
+  weekoff: number;
 }
 
 interface AttendanceEvent {

@@ -1,17 +1,8 @@
+// src/app/components/timesheet/timesheet.component.ts
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiService } from '../../api.service';
+import { ApiService, Timesheet } from '../../api.service';
 import { UserService } from '../../user.service';
-
-interface Timesheet {
-  sno: number;
-  employeeId: string;
-  members: string;
-  effectiveWorkingDays: number;
-  present: number;
-  absent: number;
-  missPunch: number;
-}
 
 @Component({
   selector: 'app-timesheet',
@@ -21,28 +12,33 @@ interface Timesheet {
 export class TimesheetComponent implements OnInit {
   timesheetData: Timesheet[] = [];
   filteredTimesheetData: Timesheet[] = [];
-  paginatedData: Timesheet[] = []; // current page
+  paginatedData: Timesheet[] = [];
+
   year: number;
-  month: number; // 0-based
+  month: number;
   repoteTo: string = '';
   userRole: string = '';
   searchTerm: string = '';
 
-  // Pagination variables
-  currentPage: number = 1;
-  pageSize: number = 10; // items per page
-  totalPages: number = 0;
+  // Pagination
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
 
-  constructor(private apiService: ApiService, private router: Router, private userService: UserService) {
+  constructor(
+    private apiService: ApiService,
+    private router: Router,
+    private userService: UserService
+  ) {
     const today = new Date();
     this.year = today.getFullYear();
-    this.month = today.getMonth();
+    this.month = today.getMonth(); // 0-based
   }
 
   ngOnInit(): void {
-    this.userRole = this.userService.role;
+    this.userRole = this.userService.role || '';
 
-    if (this.userRole === 'HR') {
+    if (this.userRole === 'HR' || this.userRole === 'CEO') {
       this.repoteTo = '';
     } else {
       this.repoteTo = localStorage.getItem('employeeId') || '';
@@ -51,24 +47,23 @@ export class TimesheetComponent implements OnInit {
     this.fetchTimesheetData();
   }
 
- fetchTimesheetData(): void {
-  this.apiService.getTimesheetData(this.year, this.month, this.repoteTo).subscribe({
-    next: (data) => {
-      // Sort by employeeId
-      data.sort((a, b) => a.employeeId.localeCompare(b.employeeId));
+  fetchTimesheetData(): void {
+    this.apiService.getTimesheetData(this.year, this.month, this.repoteTo).subscribe({
+      next: (data: Timesheet[]) => {
+        // Sort by Employee ID
+        data.sort((a, b) => a.employeeId.localeCompare(b.employeeId));
 
-      this.timesheetData = data;
-      this.filteredTimesheetData = [...data]; // initialize filtered list
-      this.currentPage = 1; // reset pagination
-      this.setupPagination();
-      console.log('Timesheet data loaded:', data);
-    },
-    error: (error) => {
-      console.error('Error fetching timesheet data:', error);
-    },
-  });
-}
-
+        this.timesheetData = data;
+        this.filteredTimesheetData = [...data];
+        this.currentPage = 1;
+        this.setupPagination();
+      },
+      error: (err) => {
+        console.error('Failed to load timesheet:', err);
+        alert('Failed to load data. Please try again.');
+      }
+    });
+  }
 
   onRowClick(employee: Timesheet): void {
     this.router.navigate(['/dashboard/timesheet1', employee.employeeId, employee.members], {
@@ -79,32 +74,37 @@ export class TimesheetComponent implements OnInit {
     });
   }
 
-  // Filter based on Employee ID or Name
   onSearchChange(): void {
-    const term = this.searchTerm.toLowerCase();
-    this.filteredTimesheetData = this.timesheetData.filter(
-      (emp) => emp.employeeId.toLowerCase().includes(term) || emp.members.toLowerCase().includes(term)
-    );
+    const term = this.searchTerm.trim().toLowerCase();
+    if (!term) {
+      this.filteredTimesheetData = [...this.timesheetData];
+    } else {
+      this.filteredTimesheetData = this.timesheetData.filter(emp =>
+        emp.employeeId.toLowerCase().includes(term) ||
+        emp.members.toLowerCase().includes(term)
+      );
+    }
     this.currentPage = 1;
     this.setupPagination();
   }
 
-  // Pagination setup
+  // Pagination Methods
   setupPagination(): void {
     this.totalPages = Math.ceil(this.filteredTimesheetData.length / this.pageSize);
     this.updatePaginatedData();
   }
 
   updatePaginatedData(): void {
-    const startIndex = (this.currentPage - 1) * this.pageSize;
-    const endIndex = startIndex + this.pageSize;
-    this.paginatedData = this.filteredTimesheetData.slice(startIndex, endIndex);
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedData = this.filteredTimesheetData.slice(start, end);
   }
 
   goToPage(page: number): void {
-    if (page < 1 || page > this.totalPages) return;
-    this.currentPage = page;
-    this.updatePaginatedData();
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePaginatedData();
+    }
   }
 
   nextPage(): void {

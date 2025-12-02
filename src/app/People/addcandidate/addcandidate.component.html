@@ -246,7 +246,7 @@
       <div class="form-row">
         <div class="form-column">
           <label>Reporting Manager <span class="mandatory">*</span></label>
-          <select [(ngModel)]="candidateDetails.reportingmanager" name="reportingmanager" required
+          <select (click)="$event.stopPropagation()" [(ngModel)]="candidateDetails.reportingmanager" name="reportingmanager" required
             [disabled]="!isEditable">
             <option value="">Select Manager</option>
             <option *ngFor="let mgr of managers" [value]="mgr.empid">
