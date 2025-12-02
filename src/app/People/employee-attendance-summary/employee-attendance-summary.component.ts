@@ -17,6 +17,7 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
   paginatedAttendanceData: any[] = [];
 
   searchTerm: string = '';
+  sortOrder: 'desc' | 'asc' = 'desc'; // 'desc' = newest first
 
   currentPage: number = 1;
   itemsPerPage: number = 30;
@@ -27,47 +28,60 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
   ngOnInit(): void {}
 
   getAttendanceDetails(): void {
-    if (this.startDate && this.endDate) {
-      this.apiService.getAttendanceAll("", this.startDate, this.endDate).subscribe(
-        (response) => {
-          this.attendanceData = response;
-          this.sortedAttendanceData = this.attendanceData.sort((a, b) =>
-            a.employeeId.localeCompare(b.employeeId)
-          ).map((record) => {
-            record.attendanceDate = this.formatDate(record.date);
-            record.checkIn = this.formatTime(record.checkIn);
-            record.checkOut = this.formatTime(record.checkOut);
-            return record;
-          });
-
-          this.filteredAttendanceData = [...this.sortedAttendanceData]; // initial data
-          this.totalRecords = this.filteredAttendanceData.length;
-          this.paginateData();
-        },
-        (error) => {
-          console.error('Error fetching attendance data:', error);
-        }
-      );
-    } else {
+    if (!this.startDate || !this.endDate) {
       alert('Please select both start and end dates.');
+      return;
     }
+
+    this.apiService.getAttendanceAll("", this.startDate, this.endDate).subscribe(
+      (response) => {
+        this.attendanceData = response;
+        this.sortByDate(); // Apply sorting (with current sortOrder)
+      },
+      (error) => {
+        console.error('Error fetching attendance data:', error);
+        alert('Failed to fetch attendance data.');
+      }
+    );
+  }
+
+  private sortByDate(): void {
+    const multiplier = this.sortOrder === 'desc' ? -1 : 1;
+
+    this.sortedAttendanceData = this.attendanceData
+      .sort((a: any, b: any) => {
+        const dateA = new Date(a.date).getTime();
+        const dateB = new Date(b.date).getTime();
+        return (dateB - dateA) * multiplier || a.employeeId.localeCompare(b.employeeId);
+      })
+      .map((record: any) => {
+        record.attendanceDate = this.formatDate(record.date);
+        record.checkIn = this.formatTime(record.checkIn);
+        record.checkOut = this.formatTime(record.checkOut);
+        return record;
+      });
+
+    this.applyFilter(); // Re-apply search filter and pagination
+  }
+
+  toggleSortOrder(): void {
+    this.sortOrder = this.sortOrder === 'desc' ? 'asc' : 'desc';
+    this.sortByDate();
   }
 
   formatDate(date: any): string {
-    const formattedDate = new Date(date);
-    const year = formattedDate.getFullYear();
-    const month = (formattedDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = formattedDate.getDate().toString().padStart(2, '0');
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
     return `${day}-${month}-${year}`;
   }
 
-  formatTime(date: any): string {
-    const formattedDate = new Date(date);
-    if (isNaN(formattedDate.getTime())) return 'N/A';
-    const hours = formattedDate.getHours().toString().padStart(2, '0');
-    const minutes = formattedDate.getMinutes().toString().padStart(2, '0');
-    const seconds = formattedDate.getSeconds().toString().padStart(2, '0');
-    return `${hours}:${minutes}:${seconds}`;
+  formatTime(time: any): string {
+    if (!time) return 'N/A';
+    const d = new Date(time);
+    if (isNaN(d.getTime())) return 'N/A';
+    return d.toTimeString().slice(0, 8); // HH:MM:SS
   }
 
   applyFilter(): void {
@@ -77,7 +91,7 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
     } else {
       this.filteredAttendanceData = this.sortedAttendanceData.filter(record =>
         record.employeeId.toLowerCase().includes(term) ||
-        record.employeeName.toLowerCase().includes(term)
+        (record.employeeName && record.employeeName.toLowerCase().includes(term))
       );
     }
     this.totalRecords = this.filteredAttendanceData.length;
@@ -86,13 +100,13 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
   }
 
   paginateData(): void {
-    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
-    this.paginatedAttendanceData = this.filteredAttendanceData.slice(startIndex, endIndex);
+    const start = (this.currentPage - 1) * this.itemsPerPage;
+    const end = start + this.itemsPerPage;
+    this.paginatedAttendanceData = this.filteredAttendanceData.slice(start, end);
   }
 
   nextPage(): void {
-    if ((this.currentPage * this.itemsPerPage) < this.totalRecords) {
+    if (this.currentPage < this.totalPages) {
       this.currentPage++;
       this.paginateData();
     }
@@ -106,6 +120,6 @@ export class EmployeeAttendanceSummaryComponent implements OnInit {
   }
 
   get totalPages(): number {
-    return Math.ceil(this.totalRecords / this.itemsPerPage);
+    return Math.ceil(this.totalRecords / this.itemsPerPage) || 1;
   }
 }

@@ -43,17 +43,66 @@
         <button type="submit">LOGIN</button>
         <div class="error-message" *ngIf="errorMessage">{{ errorMessage }}</div>
 
-        <!-- <div class="reset-password">
-  <button type="button" (click)="loginWithFingerprint()">Login with Fingerprint</button>
-</div> -->
+        <!-- Fingerprint Login Section -->
+        <!-- <div class="fingerprint-section" *ngIf="showFingerprintSection">
+          <div class="fingerprint-header">
+            <h3>Fingerprint Login</h3>
+            <p>Place your registered finger on the scanner</p>
+          </div>
+          
+          <div class="fingerprint-scanner" [class.scanning]="isFingerprintScanning">
+            <div class="scanner-animation">
+              <div class="fingerprint-image">
+                <i class="fa fa-fingerprint"></i>
+              </div>
+              <div class="scan-line" *ngIf="isFingerprintScanning"></div>
+            </div>
+            <div class="scanner-status">
+              <p>{{ fingerprintStatus }}</p>
+              <div class="quality-indicator" *ngIf="fingerprintQuality > 0">
+                <span class="quality-badge" [class]="getFingerprintQualityClass()">
+                  Quality: {{ fingerprintQuality }}%
+                </span>
+              </div>
+            </div>
+          </div>
 
+          <div class="fingerprint-actions">
+            <button 
+              type="button" 
+              class="btn-fingerprint-scan" 
+              (click)="startFingerprintScan()"
+              [disabled]="isFingerprintScanning">
+              <i class="fa fa-fingerprint"></i>
+              {{ isFingerprintScanning ? 'Scanning...' : 'Start Fingerprint Scan' }}
+            </button>
+            
+            <button 
+              type="button" 
+              class="btn-cancel-scan" 
+              (click)="cancelFingerprintScan()"
+              *ngIf="isFingerprintScanning">
+              <i class="fa fa-times"></i>
+              Cancel Scan
+            </button>
+          </div>
+        </div> -->
 
-        <div class="reset-password">
-          <button type="button" (click)="navigateToResetPassword()">Reset/Forgot password?</button>
+        <!-- Alternative Actions -->
+        <div class="alternative-actions">
+          <!-- <button 
+            type="button" 
+            class="btn-toggle-fingerprint" 
+            (click)="toggleFingerprintSection()">
+            <i class="fa fa-fingerprint"></i>
+            {{ showFingerprintSection ? 'Use Password Login' : 'Login with Fingerprint' }}
+          </button> -->
+
+          <div class="secondary-actions">
+            <button type="button" (click)="navigateToResetPassword()">Reset/Forgot password?</button>
+            <!-- <button type="button" (click)="navigateTosetfingerPrint()">Register fingerprint</button> -->
+          </div>
         </div>
-         <!-- <div class="reset-password">
-          <button type="button" (click)="navigateTosetfingerPrint()">register fingerprint</button>
-         </div> -->
       </form>
     </div>
   </div>

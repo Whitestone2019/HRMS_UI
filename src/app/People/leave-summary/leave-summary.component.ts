@@ -18,7 +18,7 @@ export class LeaveSummaryComponent implements OnInit {
 
   leaveTypes = [
     { name: 'casual leave', icon: 'fas fa-umbrella-beach', color: '#4a90e2', available: 12, booked: 0 },
-    { name: 'medical leave', icon: 'fas fa-stethoscope', color: '#bd10e0', available: 12, booked: 0 },
+    { name: 'medical leave', icon: 'fas fa-stethoscope', color: '#bd10e0', available: 0, booked: 0 },
     { name: 'earned leave', icon: 'fas fa-stopwatch', color: '#a3d39c', available: 0, booked: 0 },
     { name: 'leavewithoutpay', icon: 'fas fa-sun', color: '#f5a623', available: 0, booked: 0 },
     // { name: 'sabbatical leave', icon: 'fas fa-sync-alt', color: '#f8e71c', available: 12, booked: 0 },
@@ -44,37 +44,27 @@ export class LeaveSummaryComponent implements OnInit {
     this.fetchUpcomingHolidays(); // Fetch the upcoming holidays
   }
 
+// leave-summary.component.ts (only the updated part)
+
 getLeaveCounts(empId: string): void {
   this.apiService.getLeaveCounts(empId).subscribe({
-    next: (leaveCounts: any) => {
-      this.leaveTypes.forEach(leaveType => {
-        const leaveTypeKey = leaveType.name.toLowerCase().replace(' ', '');
-        if (leaveCounts[leaveTypeKey] !== undefined) {
-          // Set available from backend response
-          //leaveType.available = leaveCounts[leaveTypeKey];
-          leaveType.booked = leaveCounts[leaveTypeKey];
-          // Only calculate booked if available is non-zero, otherwise assume no leaves booked
-         // leaveType.booked = leaveType.available > 0 ? 12 - leaveType.available : 0;
-         leaveType.available = leaveType.booked > 0 ? 12 - leaveType.booked : 0;
-          // Override for specific leave types
-          if (leaveType.name.toLowerCase() === 'earned leave' || leaveType.name.toLowerCase() === 'leavewithoutpay') {
-            leaveType.available = 0;
-            leaveType.booked = 0; // Optionally set booked to 0 for consistency
-          }
-        } else {
-          // Handle case where leave type key is not in response
-          leaveType.available = 0;
-          leaveType.booked = 0;
-        }
-      });
+    next: (res: any) => {
+      const clUsed = Number(res.casualUsed) || 0;
+      const clRemaining = Number(res.casualRemaining) || 0;
+      const rawBalance = Number(res.rawCasualBalance) || 12;
+
+      // Casual Leave
+      this.leaveTypes[0].booked = clUsed;
+      this.leaveTypes[0].available = clRemaining > 0 ? clRemaining : rawBalance;
+
+      // Leave Without Pay
+      this.leaveTypes[3].booked = Number(res.leavewithoutpay) || 0;
+      this.leaveTypes[3].available = 0;
     },
     error: (err) => {
-      console.error('Error fetching leave counts:', err);
-      // Optionally reset all leave types or show an error message
-      this.leaveTypes.forEach(leaveType => {
-        leaveType.available = 0;
-        leaveType.booked = 0;
-      });
+      console.error(err);
+      this.leaveTypes[0].booked = 0;
+      this.leaveTypes[0].available = 12;
     }
   });
 }

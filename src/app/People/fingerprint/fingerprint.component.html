@@ -1,21 +1,164 @@
-<div class="fingerprint-container">
-  <h2>Employee Fingerprint Enrollment</h2>
-
-  <div class="form-group">
-    <label>Employee ID</label>
-    <input type="text" [(ngModel)]="employeeId" placeholder="Enter Employee ID" class="form-control" />
+<div class="container">
+  <div class="header-section">
+    <h1>Register Fingerprint for Passwordless Login</h1>
+    <p class="subtitle">Securely register your fingerprint for quick and easy access to your account</p>
   </div>
 
-  <div class="form-group">
-    <button (click)="captureFingerprint()" class="btn-capture">Capture Fingerprint</button>
+  <!-- Status Card -->
+  <div class="status-card" [class.status-success]="sdkInitialized" [class.status-error]="!sdkInitialized">
+    <div class="status-icon">
+      <i class="material-icons">{{ sdkInitialized ? 'check_circle' : 'error' }}</i>
+    </div>
+    <div class="status-content">
+      <h3>{{ sdkInitialized ? 'Device Ready' : 'Device Not Ready' }}</h3>
+      <p>{{ status }}</p>
+      <div class="device-info" *ngIf="sdkInitialized">
+        <span class="device-model">{{ deviceModel }}</span>
+        <span class="last-update">Updated: {{ lastUpdate | date:'shortTime' }}</span>
+      </div>
+    </div>
   </div>
 
-  <div *ngIf="fingerData">
-    <p><strong>Captured Fingerprint Data:</strong></p>
-    <textarea readonly class="finger-data">{{ fingerData }}</textarea>
-
-    <button (click)="saveFingerprint()" class="btn-save">Save Fingerprint</button>
+  <!-- Step Indicator -->
+  <div class="step-indicator">
+    <div class="step" [class.active]="!savedTemplate">
+      <div class="step-number">1</div>
+      <div class="step-label">Capture</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" [class.active]="savedTemplate && !employeeId">
+      <div class="step-number">2</div>
+      <div class="step-label">Employee ID</div>
+    </div>
+    <div class="step-connector"></div>
+    <div class="step" [class.active]="savedTemplate && employeeId && isEmployeeIdValid()">
+      <div class="step-number">3</div>
+      <div class="step-label">Register</div>
+    </div>
   </div>
 
-  <div *ngIf="message" class="response-msg">{{ message }}</div>
+  <div class="card">
+    <div class="card-header">
+      <h2>Fingerprint Capture & Registration</h2>
+    </div>
+
+    <div class="card-body">
+      <!-- Animated Fingerprint Scanner -->
+      <div class="fingerprint-scanner" [class.scanning]="isCapturing">
+        <div class="scanner-animation">
+          <i class="material-icons fingerprint-image">fingerprint</i>
+          <div class="scan-ring" *ngIf="isCapturing"></div>
+        </div>
+
+        <div class="scanner-status">
+          <p *ngIf="!isCapturing && !imageSrc">
+            Place your finger on the scanner
+          </p>
+          <p *ngIf="isCapturing" class="text-success">
+            <strong>Scanning fingerprint...</strong>
+          </p>
+          <p *ngIf="imageSrc && quality >= 70" class="text-success">
+            Excellent quality captured!
+          </p>
+          <p *ngIf="imageSrc && quality < 70 && quality >= 50" class="text-warning">
+            Good, but try to press firmly
+          </p>
+          <p *ngIf="imageSrc && quality < 50" class="text-danger">
+            Poor quality — please try again
+          </p>
+        </div>
+
+        <!-- Capture Button -->
+        <button 
+          class="btn btn-primary big-btn" 
+          (click)="captureFinger()" 
+          [disabled]="isCapturing || !sdkInitialized"
+          style="margin-top: 20px; width: 100%; padding: 14px; font-size: 1.1rem;">
+          <i class="material-icons" style="font-size: 1.8rem; vertical-align: middle;">
+            {{ isCapturing ? 'hourglass_empty' : 'fingerprint' }}
+          </i>
+          <span style="margin-left: 10px; vertical-align: middle;">
+            {{ isCapturing ? 'Capturing...' : 'Capture Fingerprint' }}
+          </span>
+        </button>
+      </div>
+
+      <!-- Preview After Capture -->
+      <div class="preview-container" *ngIf="imageSrc">
+        <div class="preview-header">
+          <h3>Fingerprint Preview</h3>
+          <div class="quality-indicator">
+            <span class="quality-badge" [ngClass]="getQualityClass()">
+              Quality: {{ quality }}%
+            </span>
+            <span class="nfiq-badge">NFIQ: {{ nfiq }}</span>
+          </div>
+        </div>
+        <div class="preview">
+          <img [src]="imageSrc" alt="Captured Fingerprint" />
+        </div>
+        <div class="template-info">
+          <p>Template Size: {{ templateSize }} bytes • Ready for registration</p>
+        </div>
+      </div>
+
+      <!-- Employee ID Input -->
+      <div class="employee-id-section" *ngIf="savedTemplate">
+        <div class="form-group">
+          <label>Employee ID</label>
+          <div class="input-with-validation">
+            <input 
+              type="text" 
+              [(ngModel)]="employeeId"
+              placeholder="e.g., EMP001, WS123"
+              class="form-control"
+              [class.valid]="isEmployeeIdValid()"
+              [class.invalid]="employeeId && !isEmployeeIdValid()"
+              maxlength="20"
+              autocomplete="off">
+            <i class="material-icons validation-icon">
+              {{ isEmployeeIdValid() ? 'check_circle' : 'cancel' }}
+            </i>
+          </div>
+          <div class="hint" *ngIf="employeeId && !isEmployeeIdValid()">
+            Only letters, numbers, hyphen (-) and underscore (_) allowed
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Actions -->
+      <div class="action-section" *ngIf="savedTemplate && employeeId && isEmployeeIdValid()">
+        <button 
+          class="btn btn-success big-btn register-btn"
+          (click)="registerFingerprint()"
+          [disabled]="isRegistering">
+          <i class="material-icons">how_to_reg</i>
+          {{ isRegistering ? 'Registering...' : 'Register Fingerprint' }}
+        </button>
+
+        <div class="secondary-actions">
+          <button class="btn btn-outline" (click)="verifyFinger()" [disabled]="isMatching">
+            <i class="material-icons">verified_user</i> Test Match
+          </button>
+          <button class="btn btn-outline" (click)="resetProcess()">
+            <i class="material-icons">refresh</i> Reset
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Section -->
+  <div class="help-section">
+    <div class="help-header">
+      <h3>How to Register Your Fingerprint</h3>
+    </div>
+    <div class="help-steps">
+      <div class="help-step">
+        <div class="step-icon">1</div> <div class="step-content"> <h4>Click Capture</h4> <p>Press the button and place finger firmly</p> </div> </div>
+      <div class="help-step"> <div class="step-icon">2</div> <div class="step-content"> <h4>Enter ID</h4> <p>Type your official Employee ID</p> </div> </div>
+      <div class="help-step"> <div class="step-icon">3</div> <div class="step-content"> <h4>Register</h4> <p>Save fingerprint permanently</p> </div> </div>
+      <div class="help-step"> <div class="step-icon">4</div> <div class="step-content"> <h4>Done!</h4> <p>Login next time with just your finger</p> </div> </div>
+    </div>
+  </div>
 </div>

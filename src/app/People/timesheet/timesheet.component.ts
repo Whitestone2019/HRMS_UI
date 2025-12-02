@@ -52,7 +52,7 @@ export class TimesheetComponent implements OnInit {
   }
 
  fetchTimesheetData(): void {
-  this.apiService.getTimesheetData(this.year, this.month + 1, this.repoteTo).subscribe({
+  this.apiService.getTimesheetData(this.year, this.month, this.repoteTo).subscribe({
     next: (data) => {
       // Sort by employeeId
       data.sort((a, b) => a.employeeId.localeCompare(b.employeeId));

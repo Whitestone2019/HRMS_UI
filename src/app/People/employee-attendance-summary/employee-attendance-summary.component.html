@@ -9,10 +9,16 @@
 
       <button (click)="getAttendanceDetails()">Fetch Attendance</button>
     </div>
+
+    <!-- Sort Toggle Button -->
+    <button class="sort-toggle-btn" (click)="toggleSortOrder()" 
+            *ngIf="attendanceData.length > 0">
+      Sort by Date: {{ sortOrder === 'desc' ? 'Newest First' : 'Oldest First' }}
+    </button>
   </div>
 
-  <!-- 🔍 Search Filter -->
-  <div class="search-bar">
+  <!-- Search Filter -->
+  <div class="search-bar" *ngIf="attendanceData.length > 0">
     <input
       type="text"
       placeholder="Search by Employee ID or Name"
@@ -22,7 +28,7 @@
   </div>
 
   <div class="attendance-details">
-    <table class="attendance-table" *ngIf="paginatedAttendanceData && paginatedAttendanceData.length > 0">
+    <table class="attendance-table" *ngIf="paginatedAttendanceData.length > 0">
       <thead>
         <tr>
           <th>S.No</th>
@@ -44,14 +50,19 @@
           <td>{{ record.status }}</td>
           <td>{{ record.checkIn }}</td>
           <td>{{ record.checkOut }}</td>
-          <td>{{ record.hoursWorked }}</td>
+          <td>{{ record.hoursWorked || '-' }}</td>
         </tr>
       </tbody>
     </table>
-    <p *ngIf="!paginatedAttendanceData || paginatedAttendanceData.length === 0">No records found</p>
+
+    <p *ngIf="attendanceData.length === 0">Please select dates and fetch attendance data.</p>
+    <p *ngIf="attendanceData.length > 0 && paginatedAttendanceData.length === 0">
+      No records match your search.
+    </p>
   </div>
 
-  <div class="pagination">
+  <!-- Pagination -->
+  <div class="pagination" *ngIf="totalRecords > itemsPerPage">
     <button (click)="previousPage()" [disabled]="currentPage === 1">Previous</button>
     <span>Page {{ currentPage }} of {{ totalPages }}</span>
     <button (click)="nextPage()" [disabled]="currentPage === totalPages">Next</button>

@@ -1,132 +1,201 @@
-/* General Styling */
+/* ============================================= */
+/*          Employee Attendance Summary          */
+/* ============================================= */
+
 .content {
-  padding: 20px;
-  font-family: Arial, sans-serif;
-  background-color: #f5f7fa; /* Light background for main content */
+  padding: 25px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  margin-left: 20px;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  margin-left: 20px; /* Space from sidebar */
 }
 
-/* Search bar styling */
+/* Top Bar - Date Picker + Sort Button */
+.top-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 18px 20px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+  margin-bottom: 20px;
+  gap: 15px;
+}
+
+.date-range {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+}
+
+.date-range label {
+  font-weight: 600;
+  color: #2d3748;
+  margin-right: 8px;
+}
+
+.date-range input[type="date"] {
+  padding: 10px 12px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  transition: all 0.2s ease;
+}
+
+.date-range input[type="date"]:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 3px rgba(49, 130, 206, 0.15);
+}
+
+/* Primary Buttons */
+button {
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Fetch Button */
+button:not(.sort-toggle-btn) {
+  background-color: #3182ce;
+  color: white;
+}
+
+button:not(.sort-toggle-btn):hover {
+  background-color: #2c6fbb;
+}
+
+/* Sort Toggle Button */
+.sort-toggle-btn {
+  background-color: #48bb78;
+  color: white;
+  font-size: 13px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sort-toggle-btn:hover {
+  background-color: #38a169;
+}
+
+/* Search Bar */
 .search-bar {
-  margin: 10px 0;
+  margin: 20px 0;
   text-align: right;
 }
 
 .search-bar input {
-  width: 250px;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  font-size: 14px;
-  transition: border 0.3s ease, box-shadow 0.3s ease;
+  width: 320px;
+  max-width: 100%;
+  padding: 12px 16px;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  font-size: 15px;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.search-bar input::placeholder {
+  color: #a0aec0;
 }
 
 .search-bar input:focus {
-  border-color: #007bff;
   outline: none;
-  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-}
-
-/* Date range styling */
-.date-range {
-  display: flex;
-  margin-bottom: 20px;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.date-range label {
-  font-weight: bold;
-  font-size: 14px;
-}
-
-.date-range input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  font-size: 14px;
-  transition: border 0.3s ease;
-}
-
-.date-range input:focus {
-  border-color: #007bff;
-  outline: none;
-}
-
-/* Button styling */
-button {
-  padding: 8px 15px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s ease, transform 0.2s ease;
-}
-
-button:hover {
-  background-color: #0056b3;
-  transform: scale(1.03);
+  border-color: #4299e1;
+  box-shadow: 0 0 0 4px rgba(66, 153, 225, 0.15);
 }
 
 /* Attendance Table */
 .attendance-details {
-  overflow-x: auto;
+  background-color: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   margin-top: 10px;
 }
 
 .attendance-table {
   width: 100%;
-  border-collapse: collapse;
-  margin-top: 10px;
-  background-color: #ffffff;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.attendance-table thead {
+  background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%);
+  color: white;
+  text-transform: uppercase;
+  font-size: 13px;
+  letter-spacing: 0.5px;
 }
 
 .attendance-table th {
-  background-color: #2d9df8;
-  color: white;
-  font-weight: bold;
-  padding: 12px;
+  padding: 16px 12px;
+  font-weight: 600;
   text-align: left;
+}
+
+.attendance-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.attendance-table tbody tr:hover {
+  background-color: #f1f5f9;
 }
 
 .attendance-table td {
-  padding: 8px 10px;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-  word-wrap: break-word;
-  color: #333;
+  padding: 14px 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #2d3748;
+  font-size: 14px;
 }
 
-/* Adjust column widths */
-.attendance-table th:nth-child(1),
-.attendance-table td:nth-child(1) { width: 5%; }
-.attendance-table th:nth-child(2),
-.attendance-table td:nth-child(2) { width: 10%; }
-.attendance-table th:nth-child(3),
-.attendance-table td:nth-child(3) { width: 20%; }
-.attendance-table th:nth-child(4),
-.attendance-table td:nth-child(4) { width: 15%; }
-.attendance-table th:nth-child(5),
-.attendance-table td:nth-child(5) { width: 10%; }
-.attendance-table th:nth-child(6),
-.attendance-table td:nth-child(6) { width: 15%; }
-.attendance-table th:nth-child(7),
-.attendance-table td:nth-child(7) { width: 15%; }
-.attendance-table th:nth-child(8),
-.attendance-table td:nth-child(8) { width: 10%; }
+/* Status Badge Style (Optional Enhancement) */
+td:nth-child(5) {
+  font-weight: 600;
+}
 
-/* No data message */
+td:nth-child(5):contains("Present") { color: #38a169; }
+td:nth-child(5):contains("Absent")  { color: #e53e3e; }
+td:nth-child(5):contains("Late")    { color: #dd6b20; }
+
+/* Column Widths */
+.attendance-table th:nth-child(1), td:nth-child(1) { width: 5%; }
+.attendance-table th:nth-child(2), td:nth-child(2) { width: 10%; }
+.attendance-table th:nth-child(3), td:nth-child(3) { width: 20%; }
+.attendance-table th:nth-child(4), td:nth-child(4) { width: 14%; }
+.attendance-table th:nth-child(5), td:nth-child(5) { width: 10%; }
+.attendance-table th:nth-child(6), td:nth-child(6) { width: 13%; }
+.attendance-table th:nth-child(7), td:nth-child(7) { width: 13%; }
+.attendance-table th:nth-child(8), td:nth-child(8) { width: 15%; text-align: center; }
+
+/* No Records Message */
 p {
   text-align: center;
-  font-size: 1.2em;
-  color: #888;
-  margin-top: 20px;
+  padding: 40px 20px;
+  color: #718096;
+  font-size: 1.1em;
+  background-color: #f8fafc;
+  border-radius: 10px;
+  margin: 20px 0;
 }
 
 /* Pagination */
@@ -134,50 +203,78 @@ p {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 15px;
-  gap: 10px;
+  margin: 30px 0 10px;
+  gap: 12px;
+  font-size: 15px;
 }
 
 .pagination button {
-  padding: 6px 12px;
-  font-size: 14px;
+  background-color: #edf2f7;
+  color: #4a5568;
+  padding: 10px 16px;
+  min-width: 90px;
+}
+
+.pagination button:hover:not(:disabled) {
+  background-color: #3182ce;
+  color: white;
+}
+
+.pagination button:disabled {
+  background-color: #e2e8f0;
+  color: #a0aec0;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .pagination span {
-  font-weight: bold;
+  font-weight: 600;
+  color: #2d3748;
+  padding: 0 10px;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 992px) {
   .top-bar {
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
   }
-
-  .date-range label,
-  .date-range input,
-  .search-bar input,
-  button {
-    width: 100%;
-    margin-top: 10px;
+  .search-bar {
+    text-align: left;
   }
-
-  .attendance-table th, .attendance-table td {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .attendance-table th, .attendance-table td {
-    font-size: 12px;
-    padding: 6px;
-  }
-
   .search-bar input {
     width: 100%;
   }
+}
 
-  .date-range input {
+@media (max-width: 768px) {
+  .date-range {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .date-range > div {
     width: 100%;
+  }
+  .attendance-table th,
+  .attendance-table td {
+    padding: 10px 8px;
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 576px) {
+  .content {
+    padding: 15px;
+    margin-left: 0;
+  }
+  .top-bar {
+    padding: 15px;
+  }
+  .attendance-table {
+    font-size: 12px;
+  }
+  .attendance-table th,
+  .attendance-table td {
+    padding: 8px 6px;
   }
 }
