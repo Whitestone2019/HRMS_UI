@@ -362,7 +362,7 @@
 
     <!-- Education Section -->
     <div class="form-section">
-      <h3>Education</h3>
+      <h3>Education <span class="mandatory">*</span></h3>
       <button type="button" (click)="addEducation()">Add Row</button>
       <table>
         <tr>
@@ -418,15 +418,15 @@
           <th>Actions</th>
         </tr>
         <tr *ngFor="let prof of professionalList; let i = index">
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.organisation"
+          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.organisation"
               name="organisation{{i}}" /></td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.location"
+          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.location"
               name="location{{i}}" /></td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgempid"
+          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgempid"
               name="orgempid{{i}}" /></td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgdept"
+          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgdept"
               name="orgdept{{i}}" /></td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="prof.orgrole"
+          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgrole"
               name="orgrole{{i}}" /></td>
           <td>
             <input type="date" [(ngModel)]="prof.joiningdate" name="joiningDate{{i}}" />
@@ -455,7 +455,7 @@
 
     </div>
     <div class="form-section">
-      <h3>Skill Set</h3>
+      <h3>Skill Set <span class="mandatory">*</span></h3>
       <button type="button" (click)="addSkill()">Add Row</button>
       <table>
         <tr>
