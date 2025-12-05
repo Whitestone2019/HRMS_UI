@@ -35,7 +35,7 @@ import { Router } from '@angular/router';
           <tr *ngFor="let employee of filteredEmployees" (click)="selectEmployee(employee)">
             <td>{{ employee.empid }}</td>
             <td>{{ employee.firstname }} {{ employee.lastname }}</td>
-            <td>{{ employee.officialemail }}</td>
+            <td>{{ employee.emailid }}</td>
             <td>{{ employee.department }}</td>
             <td>{{ employee.annualCTC | currency: 'INR' }}</td>
            <td>
@@ -199,7 +199,7 @@ export class EmployeeListComponent implements OnInit {
       (emp.empid?.toLowerCase() || '').includes(this.searchTerm.toLowerCase()) ||
       (emp.firstname?.toLowerCase() || '').includes(this.searchTerm.toLowerCase()) ||
       (emp.lastname?.toLowerCase() || '').includes(this.searchTerm.toLowerCase()) ||
-      (emp.officialemail?.toLowerCase() || '').includes(this.searchTerm.toLowerCase())
+      (emp.emailid?.toLowerCase() || '').includes(this.searchTerm.toLowerCase())
     );
   }
 

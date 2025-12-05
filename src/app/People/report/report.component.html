@@ -1,106 +1,101 @@
-<!-- Main Report Table -->
-<div class="report-container" *ngIf="!showSingleReport">
-  <h1>Monthly Employee Report</h1>
+<div class="report-page">
 
-  <div class="dropdown-container">
-    <label for="month-select">Select Month:</label>
-    <select id="month-select" (click)="$event.stopPropagation()" (change)="onMonthChange($event)">
-      <option *ngFor="let month of months" [value]="month.value" [selected]="month.value === selectedMonth">
-        {{ month.label }}
-      </option>
-    </select>
-  </div>
+  <!-- MAIN REPORT -->
+  <div class="report-container" *ngIf="!showSingleReport">
+    <h1 class="page-title">Monthly Timesheet Report (27th - 26th Cycle)</h1>
 
-  <table class="report-table">
-    <thead>
-      <tr>
-        <th>Employee Name</th>
-        <th>ID</th>
-        <th>Department</th>
-        <th>Days Present</th>
-        <th>Leaves Taken</th>
-        <th>Action</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let employee of employees">
-        <td>{{ employee.name }}</td>
-        <td>{{ employee.id }}</td>
-        <td>{{ employee.department }}</td>
-        <td>{{ employee.daysPresent }}</td>
-        <td>{{ employee.leavesTaken }}</td>
-        <td>
-          <button class="action-btn" (click)="viewEmployeeReport(employee)">View Report</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+    <div class="filters-row">
+      <div class="filter-group">
+        <label>Select Payroll Month</label>
+        <select (click)="$event.stopPropagation()" [(ngModel)]="selectedPayrollMonth" (change)="onPayrollMonthChange()" class="form-control">
+          <option *ngFor="let m of payrollMonths" [value]="m.value">
+            {{ m.label }}
+          </option>
+        </select>
+      </div>
 
-  <div class="button-container">
-    <button (click)="downloadReport()" class="download-btn">Download Report</button>
-    <button (click)="generateLeaveReport()" class="leave-report-btn">Employee Leave Report</button>
-  </div>
-</div>
+      <div class="filter-group">
+        <label>Search Employee</label>
+        <input type="text" [(ngModel)]="searchTerm" (input)="applyFilter()"
+               placeholder="Emp ID or Name" class="form-control search-input">
+      </div>
 
-<!-- Single Employee Report -->
-<div class="single-report-container" *ngIf="showSingleReport">
-  <button (click)="backToMainPage()" class="back-btn">Back</button>
-  <h2>Employee Report - {{ selectedEmployee.name }} ({{ selectedMonth }})</h2>
-
-  <!-- View Toggle -->
-  <div class="view-toggle">
-    <button [class.active]="viewMode==='list'" (click)="viewMode='list'">List View</button>
-    <button [class.active]="viewMode==='calendar'" (click)="viewMode='calendar'">Calendar View</button>
-  </div>
-
-  <!-- List View -->
-  <table class="report-table" *ngIf="viewMode==='list'">
-    <thead>
-      <tr>
-        <th>Date</th>
-        <th>Status</th>
-        <th>Check-In</th>
-        <th>Check-Out</th>
-        <th>Worked Hours</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let record of employeeReportData">
-        <td>{{ record.attendanceDate }}</td>
-        <td>{{ record.status }}</td>
-        <td>{{ record.checkin }}</td>
-        <td>{{ record.checkout }}</td>
-        <td>{{ record.totalHoursWorked }}</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <!-- Calendar View -->
-  <div class="calendar-container" *ngIf="viewMode==='calendar'">
-    <div class="calendar-header">
-      <button class="nav-button" (click)="prevMonth()">&#8249;</button>
-      <h2>{{ selectedEmployee.name }} - {{ selectedMonth }}</h2>
-      <button class="nav-button" (click)="nextMonth()">&#8250;</button>
-    </div>
-
-    <div class="calendar-grid">
-      <div class="calendar-day" *ngFor="let day of daysOfWeek">{{ day }}</div>
-      <div *ngFor="let day of calendarDays" 
-           class="calendar-date"
-           [ngClass]="{
-             'present': day.status==='Present',
-             'absent': day.status==='Absent',
-             'half-day': day.status==='Half-Day',
-             'holiday': day.isSunday
-           }">
-        <div class="date">{{ day.date }}</div>
-        <div class="status">{{ day.status!=='Absent' ? day.status : '' }}</div>
+      <div class="filter-group">
+        <label>Rows per page</label>
+        <select  (click)="$event.stopPropagation()" [(ngModel)]="pageSize" (change)="resetPagination()" class="form-control">
+          <option value="10">10</option>
+          <option value="25">25</option>
+          <option value="50">50</option>
+          <option value="100">100</option>
+        </select>
       </div>
     </div>
+
+    <div class="loading" *ngIf="loading">Loading timesheet data...</div>
+
+    <div class="table-responsive" *ngIf="!loading">
+      <table class="report-table" *ngIf="paginatedEmployees.length > 0">
+        <thead>
+          <tr>
+            <th>S.No</th>
+            <th>Emp ID</th>
+            <th>Name</th>
+            <th>Effective Days</th>
+            <th>Present</th>
+            <th>Half Day</th>
+            <th>Absent</th>
+            <th>Miss Punch</th>
+            <th>OD</th>
+            <th>Comp Off</th>
+            <th>Holidays</th>
+            <th>Weekoffs</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let emp of paginatedEmployees; let i = index">
+            <td>{{ getSerialNumber(i) }}</td>
+            <td>{{ emp.employeeId }}</td>
+            <td class="text-left">{{ emp.members }}</td>
+            <td>{{ emp.effectiveWorkingDays }}</td>
+            <td>{{ emp.present | number:'1.1-1' }}</td>
+            <td><strong class="half-day">{{ emp.halfDay || 0 }}</strong></td>
+            <td>{{ emp.absent }}</td>
+            <td>{{ emp.missPunch }}</td>
+            <td>{{ emp.od }}</td>
+            <td>{{ emp.compoff }}</td>
+            <td>{{ emp.holiday }}</td>
+            <td>{{ emp.weekoff }}</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="no-data" *ngIf="!loading && filteredEmployees.length === 0">
+        <p>No employees found for the selected payroll month.</p>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-controls" *ngIf="filteredEmployees.length > 0">
+      <button (click)="prevPage()" [disabled]="currentPage === 1">Previous</button>
+      <span>Page {{ currentPage }} of {{ totalPages() }}</span>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages()">Next</button>
+      <span class="total">Total: {{ filteredEmployees.length }} records</span>
+    </div>
+
+    <!-- Download Button -->
+    <div class="actions">
+      <button class="btn-download" (click)="downloadReport()" 
+              [disabled]="loading || employees.length === 0">
+        Download Excel Report
+      </button>
+    </div>
   </div>
 
-  <div class="button-container">
-    <button class="download-btn" (click)="downloadSingleEmployeeReport()">Download Employee Report</button>
-    <button class="leave-report-btn" (click)="generateLeaveReport()">Employee Leave Report</button>
+  <!-- SINGLE EMPLOYEE VIEW -->
+  <div class="single-report" *ngIf="showSingleReport">
+    <button class="btn-back" (click)="backToMainPage()">Back</button>
+    <h2>Detailed Report - {{ selectedEmployee?.members }}</h2>
+    <p><strong>Payroll Month:</strong> {{ selectedMonthLabel }}</p>
+    <div class="coming-soon">Detailed view coming soon...</div>
   </div>
 </div>

@@ -249,7 +249,7 @@ export class EmployeeComponent {
       lastname: ['', Validators.required],
       dateofbirth: [''],
       dateOfJoin: [''],
-      //officialemail: ['', [Validators.required, Validators.email]],
+      officialemail: [''],
       emailid: [''],
       phonenumber: ['', Validators.required],
       locationType: ['', Validators.required],
@@ -285,7 +285,7 @@ export class EmployeeComponent {
       dateOfJoin: employee.dateOfJoin,
       officialemail: employee.emailid,
       emailid: employee.emailid,
-      mobilenumber: employee.phonenumber,
+      phonenumber: employee.mobilenumber,
       locationType: employee.locationType,
       department: employee.department,
       annualCTC: employee.annualCTC,
@@ -356,7 +356,7 @@ export class EmployeeComponent {
       
       // Prepare the data for submission
       const formData = this.employeeForm.value;
-      
+     // mobilenumber: formData.phonenumber;
       // Format earnings and deductions as JSON strings
       const formattedEarnings = JSON.stringify(formData.earnings);
       const formattedDeductions = JSON.stringify(formData.deductions);

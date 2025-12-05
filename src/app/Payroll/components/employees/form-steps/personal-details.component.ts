@@ -16,7 +16,7 @@ import { FormGroup, ReactiveFormsModule } from '@angular/forms';
         </div>
         <div class="form-group">
           <label>Phone Number</label>
-          <input type="tel" formControlName="phoneNumber">
+          <input type="tel" formControlName="phonenumber">
         </div>
         <div class="form-group">
           <label>Address</label>

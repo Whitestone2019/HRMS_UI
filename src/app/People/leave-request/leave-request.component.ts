@@ -6,6 +6,8 @@ import { ApiService } from '../../api.service';
 import { parse } from 'date-fns';
 import { Subject } from 'rxjs';
 import { debounceTime } from 'rxjs/operators';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 
 @Component({
   selector: 'app-leave-request',
@@ -198,5 +200,60 @@ applyFilters(): void {
         error: (err: HttpErrorResponse) => alert(`Error: ${err.message}`)
       });
     }
+  }
+
+
+  exportToExcel(): void {
+    // Use the filtered list (what the user currently sees)
+    const dataToExport = this.filteredRequests.map(req => ({
+      'Employee ID': req.empid || 'N/A',
+      'Employee Name': req.name || 'N/A',
+      'Type': req.leavetype || req.type || 'N/A',
+      'Reason': req.leavereason || req.permissionreason || 'N/A',
+      'No. of Days': req.noofdays ?? 'N/A',
+      'Start Date': req.startdate ? this.formatDate(req.startdate) : 'N/A',
+      'End Date': req.enddate ? this.formatDate(req.enddate) : 'N/A',
+      'Status': req.status || 'N/A'
+    }));
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport);
+
+    // Optional: set column widths (makes it look nicer)
+    const colWidths = [
+      { wch: 15 }, // Employee ID
+      { wch: 25 }, // Name
+      { wch: 12 }, // Type
+      { wch: 40 }, // Reason
+      { wch: 12 }, // No. of Days
+      { wch: 15 }, // Start Date
+      { wch: 15 }, // End Date
+      { wch: 12 }  // Status
+    ];
+    worksheet['!cols'] = colWidths;
+
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Requests': worksheet },
+      SheetNames: ['Requests']
+    };
+
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+
+    const fileName = `${this.requestType}_Requests_${new Date()
+      .toISOString()
+      .slice(0, 10)}.xlsx`;
+
+    FileSaver.saveAs(blob, fileName);
+  }
+
+  // Helper to format JS Date → dd-MM-yyyy
+  private formatDate(date: Date): string {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}-${month}-${year}`;
   }
 }

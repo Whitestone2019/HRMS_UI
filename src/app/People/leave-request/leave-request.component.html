@@ -1,6 +1,11 @@
 <div class="content">
   <!-- Radio Buttons and Filters -->
   <div class="filter-container">
+    <div class="export-btn-container" *ngIf="hasData">
+    <button class="export-btn" (click)="exportToExcel()">
+      Export to Excel
+    </button>
+  </div>
     <!-- Request Type Radios -->
     <div class="radio-group">
       <label>
