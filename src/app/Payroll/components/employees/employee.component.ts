@@ -251,7 +251,7 @@ export class EmployeeComponent {
       dateOfJoin: [''],
       officialemail: [''],
       emailid: [''],
-      phonenumber: ['', Validators.required],
+      phonenumber: [''],
       locationType: ['', Validators.required],
       department: ['', Validators.required],
 

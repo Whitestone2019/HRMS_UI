@@ -48,6 +48,20 @@
   [day]="today_day">
 </app-attendance-pie-chart>
 
+<app-team-attendance-breakdown-pie
+  *ngIf="!isLoadingSummary && isAdmin"
+  [attendancePercentage]="overallSummary.attendancePercentage"
+  [totalPresent]="overallSummary.totalPresent"
+  [leaveWithPay]="overallSummary.leaveWithPay"
+  [leaveWithoutPay]="overallSummary.leaveWithoutPay"
+  [unplannedLeave]="overallSummary.unplannedLeave"
+  [period]="overallSummary.period">
+</app-team-attendance-breakdown-pie>
+
+<div class="loading-card" *ngIf="isLoadingSummary && isAdmin">
+  <p>Loading team attendance breakdown...</p>
+</div>
+
     </div>
   </div>
 </div>

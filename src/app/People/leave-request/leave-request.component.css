@@ -290,6 +290,26 @@
   50% { background-position: 100% 50%; }
   100% { background-position: 0% 50%; }
 }
+/* In leave-request.component.css */
+.withdraw-btn {
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  padding: 5px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  transition: background-color 0.3s;
+}
+
+.withdraw-btn:hover:not(:disabled) {
+  background-color: #f57c00;
+}
+
+.withdraw-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
 
 /* Responsive */
 @media (max-width: 768px) {

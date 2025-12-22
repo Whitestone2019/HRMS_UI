@@ -589,4 +589,87 @@
   .idcard-btn {
     width: 100%;
   }
+
+  /* Your existing CSS + this new card */
+.overall-summary-card {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 20px;
+  padding: 28px;
+  margin: 30px 0;
+  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.summary-header h3 {
+  margin: 0 0 10px 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.summary-header small {
+  opacity: 0.9;
+  font-size: 1rem;
+}
+
+.attendance-percentage {
+  margin: 25px 0;
+}
+
+.percentage-value {
+  font-size: 5rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.excellent { color: #00ff88; text-shadow: 0 0 25px #00ff88; }
+.good      { color: #7cff88; }
+.average   { color: #ffd93d; }
+.poor      { color: #ff6b6b; }
+
+.present-info {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-top: 10px;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 16px;
+  margin-top: 30px;
+}
+
+.stat-item {
+  background: rgba(255,255,255,0.18);
+  padding: 16px;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+}
+
+.stat-item .label {
+  font-size: 0.95rem;
+  opacity: 0.9;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.stat-item .value {
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.warning { border-left: 5px solid #ffb84d; }
+.success { border-left: 5px solid #4ade80; }
+.danger  { border-left: 5px solid #f87171; }
+
+.loading-card {
+  text-align: center;
+  padding: 40px;
+  background: white;
+  border-radius: 12px;
+  color: #666;
+  font-size: 1.1rem;
+}
 }

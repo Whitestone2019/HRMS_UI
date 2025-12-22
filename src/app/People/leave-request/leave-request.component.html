@@ -68,13 +68,36 @@
           <td>{{ request.startdate ? (request.startdate | date:'yyyy-MM-dd') : 'N/A' }}</td>
           <td>{{ request.enddate ? (request.enddate | date:'yyyy-MM-dd') : 'N/A' }}</td>
           <td>{{ request.status || 'N/A' }}</td>
-          <td>
-            <div *ngIf="userRole !== 'HR' && request.entitycreflg === 'N' && (request.status === 'Pending') && request.empid !== currentEmpId ">
-  <button class="reject-btn" (click)="deleteRequest(i)">Reject</button>
-  <button class="approve-btn" (click)="approve(request, i)">Approve</button>
-</div>
-
-          </td>
+        <td>
+  <div *ngIf="userRole !== 'HR' && request.entitycreflg === 'N' && (request.status === 'Pending') && request.empid !== currentEmpId ">
+    <button class="reject-btn" (click)="deleteRequest(i)">Reject</button>
+    <button class="approve-btn" (click)="approve(request, i)">Approve</button>
+  </div>
+  
+  <!-- Add Withdraw Button for user's own requests - Only for future/present dates -->
+  <div *ngIf="request.empid === currentEmpId && 
+              (request.status === 'Pending' || request.status === 'Approved') && 
+              request.status !== 'Withdrawn' &&
+              isFutureOrPresentDate(request)">
+    <button class="withdraw-btn" (click)="withdrawRequest(request, i)">
+      Withdraw
+    </button>
+  </div>
+  
+  <!-- Show withdrawn status -->
+  <div *ngIf="request.empid === currentEmpId && request.status === 'Withdrawn'">
+    <span class="withdrawn-status">Withdrawn</span>
+  </div>
+  
+  <!-- Show disabled message for past leaves -->
+  <div *ngIf="request.empid === currentEmpId && 
+              (request.status === 'Pending' || request.status === 'Approved') && 
+              request.status !== 'Withdrawn' &&
+              !isFutureOrPresentDate(request)" 
+       class="disabled-message">
+    <span class="past-leave-message">Cannot withdraw past leave</span>
+  </div>
+</td>
         </tr>
       </tbody>
     </table>

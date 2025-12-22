@@ -22,6 +22,13 @@
 
   <!-- Right Section -->
   <div class="right">
+     <div class="notification-bell" >
+    <i class="fas fa-bell bell-icon"></i>
+    <!-- <img src="/HRMS/assets/images/bell.png" alt="Notifications" class="bell-icon" /> -->
+    <span class="notification-badge" *ngIf="totalPending > 0">
+      {{ totalPending > 99 ? '99+' : totalPending }}
+    </span>
+  </div>
     <!-- Menu button for dropdown -->
     <div class="menu-button-dropdown" (document:click)="handleOutsideClick($event)">
       <img src="/HRMS/assets/images/menu-button.png" alt="Menu Button" class="menu-icon" (click)="toggleMenu($event)" />
@@ -32,8 +39,8 @@
         <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>
       </div>
     </div>
-
-
+    
+ 
     <!-- Logout button -->
     <button class="logout-button" (click)="logout()">
       <i class="fas fa-sign-out-alt"></i> Logout

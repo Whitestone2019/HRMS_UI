@@ -256,4 +256,45 @@ applyFilters(): void {
     const year = d.getFullYear();
     return `${day}-${month}-${year}`;
   }
+
+  // In leave-request.component.ts
+isFutureOrPresentDate(request: any): boolean {
+  if (!request || !request.startdate) {
+    return false;
+  }
+  
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // Set to start of day
+  
+  const startDate = new Date(request.startdate);
+  startDate.setHours(0, 0, 0, 0); // Set to start of day
+  
+  // Allow withdrawal if start date is today or in the future
+  return startDate >= today;
+}
+// Add withdraw method
+withdrawRequest(request: any, index: number): void {
+
+  if (!this.isFutureOrPresentDate(request)) {
+    alert('Cannot withdraw past leave requests. Please contact HR.');
+    return;
+  }
+  if (confirm(`Are you sure you want to withdraw this ${request.type.toLowerCase()} request?`)) {
+    // Only handle Leave requests
+    this.apiService.withdrawLeaveRequest(request.empid, request.srlnum, request.status)
+      .subscribe({
+        next: (response: any) => {
+          if (response.status === 'success') {
+            alert(`${request.type} request withdrawn successfully!`);
+            this.fetchRequests(this.currentEmpId);
+          } else {
+            alert(`Failed: ${response.message || 'Unknown error'}`);
+          }
+        },
+        error: (err: HttpErrorResponse) => {
+          alert(`Error: ${err.message}`);
+        }
+      });
+  }
+}
 }

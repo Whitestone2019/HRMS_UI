@@ -814,6 +814,17 @@ export class ApiService {
     );
   }
 
+  withdrawLeaveRequest(empId: string, srlnum: string, currentStatus: string): Observable<any> {
+  this.loaderService.show();
+  return this.http.put<any>(
+    `${this.apiUrl}/withdrawLeaveRequest?empid=${empId}&srlnum=${srlnum}&status=${currentStatus}`, 
+    null
+  ).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError(this.handleError.bind(this))
+  );
+}
+
 
   getUpcomingHolidays(): Observable<any> {
     const endpoint = `${this.apiUrl}/leaveRequests/upcomingHolidays`; // Endpoint to fetch upcoming holidays
@@ -1784,6 +1795,19 @@ uploadEmployeeWithDocuments(formData: FormData): Observable<any> {
         finalize(() => this.loaderService.hide()));
 }
 
+getOverallMonthlyAttendanceSummary() {
+  return this.http.get(`${this.apiUrl}/overall-monthly-attendance-summary`);
+}
+// api.service.ts
+getPendingCounts(managerId: string): Observable<any> {
+  return this.http.get<any>(`${this.apiUrl}/notifications/pending-counts/${managerId}`)
+    .pipe(
+      catchError(err => {
+        console.error('Failed to load notification counts', err);
+        return of({ counts: { total: 0 } }); // fallback
+      })
+    );
+}
 
   openDialog(title: string, message: string): void {
     this.dialog.open(AlertDialogComponent, {

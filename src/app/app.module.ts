@@ -77,6 +77,7 @@ import { UpdateLeaveComponent } from './People/update-leave/update-leave.compone
 import { AttendanceApprovalComponent } from './People/attendance-approval/attendance-approval.component';
 import { FingerprintComponent } from './People/fingerprint/fingerprint.component';
 import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
+import { TeamAttendanceBreakdownPieComponent } from './People/overview/team-attendance-breakdown-pie/team-attendance-breakdown-pie.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 
 @NgModule({
@@ -130,7 +131,8 @@ import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-
    UpdateLeaveComponent,
    AttendanceApprovalComponent,
    FingerprintComponent,
-   PayrollAdjustmentComponent
+   PayrollAdjustmentComponent,
+   TeamAttendanceBreakdownPieComponent
 
   ],
   imports: [

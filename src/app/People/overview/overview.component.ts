@@ -9,6 +9,7 @@ import { ApiService } from '../../api.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IdCardPhotoComponent } from './id-card-photo/id-card-photo.component';
+import { UserService } from '../../user.service';
 
 @Component({
   selector: 'app-overview',
@@ -54,7 +55,19 @@ export class OverviewComponent implements OnInit, OnDestroy {
   today_day: string = '';
   yesterday_label: string = "Yesterday's";
   today_label: string = "Today's";
-  
+    // Monthly Summary
+  overallSummary: any = {
+    period: '',
+    teamSize: 0,
+    attendancePercentage: 0,
+    totalWorkingDays: 0,
+    totalPresent: 0,
+    unplannedLeave: 0,
+    leaveWithPay: 0,
+    leaveWithoutPay: 0
+  };
+  isLoadingSummary = true;
+    isAdmin: boolean = false;
 
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef, static: true })
   container!: ViewContainerRef;
@@ -64,7 +77,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
     private dialog: MatDialog,
     private apiService: ApiService,
     private http: HttpClient,
-    private router: Router
+    private router: Router,
+    private userService:UserService
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +86,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.getAttendancePieData();
     this.checkTimerStatusOnLoad();
      this.loadProfilePicture();
+    this.loadOverallAttendanceSummary();
+    this.isAdmin = this.userService.isAdmin();
   }
 
   ngOnDestroy(): void {
@@ -458,5 +474,26 @@ checkIn(): void {
   }
   
 }
+loadOverallAttendanceSummary(): void {
+    this.isLoadingSummary = true;
+    this.apiService.getOverallMonthlyAttendanceSummary().subscribe({
+      next: (res: any) => {
+        this.overallSummary = {
+          period: res.period || 'Current Cycle',
+          teamSize: res.teamSize || 0,
+          attendancePercentage: res.attendancePercentage || 0,
+          totalWorkingDays: res.totalWorkingDays || 0,
+          totalPresent: res.totalPresent || 0,
+          unplannedLeave: res.unplannedLeave || 0,
+          leaveWithPay: res.leaveWithPay || 0,
+          leaveWithoutPay: res.leaveWithoutPay || 0
+        };
+        this.isLoadingSummary = false;
+      },
+      error: () => {
+        this.isLoadingSummary = false;
+      }
+    });
+  }
 
 }
