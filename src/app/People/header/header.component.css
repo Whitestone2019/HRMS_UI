@@ -1,10 +1,9 @@
-/* Header container */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   background-color: hsl(239, 89%, 17%);
-  padding: 30px  20px;
+  padding: 30px 20px;
   color: white;
   width: 100%;
   position: fixed;
@@ -12,35 +11,31 @@
   left: 0;
   z-index: 1000;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  height: 50px; /* Slightly increased height for better spacing */
+  height: 50px;
 }
 
-/* Left section container */
 .header .left {
   display: flex;
   align-items: center;
   flex: 1;
 }
 
-/* Company logo container */
 .company-logo {
   margin-right: 20px;
 }
 
 .header .company-logo img.company-icon {
-  width: 100px; /* Adjusted logo size */
+  width: 100px;
   height: auto;
   display: block;
 }
 
-/* Menu links section */
 .menu-links {
   display: flex;
   align-items: center;
   gap: 20px;
 }
 
-/* Menu links styling */
 .menu-links a {
   text-decoration: none;
   color: white;
@@ -52,17 +47,15 @@
 }
 
 .menu-links a:hover {
-   background-color: #279cf6; 
+  background-color: #279cf6;
   color: hsl(239, 89%, 17%);
 }
 
 .menu-links a.active {
-   color: #eff7fc; 
+  color: #eff7fc;
   font-weight: bold;
-  /* text-decoration: underline; */
 }
 
-/* Right section links and icons in the header */
 .header .right {
   display: flex;
   align-items: center;
@@ -70,30 +63,6 @@
   margin-right: 50px;
 }
 
-/* Notification and search icon styling */
-.header .right .icon-link {
-  font-size: 20px;
-  color: white;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.header .right .icon-link:hover {
-  color: #277df6;
-}
-
-/* Mobile menu toggle button */
-.mobile-menu-toggle {
-  display: none; /* Initially hidden */
-  cursor: pointer;
-  font-size: 24px;
-  color: white;
-  position: absolute;
-  right: 20px; /* Positioned at the edge */
-  z-index: 1100; /* Ensure toggle button stays above other elements */
-}
-
-/* Logout button styling */
 .logout-button {
   display: flex;
   align-items: center;
@@ -104,7 +73,7 @@
   border-radius: 5px;
   cursor: pointer;
   font-size: 14px;
-  gap: 8px; /* Space between icon and text */
+  gap: 8px;
   transition: background-color 0.3s ease;
 }
 
@@ -116,18 +85,15 @@
   background-color: #318def;
 }
 
-/* Dropdown menu styling */
 .menu-button-dropdown {
   position: relative;
 }
 
-
 .menu-button-dropdown .menu-icon {
   height: 30px;
   cursor: pointer;
-  color: white; /* Updated color */
+  color: white;
 }
-
 
 .menu-button-dropdown .dropdown-menu {
   display: none;
@@ -158,30 +124,15 @@
   background-color: #279cf6;
 }
 
-.user-location {
-  font-size: 13px;
-  color: #555;
-  margin-right: 15px;
-  font-weight: 500;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-.right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-
+/* Notification Bell */
 .notification-bell {
   position: relative;
   cursor: pointer;
 }
 
 .bell-icon {
-  width: 28px;
-  height: 28px;
-  filter: brightness(0) invert(1); /* white icon */
+  font-size: 24px;
+  color: white;
 }
 
 .notification-badge {
@@ -198,11 +149,78 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid white;
+  border: 2px solid hsl(239, 89%, 17%);
 }
 
+/* Tooltip */
+.notification-tooltip {
+  position: absolute;
+  top: 60px;
+  right: -50px;
+  background: #1e293b;
+  color: white;
+  min-width: 240px;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  padding: 14px;
+  font-size: 13px;
+  animation: fadeIn 0.2s ease-out;
+}
 
-/* Mobile Responsive Design */
+.notification-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  right: 60px;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 8px solid #1e293b;
+}
+
+.tooltip-header {
+  font-weight: bold;
+  font-size: 14px;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #475569;
+  text-align: center;
+}
+
+.tooltip-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px dashed #475569;
+}
+
+.tooltip-item:last-child {
+  border-bottom: none;
+}
+
+.tooltip-item .label {
+  color: #e2e8f0;
+}
+
+.tooltip-item .count {
+  background: #ef4444;
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .mobile-menu-toggle {
     display: block;
@@ -226,6 +244,19 @@
 
   .header .right {
     gap: 10px;
+  }
+
+  .notification-tooltip {
+    right: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 200px;
+  }
+
+  .notification-tooltip::before {
+    right: 50%;
+    left: auto;
+    transform: translateX(50%);
   }
 }
 

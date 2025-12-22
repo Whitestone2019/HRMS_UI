@@ -1,5 +1,3 @@
-// header.component.ts
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { UserService } from '../../user.service';
@@ -13,11 +11,13 @@ import { interval, Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuVisible = false;
+  showTooltip = false; // ← NEW: Controls tooltip visibility on hover
+
   userRole: string = '';
   isAdmin: boolean = false;
   isTrainee: boolean = false;
   userLocation: string = '';
-  
+
   // Notification counts
   employeeId: string = '';
   totalPending = 0;
@@ -35,10 +35,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Get employeeId from localStorage/sessionStorage
-    this.employeeId = localStorage.getItem('employeeId') 
-                    || sessionStorage.getItem('employeeId') 
-                    || this.userService.employeeId 
+    this.employeeId = localStorage.getItem('employeeId')
+                    || sessionStorage.getItem('employeeId')
+                    || this.userService.employeeId
                     || '';
 
     this.userRole = this.userService.role || localStorage.getItem('userRole') || '';
@@ -51,11 +50,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Only load notifications if user is manager/HR/admin
     if (this.employeeId && (this.isAdmin || this.userRole.toLowerCase().includes('manager') || this.userRole.toLowerCase().includes('hr'))) {
       this.loadPendingApprovals();
-      
-      // Auto-refresh every 30 seconds
+
       this.pollSubscription = interval(30000).subscribe(() => {
         this.loadPendingApprovals();
       });
@@ -91,7 +88,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ... rest of your methods (toggleMenu, logout, etc.)
   toggleMenu(event: MouseEvent): void {
     event.stopPropagation();
     this.isMenuVisible = !this.isMenuVisible;
@@ -111,7 +107,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
     return !!this.userRole.trim();
   }
 
-  
   handleOutsideClick(event: Event): void {
     const target = event.target as HTMLElement;
     const menuButtonDropdown = document.querySelector('.menu-button-dropdown');

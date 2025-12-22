@@ -361,137 +361,96 @@
     </div>
 
     <!-- Education Section -->
-    <div class="form-section">
-      <h3>Education <span class="mandatory">*</span></h3>
-      <button type="button" (click)="addEducation()">Add Row</button>
-      <table>
-        <tr>
-          <th>Institution Name</th>
-          <th>Qualification</th>
-          <th>Register No</th>
-          <th>Percentage</th>
-          <th>Duration</th>
-          <th>Field(s) of Study</th>
-          <th>Year of Graduation</th>
-          <th>Additional Notes</th>
-          <th>Actions</th>
-        </tr>
-        <tr *ngFor="let edu of educationList; let i = index">
-          <td><input type="text" [(ngModel)]="edu.institution" name="edu_inst_{{i}}" required
-              [disabled]="!isEditable" />
-          </td>
-          <td><input type="text" [(ngModel)]="edu.qualification" name="edu_qual_{{i}}" required
-              [disabled]="!isEditable" /></td>
-          <td><input type="text" [(ngModel)]="edu.regnum" name="edu_reg_{{i}}" required [disabled]="!isEditable" /></td>
-          <td><input type="text" [(ngModel)]="edu.percentage" name="edu_perc_{{i}}" required [disabled]="!isEditable" />
-          </td>
-          <td><input type="text" [(ngModel)]="edu.duration" name="edu_dur_{{i}}" required [disabled]="!isEditable" />
-          </td>
-          <td><input type="text" [(ngModel)]="edu.fieldofstudy" name="edu_field_{{i}}" required
-              [disabled]="!isEditable" /></td>
-          <td><input type="text" [(ngModel)]="edu.yearofgraduation" name="edu_year_{{i}}" required
-              [disabled]="!isEditable" /></td>
-          <td><input type="text" [(ngModel)]="edu.additionalnotes" name="edu_notes_{{i}}" [disabled]="!isEditable" />
-          </td>
-          <td><button type="button" (click)="removeEdu(i)" class="icon-button delete-icon">X</button></td>
-        </tr>
-
-      </table>
-    </div>
+   <div class="form-section">
+  <h3>Education <span class="mandatory">*</span></h3>
+  <button type="button" (click)="addEducation()">Add Row</button>
+  <table>
+    <tr>
+      <th>Institution Name</th>
+      <th>Qualification</th>
+      <th>Register No</th>
+      <th>Percentage</th>
+      <th>Duration</th>
+      <th>Field(s) of Study</th>
+      <th>Year of Graduation</th>
+      <th>Additional Notes</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let edu of educationList; let i = index">
+      <td><input type="text" [(ngModel)]="edu.institution" [name]="'edu_institution_' + i" required [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.qualification" [name]="'edu_qualification_' + i" required [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.regnum" [name]="'edu_regnum_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.percentage" [name]="'edu_percentage_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.duration" [name]="'edu_duration_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.fieldofstudy" [name]="'edu_field_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.yearofgraduation" [name]="'edu_year_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="edu.additionalnotes" [name]="'edu_notes_' + i" [disabled]="!isEditable" /></td>
+      <td><button type="button" (click)="removeEdu(i)" class="icon-button delete-icon">Remove</button></td>
+    </tr>
+  </table>
+</div>
 
     <!-- Professional Details Section -->
     <div class="form-section">
-      <h3>Professional Details</h3>
-      <button type="button" (click)="addProfessional()">Add Row</button>
-      <table>
-        <tr>
-          <th>Organization</th>
-          <th>Location</th>
-          <th>Org Emp ID</th>
-          <th>Org Dept</th>
-          <th>Org Role</th>
-          <th>Joining Date</th>
-          <th>Relieving Date</th>
-          <th>CTC</th>
-          <th>Additional Information</th>
-          <!-- <th>Offer Letter</th> -->
-          <th>Actions</th>
-        </tr>
-        <tr *ngFor="let prof of professionalList; let i = index">
-          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.organisation"
-              name="organisation{{i}}" /></td>
-          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.location"
-              name="location{{i}}" /></td>
-          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgempid"
-              name="orgempid{{i}}" /></td>
-          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgdept"
-              name="orgdept{{i}}" /></td>
-          <td><input type="text" ngModel  [disabled]="!isEditable" [(ngModel)]="prof.orgrole"
-              name="orgrole{{i}}" /></td>
-          <td>
-            <input type="date" [(ngModel)]="prof.joiningdate" name="joiningDate{{i}}" />
-          </td>
-          <td>
-            <input type="date" [(ngModel)]="prof.relievingdate" name="relievingDate{{i}}" />
-          </td>
-          <td><input type="text" [(ngModel)]="prof.ctc" name="ctc{{i}}" /></td>
-          <td>
-            <textarea [(ngModel)]="prof.additionalinformation" name="additionalInfo{{i}}"></textarea>
-          </td>
-          <!--<td>
-            <input
-              type="file"
-              (change)="uploadOfferLetter($event, i)" 
-              name="offerLetter{{i}}"
-            /> 
-          </td>-->
-          <td>
-            <button type="button" (click)="removeProfessional(i)" class="icon-button delete-icon">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </table>
-
-    </div>
-    <div class="form-section">
-      <h3>Skill Set <span class="mandatory">*</span></h3>
-      <button type="button" (click)="addSkill()">Add Row</button>
-      <table>
-        <tr>
-          <th>Skill</th>
-          <th>Proficiency</th>
-          <th>Certification</th>
-          <th>Years of Experience</th>
-          <th>Last Update</th>
-          <th>Actions</th>
-        </tr>
-        <tr *ngFor="let skill of skillList; let i = index">
-          <td><input type="text" [(ngModel)]="skill.skill" name="skill{{i}}" /></td>
-          <td>
-            <select [(ngModel)]="skill.proficiencylevel" ngModel required [disabled]="!isEditable"
-              name="proficiencylevel{{i}}" (click)="$event.stopPropagation()">
-              <option value="" disabled selected>Select</option>
-              <option value="Beginner">Beginner</option>
-              <option value="Intermediate">Intermediate</option>
-              <option value="Advanced">Advanced</option>
-              <option value="Expert">Expert</option>
-            </select>
-          </td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.certification"
-              name="certification{{i}}" /></td>
-          <td><input type="text" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.yearsExperience"
-              name="yearsExperience{{i}}" /></td>
-          <td><input type="date" ngModel required [disabled]="!isEditable" [(ngModel)]="skill.lastupdated"
-              name="lastupdated{{i}}" /></td>
-          <td>
-            <button type="button" (click)="removeSkill(i)" class="icon-button delete-icon">
-              <i class="fas fa-trash"></i>
-            </button>
-          </td>
-        </tr>
-      </table>
-    </div>
+  <h3>Professional Details</h3>
+  <button type="button" (click)="addProfessional()">Add Row</button>
+  <table>
+    <tr>
+      <th>Organization</th>
+      <th>Location</th>
+      <th>Org Emp ID</th>
+      <th>Org Dept</th>
+      <th>Org Role</th>
+      <th>Joining Date</th>
+      <th>Relieving Date</th>
+      <th>CTC</th>
+      <th>Additional Information</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let prof of professionalList; let i = index">
+      <td><input type="text" [(ngModel)]="prof.organisation" [name]="'prof_org_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="prof.location" [name]="'prof_loc_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="prof.orgempid" [name]="'prof_empid_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="prof.orgdept" [name]="'prof_dept_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="prof.orgrole" [name]="'prof_role_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="date" [(ngModel)]="prof.joiningdate" [name]="'prof_join_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="date" [(ngModel)]="prof.relievingdate" [name]="'prof_relieve_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="prof.ctc" [name]="'prof_ctc_' + i" [disabled]="!isEditable" /></td>
+      <td><textarea [(ngModel)]="prof.additionalinformation" [name]="'prof_info_' + i" [disabled]="!isEditable"></textarea></td>
+      <td><button type="button" (click)="removeProfessional(i)" class="icon-button delete-icon">Remove</button></td>
+    </tr>
+  </table>
+</div>
+   <div class="form-section">
+  <h3>Skill Set <span class="mandatory">*</span></h3>
+  <button type="button" (click)="addSkill()">Add Row</button>
+  <table>
+    <tr>
+      <th>Skill</th>
+      <th>Proficiency</th>
+      <th>Certification</th>
+      <th>Years of Experience</th>
+      <th>Last Update</th>
+      <th>Actions</th>
+    </tr>
+    <tr *ngFor="let skill of skillList; let i = index">
+      <td><input type="text" [(ngModel)]="skill.skill" [name]="'skill_name_' + i" required [disabled]="!isEditable" /></td>
+      <td>
+        <select [(ngModel)]="skill.proficiencylevel" [name]="'skill_prof_' + i" required [disabled]="!isEditable" (click)="$event.stopPropagation()">
+          <option value="">Select</option>
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate">Intermediate</option>
+          <option value="Advanced">Advanced</option>
+          <option value="Expert">Expert</option>
+        </select>
+      </td>
+      <td><input type="text" [(ngModel)]="skill.certification" [name]="'skill_cert_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="text" [(ngModel)]="skill.yearsExperience" [name]="'skill_years_' + i" [disabled]="!isEditable" /></td>
+      <td><input type="date" [(ngModel)]="skill.lastupdated" [name]="'skill_last_' + i" [disabled]="!isEditable" /></td>
+      <td><button type="button" (click)="removeSkill(i)" class="icon-button delete-icon">Remove</button></td>
+    </tr>
+  </table>
+</div>
 
     <!-- Submit Button -->
 

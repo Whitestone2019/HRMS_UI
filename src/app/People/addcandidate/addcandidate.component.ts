@@ -68,16 +68,24 @@ export class AddCandidateComponent implements OnInit {
     this.apiService.getRoles().subscribe(data => this.roles = data);
     this.apiService.getManagers().subscribe(data => this.managers = data);
 
-    const empIdFromStorage = localStorage.getItem('employeeId') || localStorage.getItem('empId');
     this.route.queryParams.subscribe(params => {
       const empIdFromUrl = params['empId'];
       const urlMode = params['mode'];
 
-      const empId = empIdFromStorage || empIdFromUrl;
+      let targetEmpId: string | null = null;
 
-      if (empId) {
-        this.EmployeeID = empId;
-        this.candidateDetails.empid = empId;
+      if (empIdFromUrl) {
+        targetEmpId = empIdFromUrl;
+      } else {
+        const loggedInId = localStorage.getItem('employeeId') || localStorage.getItem('empId');
+        if (loggedInId) {
+          targetEmpId = loggedInId;
+        }
+      }
+
+      if (targetEmpId) {
+        this.EmployeeID = targetEmpId;
+        this.candidateDetails.empid = targetEmpId;
 
         if (urlMode === 'B' || urlMode === 'approve') {
           this.mode = 'approve';
@@ -86,7 +94,8 @@ export class AddCandidateComponent implements OnInit {
           this.mode = 'edit';
           this.isEditable = true;
         }
-        this.loadEmployeeData(empId);
+
+        this.loadEmployeeData(targetEmpId);
       } else {
         this.mode = 'add';
         this.isEditable = true;
@@ -185,7 +194,6 @@ export class AddCandidateComponent implements OnInit {
   removeSkill(i: number) { if (this.skillList.length > 1) this.skillList.splice(i, 1); }
 
   onSubmit1(form: NgForm): void {
-    // Mark all as touched to show errors
     Object.keys(form.controls).forEach(key => {
       form.controls[key].markAsTouched();
     });
@@ -195,7 +203,6 @@ export class AddCandidateComponent implements OnInit {
       return;
     }
 
-    // For ADD mode, require all files
     if (this.mode === 'add') {
       const required = [this.photoFile, this.aadharFile, this.panFile, this.tenthFile, this.twelfthFile, this.degreeFile];
       if (required.some(f => !f)) {
@@ -245,9 +252,9 @@ export class AddCandidateComponent implements OnInit {
         permanentpostalcode: this.candidateDetails.permanentpostalcode,
         permanentcountry: this.candidateDetails.permanentcountry || 'India'
       },
-      education: this.educationList.filter(e => e.institution.trim()),
-      professional: this.professionalList.filter(p => p.organisation.trim()),
-      skillSet: this.skillList.filter(s => s.skill.trim())
+      education: this.educationList.filter(e => e.institution?.trim()),
+      professional: this.professionalList.filter(p => p.organisation?.trim()),
+      skillSet: this.skillList.filter(s => s.skill?.trim())
     };
 
     const formData = new FormData();

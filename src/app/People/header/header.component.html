@@ -1,11 +1,9 @@
 <div class="header">
   <div class="left">
-    <!-- Company logo section -->
     <div class="company-logo">
       <img src="/HRMS/assets/images/WHITESTONE.png" alt="Company Logo" class="company-icon" />
     </div>
 
-    <!-- Links section -->
     <div class="menu-links" [class.show]="isMenuVisible">
       <a *ngIf="isMenuItemVisible('dashboard')" [routerLink]="'/dashboard'" [routerLinkActive]="['active']"
         [class.disabled]="!userRole.trim()" (click)="!userRole.trim() && $event.preventDefault()">
@@ -20,16 +18,39 @@
     </div>
   </div>
 
-  <!-- Right Section -->
   <div class="right">
-     <div class="notification-bell" >
-    <i class="fas fa-bell bell-icon"></i>
-    <!-- <img src="/HRMS/assets/images/bell.png" alt="Notifications" class="bell-icon" /> -->
-    <span class="notification-badge" *ngIf="totalPending > 0">
-      {{ totalPending > 99 ? '99+' : totalPending }}
-    </span>
-  </div>
-    <!-- Menu button for dropdown -->
+    <!-- Notification Bell with Hover Tooltip -->
+    <div class="notification-bell"
+         (mouseenter)="showTooltip = true"
+         (mouseleave)="showTooltip = false">
+      <i class="fas fa-bell bell-icon"></i>
+      <span class="notification-badge" *ngIf="totalPending > 0">
+        {{ totalPending > 99 ? '99+' : totalPending }}
+      </span>
+
+      <!-- Hover Tooltip -->
+      <div class="notification-tooltip" *ngIf="showTooltip && totalPending > 0">
+        <div class="tooltip-header">Pending Approvals</div>
+        <div class="tooltip-item" *ngIf="leaveCount > 0">
+          <span class="label">Leave Requests</span>
+          <span class="count">{{ leaveCount }}</span>
+        </div>
+        <div class="tooltip-item" *ngIf="attendanceCount > 0">
+          <span class="label">Attendance</span>
+          <span class="count">{{ attendanceCount }}</span>
+        </div>
+        <div class="tooltip-item" *ngIf="permissionCount > 0">
+          <span class="label">Permission</span>
+          <span class="count">{{ permissionCount }}</span>
+        </div>
+        <div class="tooltip-item" *ngIf="payrollCount > 0">
+          <span class="label">Payroll</span>
+          <span class="count">{{ payrollCount }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Menu Dropdown -->
     <div class="menu-button-dropdown" (document:click)="handleOutsideClick($event)">
       <img src="/HRMS/assets/images/menu-button.png" alt="Menu Button" class="menu-icon" (click)="toggleMenu($event)" />
 
@@ -39,9 +60,7 @@
         <a *ngIf="isAdmin" routerLink="/payroll/overview" (click)="closeMenu()">Payroll</a>
       </div>
     </div>
-    
- 
-    <!-- Logout button -->
+
     <button class="logout-button" (click)="logout()">
       <i class="fas fa-sign-out-alt"></i> Logout
     </button>
