@@ -63,6 +63,7 @@ import { UpdateLeaveComponent } from './People/update-leave/update-leave.compone
 import { AttendanceApprovalComponent } from './People/attendance-approval/attendance-approval.component';
 import { FingerprintComponent } from './People/fingerprint/fingerprint.component';
 import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
+import { CalendarsPageComponent } from './calendars-page/calendars-page.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -146,6 +147,7 @@ export const routes: Routes = [
         { path: 'attendanceApproval', component: AttendanceApprovalComponent },
        { path: 'payrollAdjustment', component: PayrollAdjustmentComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default child route set to Overview
+      { path: 'calendar-page', component: CalendarsPageComponent},
     ]
   },
   {

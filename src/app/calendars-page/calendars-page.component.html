@@ -1,0 +1,186 @@
+<div class="container">
+  <!-- Authorization Loading -->
+  <div *ngIf="isLoadingAuth" class="auth-loading">
+    <div class="spinner"></div>
+    <p>Loading holiday management...</p>
+  </div>
+
+  <!-- Unauthorized Access - Only show for non-HR users -->
+  <div *ngIf="!isLoadingAuth && !isAuthorized" class="unauthorized-message">
+    <div class="unauthorized-container">
+      <div class="icon">🔒</div>
+      <h3>Access Denied</h3>
+      <p>This page is restricted to HR personnel only.</p>
+      <p>Please contact your administrator if you need access.</p>
+      <button class="btn-back" (click)="goToDashboard()">
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Authorized Content - Only show for HR users -->
+  <div *ngIf="!isLoadingAuth && isAuthorized">
+    <!-- Submission Message -->
+    <div *ngIf="submissionMessage" 
+         class="message-box" 
+         [class.success]="messageType === 'success'"
+         [class.error]="messageType === 'error'">
+      {{ submissionMessage }}
+    </div>
+
+    <h2>Holiday Management</h2>
+
+    <!-- Add Holiday Form -->
+    <div class="holiday-form-section">
+      <h3>Add New Holidays</h3>
+      
+      <div class="form-container">
+        <!-- Single Row Container - Each field in column layout -->
+        <div class="form-row" *ngFor="let row of formRows; let i = index">
+          <div class="row-header">
+            <span class="row-number">Holiday {{i + 1}}</span>
+            <button *ngIf="formRows.length > 1" 
+                    class="btn-remove" 
+                    (click)="removeFormRow(i)"
+                    title="Remove this holiday">
+              × 
+            </button>
+          </div>
+          
+          <div class="form-columns">
+            <!-- Event Date Column -->
+            <div class="form-column">
+              <label class="field-label">EVENT_DATE *</label>
+              <input type="date" 
+                     [(ngModel)]="row.eventDate"
+                     class="form-input"
+                     required>
+            </div>
+            
+            <!-- Event Name Column -->
+            <div class="form-column">
+              <label class="field-label">EVENT_NAME *</label>
+              <input type="text" 
+                     [(ngModel)]="row.eventName"
+                     placeholder="Enter holiday name"
+                     class="form-input"
+                     required>
+            </div>
+          
+            <!-- Description Column -->
+            <div class="form-column">
+              <label class="field-label">DESCRIPTION</label>
+              <textarea [(ngModel)]="row.description"
+                        placeholder="Enter holiday description"
+                        class="form-input textarea"
+                        rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Add More Button -->
+      <div class="action-buttons">
+        <button class="btn-add" (click)="addFormRow()">
+          + Add 
+        </button>
+      </div>
+      
+      <!-- Submit Buttons - Aligned to the right -->
+      <div class="submit-buttons">
+        <button class="btn-reset" (click)="resetForm()" [disabled]="isSubmitting">
+          Reset
+        </button>
+        <button class="btn-submit" 
+                (click)="submitAllEvents()" 
+                [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting">Submit All Holidays ({{formRows.length}})</span>
+          <span *ngIf="isSubmitting">Submitting...</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- View All Holidays Button -->
+    <div *ngIf="events.length > 0" class="view-all-section">
+      <button class="btn-view-all" (click)="loadAllEvents()" [disabled]="loading">
+        {{ loading ? 'Loading...' : 'View All Holidays' }}
+      </button>
+    </div>
+
+    <!-- Existing Holidays Section -->
+    <div *ngIf="showHolidaysTable" class="holidays-section">
+      <div class="section-header">
+        <h3>Submitted Holidays ({{events.length}})</h3>
+        <div class="section-actions">
+          <span class="holidays-count">{{events.length}} holiday(s) found</span>
+        </div>
+      </div>
+      
+      <!-- Loading State -->
+      <div *ngIf="loading" class="loading-state">
+        <div class="spinner"></div>
+        <p>Loading holidays...</p>
+      </div>
+      
+      <!-- No Holidays State -->
+      <div *ngIf="!loading && events.length === 0" class="no-holidays">
+        <div class="no-holidays-icon">🎉</div>
+        <p>No holidays found. Submit some holidays using the form above!</p>
+      </div>
+      
+      <!-- Holidays Table -->
+      <div *ngIf="!loading && events.length > 0" class="holidays-table">
+        <!-- Table Header -->
+        <div class="table-header">
+          <div class="header-cell">EVENT_NAME</div>
+          <div class="header-cell">EVENT_DATE</div>
+          <div class="header-cell">DESCRIPTION</div>
+          <div class="header-cell">CREATED_BY</div>
+          <div class="header-cell">CREATED_DATE</div>
+          <div class="header-cell">ACTIONS</div>
+        </div>
+        
+        <!-- Table Body -->
+        <div class="table-body">
+          <div class="table-row" *ngFor="let event of events">
+            <div class="table-cell">
+              <div class="cell-label">EVENT_NAME</div>
+              <div class="cell-value">{{event.eventName}}</div>
+            </div>
+            
+            <div class="table-cell">
+              <div class="cell-label">EVENT_DATE</div>
+              <div class="cell-value">{{event.eventDate | date:'dd-MM-yy'}}</div>
+            </div>
+            
+            <div class="table-cell">
+              <div class="cell-label">DESCRIPTION</div>
+              <div class="cell-value">{{event.description || '-'}}</div>
+            </div>
+            
+            <div class="table-cell">
+              <div class="cell-label">CREATED_BY</div>
+              <div class="cell-value">{{event.createdBy || 'admin'}}</div>
+            </div>
+            
+            <div class="table-cell">
+              <div class="cell-label">CREATED_DATE</div>
+              <div class="cell-value">
+                {{event.formattedCreatedDate || '-'}}
+              </div>
+            </div>
+            
+            <div class="table-cell">
+              <div class="cell-label">ACTIONS</div>
+              <div class="cell-actions">
+                <button class="btn-action delete" (click)="deleteEvent(event.calenderId!)">
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
