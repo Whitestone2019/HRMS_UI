@@ -13,6 +13,7 @@ export class HomeHeaderComponent implements OnInit {
   userRole='';
   isAdmin: boolean = false;
   isManager:boolean=false;
+    isHR: boolean = false; // ✅ Add this
 
   constructor(private menuSelectionService: MenuSelectionService,private userService: UserService) {}
 
@@ -20,6 +21,7 @@ export class HomeHeaderComponent implements OnInit {
     this.userRole = this.userService.role;
     this.isAdmin = this.userService.isAdmin();
     this.isManager = this.userService.isManager();
+    this.isHR = this.userService.isHr(); // ✅ Add this line
     // Subscribe to the menu selection service to get the selected main menu and submenu
     this.menuSelectionService.selectedMenu$.subscribe((menu) => {
       this.selectedMenu = menu.mainMenu;   // Track the main menu

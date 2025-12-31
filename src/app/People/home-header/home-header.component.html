@@ -20,6 +20,8 @@
     <a *ngIf="selectedMenu === 'leave-summary'" routerLink="/dashboard/leave-summary" routerLinkActive="active">Leave Summary</a>
     <!-- <a *ngIf="selectedMenu === 'leave-summary'" routerLink="/dashboard/leave-balance" routerLinkActive="active">Leave Balance</a> -->
     <a *ngIf="selectedMenu === 'leave-summary'" routerLink="/dashboard/leave-request" routerLinkActive="active">Leave Request</a>
+
+    <a *ngIf="selectedMenu === 'leave-summary' && isHR" routerLink="/dashboard/calendar-page" routerLinkActive="active">Leave Calendar</a>
     <!-- Show settings-related links when 'settings' is selected -->
     <a *ngIf="selectedMenu === 'settings'" routerLink="/dashboard/operations" routerLinkActive="active">Settings</a>
     <a *ngIf="selectedMenu === 'settings'" routerLink="/analytics" routerLinkActive="active">Analytics</a>
