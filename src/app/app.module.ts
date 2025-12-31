@@ -79,6 +79,7 @@ import { FingerprintComponent } from './People/fingerprint/fingerprint.component
 import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
 import { TeamAttendanceBreakdownPieComponent } from './People/overview/team-attendance-breakdown-pie/team-attendance-breakdown-pie.component';
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
+import { CalendarsPageComponent } from './calendars-page/calendars-page.component';
 
 @NgModule({
   declarations: [
@@ -132,7 +133,8 @@ import { TeamAttendanceBreakdownPieComponent } from './People/overview/team-atte
    AttendanceApprovalComponent,
    FingerprintComponent,
    PayrollAdjustmentComponent,
-   TeamAttendanceBreakdownPieComponent
+   TeamAttendanceBreakdownPieComponent,
+   CalendarsPageComponent,
 
   ],
   imports: [

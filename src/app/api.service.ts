@@ -158,6 +158,26 @@ export interface LocationAllowance {
   amount: number;
 }
 
+export interface CalendarEvent {
+  calenderId?: number;
+  eventName: string;
+  eventDate: string; // Format: yyyy-MM-dd
+  eventType: string;
+  description?: string;
+  isPublic?: string;
+  createdBy?: string;
+  createdDate?: string;
+  updatedBy?: string;
+  updatedDate?: string;
+}
+
+export interface ApiResponse {
+  success: boolean;
+  message?: string;
+  data?: any;
+  [key: string]: any;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -1460,6 +1480,100 @@ getAttendancePieData(empId: string, date: string): Observable<any> {
   );
 }
 
+// CREATE - Create new calendar event
+createCalendarEvent(eventData: CalendarEvent): Observable<any> {
+  const url = `${this.apiUrl}/api/calendar`;
+  this.loaderService.show();
+  return this.http.post<any>(url, eventData).pipe(
+    tap((response) => {
+      console.log('Calendar event created:', response);
+      if (response.success) {
+        this.openDialog('Success', response.message || 'Event created successfully!');
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error creating calendar event:', error);
+      this.openDialog('Error', error.error?.message || 'Failed to create event');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get all calendar events
+getAllCalendarEvents(): Observable<any> {
+  const url = `${this.apiUrl}/api/getall/calendar`;
+  this.loaderService.show();
+  return this.http.get<any>(url).pipe(
+    tap((response) => {
+      console.log('Calendar events fetched:', response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching calendar events:', error);
+      this.openDialog('Error', 'Failed to fetch calendar events');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get calendar event by ID
+getCalendarEventById(id: number): Observable<any> {
+  const url = `${this.apiUrl}/api/calendar/${id}`;
+  this.loaderService.show();
+  return this.http.get<any>(url).pipe(
+    tap((response) => {
+      console.log('Calendar event fetched:', response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching calendar event:', error);
+      this.openDialog('Error', 'Failed to fetch calendar event');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// UPDATE - Update calendar event
+updateCalendarEvent(id: number, eventData: CalendarEvent): Observable<any> {
+  const url = `${this.apiUrl}/api/update/calendar/${id}`;
+  this.loaderService.show();
+  return this.http.put<any>(url, eventData).pipe(
+    tap((response) => {
+      console.log('Calendar event updated:', response);
+      if (response.success) {
+        this.openDialog('Success', response.message || 'Event updated successfully!');
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error updating calendar event:', error);
+      this.openDialog('Error', error.error?.message || 'Failed to update event');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// DELETE - Delete calendar event
+deleteCalendarEvent(id: number): Observable<any> {
+  const url = `${this.apiUrl}/api/delete/calendar/${id}`;
+  this.loaderService.show();
+  return this.http.delete<any>(url).pipe(
+    tap((response) => {
+      console.log('Calendar event deleted:', response);
+      if (response.success) {
+        this.openDialog('Success', response.message || 'Event deleted successfully!');
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error deleting calendar event:', error);
+      this.openDialog('Error', error.error?.message || 'Failed to delete event');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
    // ✅ Save user
   saveUser(user: any): Observable<any> {
     this.loaderService.show();
@@ -1816,3 +1930,4 @@ getPendingCounts(managerId: string): Observable<any> {
     });
   }
 }
+
