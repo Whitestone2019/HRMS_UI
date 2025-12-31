@@ -2,7 +2,7 @@
   <!-- Authorization Loading -->
   <div *ngIf="isLoadingAuth" class="auth-loading">
     <div class="spinner"></div>
-    <p>Loading holiday management...</p>
+    <!-- <p>Loading holiday management...</p> -->
   </div>
 
   <!-- Unauthorized Access - Only show for non-HR users -->
@@ -28,7 +28,7 @@
       {{ submissionMessage }}
     </div>
 
-    <h2>Holiday Management</h2>
+    <!-- <h2>Holiday Management</h2> -->
 
     <!-- Add Holiday Form -->
     <div class="holiday-form-section">
@@ -136,7 +136,7 @@
           <div class="header-cell">EVENT_DATE</div>
           <div class="header-cell">DESCRIPTION</div>
           <div class="header-cell">CREATED_BY</div>
-          <div class="header-cell">CREATED_DATE</div>
+          <!-- <div class="header-cell">CREATED_DATE</div> -->
           <div class="header-cell">ACTIONS</div>
         </div>
         
@@ -163,12 +163,12 @@
               <div class="cell-value">{{event.createdBy || 'admin'}}</div>
             </div>
             
-            <div class="table-cell">
+            <!-- <div class="table-cell">
               <div class="cell-label">CREATED_DATE</div>
               <div class="cell-value">
                 {{event.formattedCreatedDate || '-'}}
               </div>
-            </div>
+            </div> -->
             
             <div class="table-cell">
               <div class="cell-label">ACTIONS</div>
