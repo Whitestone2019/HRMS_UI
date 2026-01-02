@@ -11,7 +11,7 @@ import { ApiService } from '../../api.service';
 })
 export class ApplyLeaveComponent implements OnInit {
   leaveForm!: FormGroup;
-  leaveTypes = ['casual leave', 'medical leave'];
+  leaveTypes = ['casual leave'];
   isModalOpen = true;
   aj: string = '';
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
