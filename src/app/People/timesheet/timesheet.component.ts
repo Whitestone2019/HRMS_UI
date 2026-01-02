@@ -32,7 +32,7 @@ export class TimesheetComponent implements OnInit {
   ) {
     const today = new Date();
     this.year = today.getFullYear();
-    this.month = today.getMonth(); // 0-based
+    this.month = today.getMonth()+1; // 0-based
   }
 
   ngOnInit(): void {
