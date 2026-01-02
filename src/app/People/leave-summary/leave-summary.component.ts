@@ -17,7 +17,7 @@ export class LeaveSummaryComponent implements OnInit {
   endDate: string = `${this.currentYear}-12-31`;
 
   leaveTypes = [
-    { name: 'casual leave', icon: 'fas fa-umbrella-beach', color: '#4a90e2', available: 12, booked: 0 },
+    { name: 'casual leave', icon: 'fas fa-umbrella-beach', color: '#4a90e2', available: 18, booked: 0 },
     { name: 'medical leave', icon: 'fas fa-stethoscope', color: '#bd10e0', available: 0, booked: 0 },
     { name: 'earned leave', icon: 'fas fa-stopwatch', color: '#a3d39c', available: 0, booked: 0 },
     { name: 'leavewithoutpay', icon: 'fas fa-sun', color: '#f5a623', available: 0, booked: 0 },
@@ -51,7 +51,7 @@ getLeaveCounts(empId: string): void {
     next: (res: any) => {
       const clUsed = Number(res.casualUsed) || 0;
       const clRemaining = Number(res.casualRemaining) || 0;
-      const rawBalance = Number(res.rawCasualBalance) || 12;
+      const rawBalance = Number(res.rawCasualBalance) || 18;
 
       // Casual Leave
       this.leaveTypes[0].booked = clUsed;
@@ -64,7 +64,7 @@ getLeaveCounts(empId: string): void {
     error: (err) => {
       console.error(err);
       this.leaveTypes[0].booked = 0;
-      this.leaveTypes[0].available = 12;
+      this.leaveTypes[0].available = 18;
     }
   });
 }
