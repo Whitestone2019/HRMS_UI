@@ -783,14 +783,22 @@ export class ApiService {
     );
   }
 
-  rejectLeaveRequest1(empid: string, leavereason: string): Observable<any> {
-    this.loaderService.show();
-    return this.http.post<any>(`${this.apiUrl}/rejectLeaveRequest`, { empid, leavereason }).pipe(
-     // tap(() => this.openDialog('Success', `Leave request rejected for Employee ID: ${empid}`)),
-      finalize(() => this.loaderService.hide()),
-      catchError(this.handleError.bind(this))
-    );
-  }
+  // In api.service.ts - Add this new method
+rejectLeaveRequest1(empid: string, startdate: string): Observable<any> {
+  this.loaderService.show();
+  
+  const payload = {
+    empid: empid,
+    startdate: startdate  // Correct field name
+  };
+  
+  console.log('Sending leave rejection:', payload);
+  
+  return this.http.post<any>(`${this.apiUrl}/rejectLeaveRequest`, payload).pipe(
+    finalize(() => this.loaderService.hide()),
+    catchError(this.handleError.bind(this))
+  );
+}
 
 
   rejectLeaveRequest(empId: string): Observable<any> {

@@ -159,27 +159,103 @@ applyFilters(): void {
     this.router.navigate([`/dashboard/apply-${this.requestType.toLowerCase()}`]);
   }
 
-  deleteRequest(index: number): void {
-    const request = this.displayedRequests[index];
-    if (confirm(`Reject this ${request.type.toLowerCase()} request?`)) {
-      const action =
-        request.type === 'Leave'
-          ? this.apiService.rejectLeaveRequest1(request.empid, request.leavereason)
-          : this.apiService.rejectPermissionRequest(request.empid, request.srlnum);
-
-      action.subscribe({
-        next: (response: any) => {
-          if (response.status === 'success') {
-            alert(`${request.type} request rejected successfully!`);
-            this.fetchRequests(this.currentEmpId);
-          } else {
-            alert(`Failed: ${response.message || 'Unknown error'}`);
+  // In leave-request.component.ts - Update deleteRequest method
+deleteRequest(index: number): void {
+  const request = this.displayedRequests[index];
+  
+  // Debug log to see what data we have
+  console.log('DEBUG - Request object:', request);
+  console.log('DEBUG - empid:', request.empid);
+  console.log('DEBUG - startdate:', request.startdate);
+  console.log('DEBUG - startdate type:', typeof request.startdate);
+  
+  if (confirm(`Reject this ${request.type.toLowerCase()} request?`)) {
+    if (request.type === 'Leave') {
+      // Format the date for backend
+      const formattedDate = this.formatDateForBackend(request.startdate);
+      console.log('Formatted date for backend:', formattedDate);
+      
+      if (!formattedDate) {
+        alert('Error: Could not format start date. Please check the date format.');
+        return;
+      }
+      
+      // Call API with formatted date
+      this.apiService.rejectLeaveRequest1(request.empid, formattedDate)
+        .subscribe({
+          next: (response: any) => {
+            if (response.status === 'success') {
+              alert(`${request.type} request rejected successfully!`);
+              this.fetchRequests(this.currentEmpId);
+            } else {
+              alert(`Failed: ${response.message || 'Unknown error'}`);
+            }
+          },
+          error: (err: HttpErrorResponse) => {
+            console.error('Full error details:', err);
+            // Show better error message
+            const errorMessage = err.error?.message || err.message || 'Unknown error occurred';
+            alert(`Error: ${errorMessage}`);
           }
-        },
-        error: (err: HttpErrorResponse) => alert(`Error: ${err.message}`)
-      });
+        });
+    } else {
+      // Permission request handling (unchanged)
+      this.apiService.rejectPermissionRequest(request.empid, request.srlnum)
+        .subscribe({
+          next: (response: any) => {
+            if (response.status === 'success') {
+              alert(`${request.type} request rejected successfully!`);
+              this.fetchRequests(this.currentEmpId);
+            } else {
+              alert(`Failed: ${response.message || 'Unknown error'}`);
+            }
+          },
+          error: (err: HttpErrorResponse) => alert(`Error: ${err.message}`)
+        });
     }
   }
+}
+
+// Add this method AFTER line 186 (after the existing formatDate method)
+private formatDateForBackend(date: any): string {
+  if (!date) {
+    console.error('No date provided');
+    return '';
+  }
+  
+  console.log('Original date:', date);
+  console.log('Date type:', typeof date);
+  
+  try {
+    let dateObj: Date;
+    
+    if (date instanceof Date) {
+      dateObj = date;
+    } else if (typeof date === 'string') {
+      dateObj = new Date(date);
+      if (isNaN(dateObj.getTime())) {
+        console.error('Invalid date string:', date);
+        return '';
+      }
+    } else {
+      console.error('Unknown date type:', date);
+      return '';
+    }
+    
+    // Format as YYYY-MM-DD
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
+    
+    const formatted = `${year}-${month}-${day}`;
+    console.log('Formatted date:', formatted);
+    return formatted;
+    
+  } catch (error) {
+    console.error('Error formatting date:', error);
+    return '';
+  }
+}
 
   approve(request: any, index: number): void {
     if (confirm(`Approve this ${request.type.toLowerCase()} request?`)) {
