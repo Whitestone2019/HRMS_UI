@@ -1,6 +1,24 @@
 <div class="main">
   <div class="profile-card">
-    <img alt="Profile Picture" height="80" src="https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg" width="80"/>
+    <!-- Profile Picture - Dynamic based on uploaded photo or default -->
+    <div class="profile-picture-container">
+      <!-- Show loading spinner while fetching -->
+      <div *ngIf="isProfilePictureLoading" class="profile-picture-loading">
+        <div class="spinner"></div>
+      </div>
+      
+      <!-- Show profile picture when loaded -->
+      <img 
+        *ngIf="!isProfilePictureLoading"
+        alt="Profile Picture" 
+        height="80" 
+        [src]="profilePicture" 
+        width="80"
+        (error)="onProfilePictureError()"
+        class="profile-picture"
+      />
+    </div>
+    
     <h2>{{ employeeId }}</h2>
     <h2>{{ username }}</h2>
     <h6>{{ userRole }}</h6>
@@ -9,17 +27,19 @@
     <div class="status" [ngClass]="{ 'in': employeeStatus === 'In', 'out': employeeStatus === 'Out' }">{{ employeeStatus }}</div>
     <div class="timer">{{ timerDisplay }}</div>
     <div class="button-group">
-    <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>
-    <button *ngIf="employeeStatus === 'In'" (click)="checkOut()" class="checkout-btn">Check-out</button>
+      <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>
+      <button *ngIf="employeeStatus === 'In'" (click)="checkOut()" class="checkout-btn">Check-out</button>
 
-  <button *ngIf="!hasUploaded" (click)="openIdCardDialog()" class="idcard-btn">
-  Upload ID Card Photo
-</button>
+      <!-- Button is ALWAYS VISIBLE (removed *ngIf="!hasUploaded") -->
+      <button (click)="openIdCardDialog()" class="idcard-btn">
+        Upload ID Card Photo
+      </button>
 
- <button (click)="PersonalDetails()" class="idcard-btn">
- Personal Details
-</button>
-  </div></div>
+      <button (click)="PersonalDetails()" class="idcard-btn">
+        Personal Details
+      </button>
+    </div>
+  </div>
   
   <div class="content">
     <div class="greeting">
@@ -28,40 +48,38 @@
         <h2>Good Morning {{ username }}</h2>
         <p>Have a productive day!</p>
       </div>
-       <div class="quote">
-      "Success is liking yourself, liking what you do, and liking how you do it." - Maya Angelou
-    </div>
+      <div class="quote">
+        "Success is liking yourself, liking what you do, and liking how you do it." - Maya Angelou
+      </div>
     </div>
     <div class="menu-content">
-      <!-- <ng-template #dynamicComponentContainer></ng-template> -->
       <app-attendance-pie-chart
-   [label]="yesterday_label"
-  [present]="yesterday_present"
-  [absent]="yesterday_absent"
-  [day]="yesterday_day">
-</app-attendance-pie-chart>
+        [label]="yesterday_label"
+        [present]="yesterday_present"
+        [absent]="yesterday_absent"
+        [day]="yesterday_day">
+      </app-attendance-pie-chart>
 
       <app-attendance-pie-chart
-       [label]="today_label"
-  [present]="today_present"
-  [absent]="today_absent"
-  [day]="today_day">
-</app-attendance-pie-chart>
+        [label]="today_label"
+        [present]="today_present"
+        [absent]="today_absent"
+        [day]="today_day">
+      </app-attendance-pie-chart>
 
-<app-team-attendance-breakdown-pie
-  *ngIf="!isLoadingSummary && isAdmin"
-  [attendancePercentage]="overallSummary.attendancePercentage"
-  [totalPresent]="overallSummary.totalPresent"
-  [leaveWithPay]="overallSummary.leaveWithPay"
-  [leaveWithoutPay]="overallSummary.leaveWithoutPay"
-  [unplannedLeave]="overallSummary.unplannedLeave"
-  [period]="overallSummary.period">
-</app-team-attendance-breakdown-pie>
+      <app-team-attendance-breakdown-pie
+        *ngIf="!isLoadingSummary && isAdmin"
+        [attendancePercentage]="overallSummary.attendancePercentage"
+        [totalPresent]="overallSummary.totalPresent"
+        [leaveWithPay]="overallSummary.leaveWithPay"
+        [leaveWithoutPay]="overallSummary.leaveWithoutPay"
+        [unplannedLeave]="overallSummary.unplannedLeave"
+        [period]="overallSummary.period">
+      </app-team-attendance-breakdown-pie>
 
-<div class="loading-card" *ngIf="isLoadingSummary && isAdmin">
-  <p>Loading team attendance breakdown...</p>
-</div>
-
+      <div class="loading-card" *ngIf="isLoadingSummary && isAdmin">
+        <p>Loading team attendance breakdown...</p>
+      </div>
     </div>
   </div>
 </div>

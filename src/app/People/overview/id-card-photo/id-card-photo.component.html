@@ -1,4 +1,30 @@
 <div class="container">
+  <!-- Display current photo above heading -->
+  <div class="current-photo-section">
+    <div class="profile-picture-container">
+      <!-- Show loading spinner while fetching photo -->
+      <div *ngIf="isPhotoLoading" class="profile-picture-loading">
+        <div class="spinner"></div>
+        <p>Loading photo...</p>
+      </div>
+      
+      <!-- Show photo or default when loaded -->
+      <div *ngIf="!isPhotoLoading" class="photo-display">
+        <img 
+          alt="Current Profile Picture" 
+          height="80" 
+          [src]="currentPhoto" 
+          width="80"
+          (error)="onPhotoError()"
+          class="current-profile-picture"
+        />
+      </div>
+    </div>
+    <p class="current-photo-label">
+      {{ isPhotoAlreadyExists ? 'Current Photo' : 'No Photo Uploaded' }}
+    </p>
+  </div>
+
   <h2>ID Card Photo</h2>
   <p>Kindly upload a clear passport-size photograph with a plain background. Selfies will not be accepted.</p>
 
@@ -10,17 +36,57 @@
 
     <div class="form-group">
       <label>Passport size, white background (less than 2 weeks old)</label>
-      <input type="file" (change)="onFileSelected($event)" accept="image/*" required />
+      <input 
+        type="file" 
+        (change)="onFileSelected($event)" 
+        accept="image/jpeg,image/png,image/jpg" 
+        required 
+        #fileInput
+      />
+      <small class="file-info">Accepted formats: JPG, PNG. Max size: 10MB</small>
+    </div>
+
+    <!-- Preview of selected file -->
+    <div *ngIf="selectedFile" class="selected-file-preview">
+      <p>Selected file: {{selectedFile.name}} ({{(selectedFile.size / 1024).toFixed(2)}} KB)</p>
+    </div>
+
+    <!-- Information message -->
+    <div *ngIf="uploadMessage && !isUploading" class="info-message">
+      <p>{{uploadMessage}}</p>
     </div>
 
     <div class="button-group">
-      <!-- Show Upload button only if photo is not uploaded -->
-      <button *ngIf="!hasUploaded" type="submit" [disabled]="!selectedFile">Upload</button>
+      <!-- Show appropriate button based on whether photo exists -->
+      <button 
+        type="submit" 
+        [disabled]="!selectedFile || isUploading" 
+        class="upload-btn"
+        [ngClass]="{ 'update-btn': isPhotoAlreadyExists }"
+      >
+        <span *ngIf="!isUploading">
+          {{ isPhotoAlreadyExists ? 'Update Photo' : 'Upload Photo' }}
+        </span>
+        <span *ngIf="isUploading">
+          {{ isPhotoAlreadyExists ? 'Updating...' : 'Uploading...' }}
+        </span>
+      </button>
       
       <!-- Close button always visible -->
-      <button type="button" (click)="onClose()" class="close-btn">Close</button>
+      <button type="button" (click)="onClose()" class="close-btn" [disabled]="isUploading">Close</button>
     </div>
   </form>
 
-  <div *ngIf="uploadMessage" class="message">{{ uploadMessage }}</div>
+  <!-- Status message area -->
+  <div *ngIf="uploadMessage" class="message" [ngClass]="{
+    'success': uploadMessage.includes('successfully'),
+    'error': uploadMessage.includes('Error') || uploadMessage.includes('failed'),
+    'warning': uploadMessage.includes('already') || uploadMessage.includes('exists'),
+    'info': !uploadMessage.includes('successfully') && 
+            !uploadMessage.includes('Error') && 
+            !uploadMessage.includes('failed') &&
+            !uploadMessage.includes('already')
+  }">
+    {{ uploadMessage }}
+  </div>
 </div>

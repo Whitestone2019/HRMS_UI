@@ -673,3 +673,72 @@
   font-size: 1.1rem;
 }
 }
+
+.profile-picture-container {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 15px;
+}
+
+.profile-picture {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.profile-picture-loading {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #ddd;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(0,0,0,0.1);
+  border-top: 3px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.button-group {
+  margin-top: 20px;
+}
+
+.checkin-btn, .checkout-btn, .idcard-btn {
+  margin: 5px;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.checkin-btn {
+  background-color: #4CAF50;
+  color: white;
+}
+
+.checkout-btn {
+  background-color: #f44336;
+  color: white;
+}
+
+.idcard-btn {
+  background-color: #2196F3;
+  color: white;
+}

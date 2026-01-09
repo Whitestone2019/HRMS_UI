@@ -10,6 +10,7 @@ import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { IdCardPhotoComponent } from './id-card-photo/id-card-photo.component';
 import { UserService } from '../../user.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-overview',
@@ -20,12 +21,13 @@ export class OverviewComponent implements OnInit, OnDestroy {
   // User data
   username: string = localStorage.getItem('username') || 'Guest';
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
-  
- userRole: string = localStorage.getItem('userRole') || 'Unknown';
+  userRole: string = localStorage.getItem('userRole') || 'Unknown';
   managerId: string = localStorage.getItem('managerId') || 'Unknown';
   managerName: string = localStorage.getItem('managerName') || 'Unknown';
 
-    hasUploaded: boolean = false;
+  // Track if photo is uploaded
+  hasUploaded: boolean = false;
+  
   // Attendance tracking
   employeeStatus: string = 'Out';
   timerDisplay: string = '00:00:00';
@@ -34,17 +36,11 @@ export class OverviewComponent implements OnInit, OnDestroy {
   checkInLocation: string = '';
   checkOutLocation: string = '';
   srlNum: number = 0;
-  profilePicture: string = '';
-
-  // // Team data
-  // reportees = [
-  //   {
-  //     id: '10004',
-  //     name: 'Poovarasam Murugan',
-  //     status: 'Yet to check-in',
-  //     imageUrl: 'https://storage.googleapis.com/a1aa/image/6avEkAv3f7zSeExA5f4FG59V05MJ2kNyeTqX4YlWbU86914OB.jpg',
-  //   },
-  // ];
+  
+  // Profile picture
+  profilePicture: string | SafeUrl = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
+  isProfilePictureLoading: boolean = false;
+  private objectUrl: string | null = null;
 
   // Attendance statistics
   yesterday_present: number = 0;
@@ -55,7 +51,8 @@ export class OverviewComponent implements OnInit, OnDestroy {
   today_day: string = '';
   yesterday_label: string = "Yesterday's";
   today_label: string = "Today's";
-    // Monthly Summary
+  
+  // Monthly Summary
   overallSummary: any = {
     period: '',
     teamSize: 0,
@@ -67,7 +64,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
     leaveWithoutPay: 0
   };
   isLoadingSummary = true;
-    isAdmin: boolean = false;
+  isAdmin: boolean = false;
 
   @ViewChild('dynamicComponentContainer', { read: ViewContainerRef, static: true })
   container!: ViewContainerRef;
@@ -78,37 +75,101 @@ export class OverviewComponent implements OnInit, OnDestroy {
     private apiService: ApiService,
     private http: HttpClient,
     private router: Router,
-    private userService:UserService
+    private userService: UserService,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
     this.subscribeToAttendanceUpdates();
     this.getAttendancePieData();
     this.checkTimerStatusOnLoad();
-     this.loadProfilePicture();
+    this.loadProfilePicture(); // Load profile picture
+    this.checkIfAlreadyUploaded(); // Check if photo already uploaded
     this.loadOverallAttendanceSummary();
     this.isAdmin = this.userService.isAdmin();
   }
 
   ngOnDestroy(): void {
     this.stopTimer();
+    this.cleanupObjectUrl(); // Clean up blob URL to prevent memory leaks
   }
 
   // ======================
-  // CORE FUNCTIONALITY
+  // UPDATED PROFILE PICTURE METHODS
   // ======================
 
-  loadProfilePicture() {
-  this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
-    next: (res: any) => {
-      // Assuming API returns { photoUrl: '...' } or Base64 string
-      this.profilePicture = res.photoUrl || 'assets/default-profile.png';
-    },
-    error: () => {
-      this.profilePicture = 'assets/default-profile.png'; // fallback image
+  loadProfilePicture(): void {
+    this.isProfilePictureLoading = true;
+    
+    // Clean up any existing object URL first
+    this.cleanupObjectUrl();
+    
+    this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
+      next: (blob: Blob) => {
+        // Check if blob is not empty (photo exists)
+        if (blob && blob.size > 0) {
+          // Create object URL from blob
+          this.objectUrl = URL.createObjectURL(blob);
+          
+          // Sanitize the URL for security and use it
+          this.profilePicture = this.sanitizer.bypassSecurityTrustUrl(this.objectUrl);
+          this.hasUploaded = true; // Photo exists
+        } else {
+          // If blob is empty, use default Google Storage image
+          this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
+          this.hasUploaded = false;
+        }
+        this.isProfilePictureLoading = false;
+      },
+      error: (error) => {
+        console.error('Error loading profile picture:', error);
+        
+        // Use default Google Storage image on error
+        this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
+        this.hasUploaded = false;
+        this.isProfilePictureLoading = false;
+      }
+    });
+  }
+
+  private cleanupObjectUrl(): void {
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl);
+      this.objectUrl = null;
     }
-  });
-}
+  }
+
+  // Handle image loading errors
+  onProfilePictureError(): void {
+    // If blob image fails to load, fall back to default Google Storage image
+    this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
+    this.cleanupObjectUrl();
+  }
+
+  // Check if photo is already uploaded (but keep button visible always)
+  checkIfAlreadyUploaded(): void {
+    this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
+      next: (blob: Blob) => {
+        // Check if blob exists and has content
+        if (blob && blob.size > 0) {
+          this.hasUploaded = true;
+          // Clean up the temporary blob URL
+          const tempUrl = URL.createObjectURL(blob);
+          URL.revokeObjectURL(tempUrl);
+        } else {
+          this.hasUploaded = false;
+        }
+      },
+      error: () => {
+        // If API call fails, assume no photo uploaded
+        this.hasUploaded = false;
+      }
+    });
+  }
+
+  // ======================
+  // EXISTING METHODS (UNCHANGED)
+  // ======================
 
   private subscribeToAttendanceUpdates(): void {
     this.attendanceService.isCheckedIn$.subscribe((status) => {
@@ -163,66 +224,39 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.timerDisplay = '00:00:00';
     this.employeeStatus = 'Out';
   }
-// ======================
-  // CHECK-IN/CHECK-OUT without eligible
-  // ======================
-//   checkIn(): void {
-//   // ✅ Always open the Check-In dialog (no eligibility check)
-//   const dialogRef = this.dialog.open(CheckInDialogComponent);
 
-//   dialogRef.afterClosed().subscribe((status) => {
-//     if (status) {
-//       this.initiateCheckInProcess(status);
-//     }
-//   });
-// }
-
-
-  // ======================
-  // CHECK-IN/CHECK-OUT with eligible
-  // ======================
-
-checkIn(): void {
-  // 🟢 If employeeId starts with "WS", skip eligibility check
-  if (this.employeeId && this.employeeId.toUpperCase().startsWith('WS')) {
-    const dialogRef = this.dialog.open(CheckInDialogComponent);
-    dialogRef.afterClosed().subscribe((status) => {
-      if (status) {
-        this.initiateCheckInProcess(status);
-      }
-    });
-    return; // Exit early — no need to call backend
-  }
-
-  // 🔍 Otherwise, proceed with eligibility check
-  this.apiService.getCheckInEligibility(this.employeeId).subscribe(
-    (response: any) => {
-      if (response.eligible) {
-        // 🟢 Show optional message before check-in
-        if (response.message) {
-          alert(response.message);
+  checkIn(): void {
+    if (this.employeeId && this.employeeId.toUpperCase().startsWith('WS')) {
+      const dialogRef = this.dialog.open(CheckInDialogComponent);
+      dialogRef.afterClosed().subscribe((status) => {
+        if (status) {
+          this.initiateCheckInProcess(status);
         }
-
-        // ✅ Open Check-In dialog
-        const dialogRef = this.dialog.open(CheckInDialogComponent);
-        dialogRef.afterClosed().subscribe((status) => {
-          if (status) {
-            this.initiateCheckInProcess(status);
-          }
-        });
-      } else {
-        // 🔴 Redirect if not eligible
-        this.router.navigate(['/dashboard/timesheet']);
-      }
-    },
-    (error) => {
-      console.error('Error checking eligibility:', error);
+      });
+      return;
     }
-  );
-}
 
-
-
+    this.apiService.getCheckInEligibility(this.employeeId).subscribe(
+      (response: any) => {
+        if (response.eligible) {
+          if (response.message) {
+            alert(response.message);
+          }
+          const dialogRef = this.dialog.open(CheckInDialogComponent);
+          dialogRef.afterClosed().subscribe((status) => {
+            if (status) {
+              this.initiateCheckInProcess(status);
+            }
+          });
+        } else {
+          this.router.navigate(['/dashboard/timesheet']);
+        }
+      },
+      (error) => {
+        console.error('Error checking eligibility:', error);
+      }
+    );
+  }
 
   private async initiateCheckInProcess(status: string): Promise<void> {
     try {
@@ -257,10 +291,10 @@ checkIn(): void {
   }
 
   checkOut(): void {
-   const confirmCheckout = confirm('Are you sure you want to check out?');
-  if (!confirmCheckout) {
-    return; // user cancelled
-  }
+    const confirmCheckout = confirm('Are you sure you want to check out?');
+    if (!confirmCheckout) {
+      return;
+    }
     const dialogRef = this.dialog.open(CheckOutDialogComponent);
 
     dialogRef.afterClosed().subscribe((status) => {
@@ -281,7 +315,6 @@ checkIn(): void {
 
   private async completeCheckOut(status: string, locationName: string): Promise<void> {
     const checkOutDuration = (Date.now() - this.checkInTime) / 1000;
-    console.log("this.srlNum>>>>>>>>>>>>>>>>>"+this.srlNum)
     await this.apiService.checkOut(status, locationName, checkOutDuration, this.srlNum).toPromise();
     
     this.attendanceService.checkOut();
@@ -314,8 +347,7 @@ checkIn(): void {
 
   private getLocationByIP(): Promise<{ lat: number; lon: number }> {
     return new Promise((resolve, reject) => {
-      // Make a request to ip-api.com to get the IP geolocation information
-      const ipInfoUrl = 'https://ipapi.co/json';  // No API key required for basic usage
+      const ipInfoUrl = 'https://ipapi.co/json';
 
       fetch(ipInfoUrl)
         .then((response) => {
@@ -331,11 +363,9 @@ checkIn(): void {
             const lat = parseFloat(data.lat);
             const lon = parseFloat(data.lon);
 
-            // Validate latitude and longitude ranges
             if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
               reject('Invalid geolocation data received.');
             } else {
-              //alert(`Your Location: Latitude = ${lat}, Longitude = ${lon}`);
               resolve({ lat, lon });
             }
           }
@@ -378,7 +408,6 @@ checkIn(): void {
 
   private handleCheckInError(error: any): void {
     console.error('Check-in failed:', error);
-   // alert(error instanceof Error ? error.message : 'Check-in failed. Please try again.');
   }
 
   private handleCheckOutError(error: any): void {
@@ -422,7 +451,7 @@ checkIn(): void {
     this.container.createComponent(component);
   }
 
-   goToIdCardForm() {
+  goToIdCardForm() {
     this.router.navigate(['dashboard/iddetails']);
   }
 
@@ -442,39 +471,27 @@ checkIn(): void {
     );
   }
 
-  checkIfAlreadyUploaded() {
-    this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
-      next: (data: any) => {
-        if (data) {
-          this.hasUploaded = true; // Photo exists
-        }
-      },
-      error: () => {
-        this.hasUploaded = false;
-      }
-    });
-  }
-
   PersonalDetails(){
     this.router.navigate(['dashboard/addcandidate']);
   }
 
- openIdCardDialog(): void {
-  // 🚫 Temporary restriction message
-  //alert('This link has expired. Please contact your administrator or HR team for assistance.');
-
-  // 🧩 Uncomment the following when you re-enable photo upload:
-  
-  if (!this.hasUploaded) {
+  // REMOVED *ngIf="!hasUploaded" - Button is always visible
+  openIdCardDialog(): void {
+    // 🧩 Button is always visible for re-uploading
     this.dialog.open(IdCardPhotoComponent, {
       width: '600px',
       disableClose: true,
-      data: { employeeId: this.employeeId } // optional data pass
+      data: { employeeId: this.employeeId }
+    }).afterClosed().subscribe(result => {
+      // After dialog closes, refresh the profile picture
+      if (result === 'success') {
+        this.loadProfilePicture();
+        this.checkIfAlreadyUploaded();
+      }
     });
   }
-  
-}
-loadOverallAttendanceSummary(): void {
+
+  loadOverallAttendanceSummary(): void {
     this.isLoadingSummary = true;
     this.apiService.getOverallMonthlyAttendanceSummary().subscribe({
       next: (res: any) => {
@@ -495,5 +512,4 @@ loadOverallAttendanceSummary(): void {
       }
     });
   }
-
 }
