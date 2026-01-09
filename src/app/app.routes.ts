@@ -65,6 +65,16 @@ import { FingerprintComponent } from './People/fingerprint/fingerprint.component
 import { PayrollAdjustmentComponent } from './People/payroll-adjustment/payroll-adjustment.component';
 import { CalendarsPageComponent } from './calendars-page/calendars-page.component';
 
+import { ExitFormComponent } from './exit-form/exit-form.component';
+import {ExitPageComponent} from './exit-page/exit-page.component';
+import { ManagerReviewComponent } from './manager-review/manager-review.component';
+import { ExitpageDatasComponent } from './exitpage-datas/exitpage-datas.component';
+import { HrVerificationComponent } from './hr-verification/hr-verification.component';
+import { AssetClearanceComponent } from './asset-clearance/asset-clearance.component';
+import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-approval.component';
+import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
+import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
+
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'reset-password', component: ResetPasswordComponent },
@@ -148,6 +158,16 @@ export const routes: Routes = [
        { path: 'payrollAdjustment', component: PayrollAdjustmentComponent },
       { path: '', redirectTo: 'overview', pathMatch: 'full' }, // Default child route set to Overview
       { path: 'calendar-page', component: CalendarsPageComponent},
+        { path: 'exit-form', component: ExitFormComponent },
+          { path: 'exit-page', component: ExitPageComponent },
+          {path: 'exitpage-data', component: ExitpageDatasComponent},
+
+          {path: 'manager', component: ManagerReviewComponent},
+          { path: 'hrverify', component: HrVerificationComponent}, //hr round 1 
+          { path: 'asset-clear', component: AssetClearanceComponent},
+          { path: 'final-round', component: FinalExitApprovalComponent},//final hr round
+          { path: 'payroll-check', component: PayrollChecksComponent},
+          { path: 'hr-offboard', component: HrOffboardingChecklistComponent},//hr round 2
     ]
   },
   {

@@ -1,0 +1,101 @@
+<div class="main-container">
+  <div class="form-header">
+    <!-- <h2 class="title">IT Asset Recovery & Clearance</h2> -->
+    <div class="form-info" *ngIf="exitFormId">
+      <p><strong>Form ID:</strong> {{ exitFormId }}</p>
+      <div *ngIf="isUpdateMode" class="mode-indicator update-mode">
+        Edit Mode
+      </div>
+      <div *ngIf="!isUpdateMode && !isSubmitted" class="mode-indicator create-mode">
+        Create Mode
+      </div>
+      <div *ngIf="!isUpdateMode && isSubmitted" class="mode-indicator view-mode">
+        View Mode
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading...</p>
+  </div>
+
+  <form [formGroup]="assetForm" (ngSubmit)="submit()" *ngIf="!isLoading">
+    <div formArrayName="assets">
+      <div *ngFor="let asset of assets.controls; let i = index" [formGroupName]="i" 
+           class="card" [class.readonly]="isSubmitted && !isUpdateMode">
+        <div class="card-header">
+          <strong>{{ asset.get('name')?.value }}</strong>
+          <button type="button" (click)="removeAsset(i)" class="remove-btn"
+                  *ngIf="(!isSubmitted || isUpdateMode) && i >= defaultAssets.length">×</button>
+        </div>
+
+        <div class="radio-group">
+          <label *ngFor="let c of conditions" class="radio-option">
+            <input type="radio" [value]="c" formControlName="condition"
+                   [disabled]="isSubmitted && !isUpdateMode">
+            <span class="radio-label">{{ c }}</span>
+          </label>
+        </div>
+
+        <div *ngIf="asset.get('condition')?.invalid && asset.get('condition')?.touched && (!isSubmitted || isUpdateMode)" 
+             class="validation-error">
+          Select condition for {{ asset.get('name')?.value }}
+        </div>
+
+        <div *ngIf="asset.get('condition')?.value && asset.get('condition')?.value !== 'Good'" 
+             class="comment-section">
+          <label>Remarks:</label>
+          <textarea formControlName="comments"
+                    placeholder="Describe the issue..."
+                    [readOnly]="isSubmitted && !isUpdateMode"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!isSubmitted || isUpdateMode" class="add-container">
+      <input type="text" formControlName="extraAssetName" placeholder="Add another asset...">
+      <button type="button" (click)="addNewAsset()" class="add-btn">Add</button>
+    </div>
+
+    <div *ngIf="!isSubmitted || isUpdateMode" class="submit-section">
+      <div class="button-group">
+        <button class="submit-btn" type="submit" 
+                [disabled]="!isFormValid() || isSubmitting"
+                [class.disabled]="!isFormValid() || isSubmitting"
+                [class.update-btn]="isUpdateMode">
+          {{ getSubmitButtonText() }}
+        </button>
+      </div>
+      
+      <div *ngIf="!isFormValid() && assets.length > 0" class="validation-message">
+        Select condition for all assets to submit.
+      </div>
+    </div>
+  </form>
+
+  <div *ngIf="!isLoading" class="action-buttons-container">
+    <div *ngIf="isSubmitted && !isUpdateMode" class="view-mode-buttons">
+      <div class="button-group">
+        <button class="edit-btn" (click)="enableEditMode()">
+          Edit Asset Clearance
+        </button>
+      </div>
+      <p class="view-message">Submitted. Click "Edit" to make changes.</p>
+    </div>
+    
+    <div *ngIf="isUpdateMode" class="edit-mode-buttons">
+      <div class="button-group">
+        <button class="edit-btn edit-mode-label" disabled>
+          Edit Mode Active
+        </button>
+        <button class="cancel-btn" 
+                (click)="cancelEdit()"
+                [disabled]="isSubmitting">
+          Cancel
+        </button>
+      </div>
+      <p class="edit-mode-message">Make changes and click "Update" above.</p>
+    </div>
+  </div>
+</div>

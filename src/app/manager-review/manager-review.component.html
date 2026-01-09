@@ -1,0 +1,237 @@
+<div class="direct-review-container">
+  <div class="card" [ngClass]="{'card-disabled': isCardDisabled()}">
+    <div class="header">
+      <h2>{{ getFormTitle() }}</h2>
+      <h3>{{ employeeName }} <small>(ID: {{ employeeId }})</small></h3>
+      <div class="form-id" *ngIf="exitFormId">Form ID: {{ exitFormId }}</div>
+      
+      <!-- Status badges -->
+      <div class="status-badge" *ngIf="isSubmitted && !isEditMode">
+        Submitted • Action: <strong>{{ submittedAction }}</strong>
+      </div>
+      <div class="status-badge new-review" *ngIf="!isSubmitted">
+        New Review
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading" *ngIf="isLoading">
+      <div class="spinner"></div> Loading review data...
+    </div>
+
+    <!-- Already Submitted Banner -->
+    <div *ngIf="isSubmitted && !isLoading && !isEditMode" class="submitted-banner">
+      <h3>✓ Manager Review Already Submitted</h3>
+      <p>This review has been completed. Click "Update Review" to make changes.</p>
+    </div>
+
+    <!-- Form Body -->
+    <form [formGroup]="managerReviewForm" class="form-body" *ngIf="!isLoading">
+      
+      <!-- Row 1: Performance Rating and Project Dependency -->
+      <div class="form-row">
+        <!-- Performance Rating -->
+        <div class="form-column">
+          <div class="review-field" [class.expanded]="expandedField === 'performance'">
+            <div class="field-header" (click)="toggleField('performance')">
+              <span class="label">Performance Rating *</span>
+              <span class="value">{{ getDisplayValue('performance') }}</span>
+              <span class="icon" *ngIf="isFieldClickable()">{{ expandedField === 'performance' ? '▲' : '▼' }}</span>
+            </div>
+            <div class="options" *ngIf="expandedField === 'performance'">
+              <div class="radio-grid">
+                <label *ngFor="let opt of performanceOptions" class="radio-option">
+                  <input type="radio" 
+                         [value]="opt" 
+                         [checked]="managerReviewForm.get('performance')?.value === opt"
+                         (click)="onOptionChange('performance', opt)"
+                         [disabled]="isFieldDisabled()">
+                  <span class="radio-label">{{ opt }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Project Dependency -->
+        <div class="form-column">
+          <div class="review-field" [class.expanded]="expandedField === 'projectDependency'">
+            <div class="field-header" (click)="toggleField('projectDependency')">
+              <span class="label">Project Dependency *</span>
+              <span class="value">{{ getDisplayValue('projectDependency') }}</span>
+              <span class="icon" *ngIf="isFieldClickable()">{{ expandedField === 'projectDependency' ? '▲' : '▼' }}</span>
+            </div>
+            <div class="options" *ngIf="expandedField === 'projectDependency'">
+              <div class="radio-grid">
+                <label *ngFor="let opt of yesNoOptions" class="radio-option">
+                  <input type="radio" 
+                         [value]="opt" 
+                         [checked]="managerReviewForm.get('projectDependency')?.value === opt"
+                         (click)="onOptionChange('projectDependency', opt)"
+                         [disabled]="isFieldDisabled()">
+                  <span class="radio-label">{{ opt }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Row 2: Knowledge Transfer and Notice Period -->
+      <div class="form-row">
+        <!-- Knowledge Transfer -->
+        <div class="form-column">
+          <div class="review-field" [class.expanded]="expandedField === 'knowledgeTransfer'">
+            <div class="field-header" (click)="toggleField('knowledgeTransfer')">
+              <span class="label">Knowledge Transfer *</span>
+              <span class="value">{{ getDisplayValue('knowledgeTransfer') }}</span>
+              <span class="icon" *ngIf="isFieldClickable()">{{ expandedField === 'knowledgeTransfer' ? '▲' : '▼' }}</span>
+            </div>
+            <div class="options" *ngIf="expandedField === 'knowledgeTransfer'">
+              <div class="radio-grid">
+                <label *ngFor="let opt of ktOptions" class="radio-option">
+                  <input type="radio" 
+                         [value]="opt" 
+                         [checked]="managerReviewForm.get('knowledgeTransfer')?.value === opt"
+                         (click)="onOptionChange('knowledgeTransfer', opt)"
+                         [disabled]="isFieldDisabled()">
+                  <span class="radio-label">{{ opt }}</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Notice Period -->
+        <div class="form-column">
+          <div class="review-field" [class.expanded]="expandedField === 'noticePeriod'">
+            <div class="field-header" (click)="toggleField('noticePeriod')">
+              <span class="label">Notice Period Applicable? *</span>
+              <span class="value">{{ getDisplayValue('noticePeriod') }}</span>
+              <span class="icon" *ngIf="isFieldClickable()">{{ expandedField === 'noticePeriod' ? '▲' : '▼' }}</span>
+              <span class="comments-hint" *ngIf="shouldShowCommentsHint()">(Click to see comments)</span>
+            </div>
+            <div class="options" *ngIf="expandedField === 'noticePeriod'">
+              <div class="radio-grid">
+                <label *ngFor="let opt of yesNoOptions" class="radio-option">
+                  <input type="radio" 
+                         [value]="opt" 
+                         [checked]="managerReviewForm.get('noticePeriod')?.value === opt"
+                         (click)="onOptionChange('noticePeriod', opt)"
+                         [disabled]="isFieldDisabled()">
+                  <span class="radio-label">{{ opt }}</span>
+                </label>
+              </div>
+
+              <!-- Remarks section for Yes - ALWAYS visible when Yes is selected and expanded -->
+              <div class="remarks" *ngIf="shouldShowRemarks()">
+                <label>Remarks <span class="req">*</span></label>
+                <textarea formControlName="remarks" 
+                          [placeholder]="getRemarksPlaceholder()" 
+                          rows="4"
+                          [readOnly]="isRemarksReadonly()"
+                          [class.readonly-textarea]="isRemarksReadonly()"></textarea>
+                
+                <!-- Validation message for new/editing mode -->
+                <div *ngIf="managerReviewForm.get('remarks')?.invalid && managerReviewForm.get('remarks')?.touched && !isRemarksReadonly()" 
+                     class="error-message">
+                  Remarks are required when Notice Period is Applicable
+                </div>
+                
+                <!-- Hint for view mode -->
+                <div *ngIf="isRemarksReadonly() && managerReviewForm.get('remarks')?.value?.trim()" class="view-mode-hint">
+                  Manager comments are shown above
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Purpose of Change (Only in Edit Mode) -->
+      <div class="review-field" *ngIf="isEditMode">
+        <div class="field-header">
+          <span class="label">Purpose of Change <span class="req">*</span></span>
+        </div>
+        <div class="options">
+          <textarea formControlName="purposeOfChange" 
+                    placeholder="Why are you updating this review?" 
+                    rows="4"></textarea>
+        </div>
+      </div>
+
+      <!-- Action Buttons Section -->
+      <div class="actions-section">
+        <h3>Select Action *</h3>
+        <div class="btn-group">
+          <button class="btn approve" 
+                  [class.highlighted]="isActionHighlighted('Approve')"
+                  (click)="submitAction('Approve')"
+                  [disabled]="isActionDisabled('Approve')">
+            {{ isSubmitting && selectedAction === 'Approve' ? 'Processing...' : 'Approve' }}
+          </button>
+          <button class="btn reject" 
+                  [class.highlighted]="isActionHighlighted('Reject')"
+                  (click)="submitAction('Reject')"
+                  [disabled]="isActionDisabled('Reject')">
+            {{ isSubmitting && selectedAction === 'Reject' ? 'Processing...' : 'Reject' }}
+          </button>
+          <button class="btn hold" 
+                  [class.highlighted]="isActionHighlighted('On-Hold')"
+                  (click)="submitAction('On-Hold')"
+                  [disabled]="isActionDisabled('On-Hold')">
+            {{ isSubmitting && selectedAction === 'On-Hold' ? 'Processing...' : 'On-Hold' }}
+          </button>
+          <button class="btn waiver" 
+                  [class.highlighted]="isActionHighlighted('Recommend Notice Period Waiver')"
+                  (click)="submitAction('Recommend Notice Period Waiver')"
+                  [disabled]="isActionDisabled('Recommend Notice Period Waiver')">
+            {{ isSubmitting && selectedAction === 'Recommend Notice Period Waiver' ? 'Processing...' : 'Recommend Waiver' }}
+          </button>
+        </div>
+        
+        <div class="selected-action" *ngIf="selectedAction && !isSubmitted">
+          Selected Action: <strong>{{ selectedAction }}</strong>
+        </div>
+        <div class="submitted-action" *ngIf="isSubmitted && !isEditMode">
+          Submitted Action: <strong>{{ submittedAction }}</strong>
+        </div>
+      </div>
+
+      <!-- Control Buttons -->
+      <div class="control-buttons">
+        <!-- Update Review Button (Only shown when submitted and NOT in edit mode) -->
+        <button *ngIf="shouldShowUpdateButton()" 
+                class="edit-btn" 
+                (click)="enableEdit()">
+          Update Review
+        </button>
+        
+        <!-- Cancel Edit Button (Only shown in edit mode) -->
+        <button *ngIf="isEditMode" 
+                class="cancel-btn" 
+                (click)="cancelEdit()">
+          Cancel Edit
+        </button>
+      </div>
+
+      <!-- Validation Error -->
+      <div class="error" *ngIf="!isFormValid() && (isEditMode || !isSubmitted)">
+        ⚠️ Please complete all required fields
+        <span *ngIf="managerReviewForm.get('noticePeriod')?.value === 'Yes' && !managerReviewForm.get('remarks')?.value?.trim()">
+          including remarks for Notice Period
+        </span>
+      </div>
+
+      <!-- Action validation -->
+      <div class="error" *ngIf="isFormValid() && !selectedAction && (isEditMode || !isSubmitted)">
+        ⚠️ Please select an action
+      </div>
+
+      <!-- Edit Mode Info -->
+      <div class="edit-mode-info" *ngIf="isEditMode">
+        ✏️ You are in edit mode. Please provide "Purpose of Change" and update any fields as needed.
+      </div>
+    </form>
+  </div>
+</div>

@@ -25,5 +25,10 @@
     <!-- Show settings-related links when 'settings' is selected -->
     <a *ngIf="selectedMenu === 'settings'" routerLink="/dashboard/operations" routerLinkActive="active">Settings</a>
     <a *ngIf="selectedMenu === 'settings'" routerLink="/analytics" routerLinkActive="active">Analytics</a>
+
+     <!-- ⭐ NEW EXIT FORM MENUS ⭐ -->
+    <a *ngIf="selectedMenu === 'exit-form'" routerLink="/dashboard/exit-form" routerLinkActive="active">Exit Form</a>
+    <a *ngIf="selectedMenu === 'exit-form'" routerLink="/dashboard/exitpage-data" routerLinkActive="active">Exit Form Status</a>
+
   </nav>
 </div>

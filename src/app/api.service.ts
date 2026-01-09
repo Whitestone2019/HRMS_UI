@@ -171,11 +171,168 @@ export interface CalendarEvent {
   updatedDate?: string;
 }
 
+export interface ChecklistPayloadItem {
+  label: string;
+  checked: boolean;
+  comment: string;
+}
+
+export interface FinalHrData {
+  finalHrRemarks: string;
+  finalHrApprovedBy: string;
+  finalHrApprovedOn: string;
+  finalChecklistData: string;
+  isSubmitted: boolean;
+  status: string;
+  parsedChecklist?: ChecklistPayloadItem[];
+}
+
 export interface ApiResponse {
   success: boolean;
   message?: string;
   data?: any;
   [key: string]: any;
+}
+
+// In your api.service.ts file, update the ExitForm interface:
+
+export interface ExitForm {
+  id?: string;
+  employeeId?: string;
+  employeeName?: string;
+  noticeStartDate?: string;
+  reason?: string;
+  comments?: string;
+  status?: any; // string or number
+  noticePeriod?: number;
+  noticeEndDate?: string;
+  attachment?: string | null;
+  withdrawPurpose?: string | null;
+  withdrawDate?: string | null;
+  withdrawBy?: string | null;
+  
+  // Manager Review fields
+  performance?: string;
+  managerNoticeperiod?: string;
+  projectDependency?: string;
+  knowledgeTransfer?: string;
+  managerRemarks?: string | null;
+  managerAction?: string;
+  managerName?: string;
+  purposeOfChange?: string | null;
+  
+  // HR Round 1 fields
+  hrNoticePeriod?: boolean;
+  hrLeaveBalances?: boolean;
+  hrPolicyCompliance?: boolean;
+  hrExitEligibility?: boolean;
+  hrNoticePeriodComments?: string;
+  hrLeaveBalancesComments?: string;
+  hrPolicyComplianceComments?: string;
+  hrExitEligibilityComments?: string;
+  hrGeneralComments?: string | null;
+  hrAction?: string;
+  hrReviewDate?: string;
+  
+  // Asset Clearance field
+  assetClearance?: string;
+  assetSubmittedBy?: string; // ADD THIS LINE
+  
+  // HR Round 2 (Offboarding) field
+  hrOffboardingChecks?: string;
+  
+  // Payroll Checks field
+  payrollChecks?: string;
+  payrollSubmittedBy?: string; // ADD THIS LINE
+  
+  // Final HR Approval fields
+  finalHrRemarks?: string;
+  finalHrApprovedBy?: string;
+  finalHrApprovedOn?: string;
+  finalChecklistData?: string;
+  
+  // Audit fields
+  createdOn?: string;
+  createdBy?: string;
+  updatedOn?: string;
+  updatedBy?: string;
+  delFlag?: string;
+
+  userSubmittedOn?: any; // Can be string, Date, or LocalDateTime object
+  managerSubmittedOn?: any;
+  hrRound1SubmittedOn?: any;
+  assetSubmittedOn?: any;
+  hrRound2SubmittedOn?: any;
+  payrollSubmittedOn?: any;
+  finalHrSubmittedOn?: any;
+}
+
+
+export interface ManagerReview {
+  id?: string;
+  employeeId: string;
+  employeeName?: string;
+  
+  // Frontend form fields
+  performance: string;
+  projectDependency: number; // Frontend uses number
+  knowledgeTransfer: string;
+  noticePeriod: number; // Frontend uses number
+  remarks: string; // Frontend field name
+  
+  // Backend field names (for mapping)
+  managerRemarks?: string; // Backend field name
+  managerAction?: string; // Backend field name
+  
+  purposeOfChange?: string | null;
+  action?: string; // Frontend field name
+  managerName: string;
+  
+  // Audit fields
+  createdDate?: string;
+  updatedDate?: string;
+  createdBy?: string;
+  updatedBy?: string;
+}
+
+export interface Checklist {
+  noticePeriod: boolean;
+  leaveBalances: boolean;
+  policyCompliance: boolean;
+  exitEligibility: boolean;
+}
+
+export interface Comments {
+  noticePeriod: string;
+  leaveBalances: string;
+  policyCompliance: string;
+  exitEligibility: string;
+  general: string;
+}
+
+export interface HRReview {
+  id?: string;
+  checklist: Checklist;
+  comments: Comments;
+  hrAction: string;
+  hrName: string;
+  hrReviewDate?: Date;
+}
+
+export interface HRReviewResponse {
+  success: boolean;
+  message: string;
+  data?: HRReview;
+  reviews?: HRReview[];
+}
+
+export interface AssetClearanceData {
+  assets: Array<{
+    name: string;
+    condition: string;
+    comments: string;
+  }>;
+  extraAssetName: string;
 }
 
 @Injectable({
@@ -1931,11 +2088,713 @@ getPendingCounts(managerId: string): Observable<any> {
     );
 }
 
-  openDialog(title: string, message: string): void {
+ // Create new exit form
+createExitForm(exitFormData: ExitForm): Observable<ExitForm> {
+  const url = `${this.apiUrl}/api/create/exit-form`;
+  this.loaderService.show();
+  return this.http.post<ExitForm>(url, exitFormData).pipe(
+    tap((response) => {
+      console.log('Exit form created successfully:', response);
+      setTimeout(() => window.location.reload(), 1000);
+      this.openDialog('Success', 'Exit form created successfully!');
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error creating exit form:', error);
+      this.openDialog('Error', `Failed to create exit form: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Get all active exit forms
+getAllActiveExitForms(): Observable<ExitForm[]> {
+  const url = `${this.apiUrl}/api/all/exit-form`;
+  this.loaderService.show();
+  return this.http.get<ExitForm[]>(url).pipe(
+    tap((response) => {
+      console.log('Active exit forms retrieved:', response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching exit forms:', error);
+      this.openDialog('Error', `Failed to fetch exit forms: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Get exit form by ID
+getExitFormById(id: string): Observable<ExitForm> {
+  const url = `${this.apiUrl}/api/exit-from/${id}`;
+  this.loaderService.show();
+  return this.http.get<ExitForm>(url).pipe(
+    tap((response) => {
+      console.log('Exit form retrieved:', response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching exit form:', error);
+      this.openDialog('Error', `Failed to fetch exit form: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Update exit form
+updateExitForm(id: string, exitFormData: ExitForm): Observable<ExitForm> {
+  const url = `${this.apiUrl}/api/update/exit-form/${id}`;
+  this.loaderService.show();
+  return this.http.put<ExitForm>(url, exitFormData).pipe(
+    tap((response) => {
+      console.log('Exit form updated successfully:', response);
+      this.openDialog('Success', 'Exit form updated successfully!');
+      setTimeout(() => window.location.reload(), 1000);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error updating exit form:', error);
+      this.openDialog('Error', `Failed to update exit form: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Soft delete exit form
+softDeleteExitForm(id: string): Observable<string> {
+  const url = `${this.apiUrl}/api/delete/exit-from/${id}`;
+  this.loaderService.show();
+  return this.http.put<string>(url, {}).pipe(
+    tap((response) => {
+      console.log('Exit form deleted successfully:', response);
+      this.openDialog('Success', 'Exit form deleted successfully!');
+      setTimeout(() => window.location.reload(), 1000);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error deleting exit form:', error);
+      this.openDialog('Error', `Failed to delete exit form: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// updateExitFormStatus(exitFormId: string, statusCode: string): Observable<any> {
+//   const url = `${this.apiUrl}/api/exit-form/${exitFormId}/status`;
+//   return this.http.put(url, { statusCode: statusCode });
+// }
+
+// In your ApiService class
+// getReportsByManager(managerId: string): Observable<any> {
+//   return this.http.get(`${this.apiUrl}/api/employees/reports/${managerId}`);
+// }
+
+//this is for repot to api
+
+ // FIXED: Get exit forms by employee ID
+getExitFormsByEmployee(employeeId: string): Observable<any> {
+  console.log('🟢 Calling getExitFormsByEmployee for:', employeeId);
+  const url = `${this.apiUrl}/api/exitForms/get/${employeeId}`;
+  this.loaderService.show();
+  
+  return this.http.get<any>(url).pipe(
+    tap(response => {
+      console.log('🟢 getExitFormsByEmployee Response:', response);
+      if (response?.data && Array.isArray(response.data)) {
+        console.log('🟢 First form data keys:', Object.keys(response.data[0] || {}));
+        console.log('🟢 First form timestamp fields:', {
+          userSubmittedOn: response.data[0]?.userSubmittedOn,
+          managerSubmittedOn: response.data[0]?.managerSubmittedOn,
+          hrRound1SubmittedOn: response.data[0]?.hrRound1SubmittedOn,
+          assetSubmittedOn: response.data[0]?.assetSubmittedOn,
+          hrRound2SubmittedOn: response.data[0]?.hrRound2SubmittedOn,
+          payrollSubmittedOn: response.data[0]?.payrollSubmittedOn,
+          finalHrSubmittedOn: response.data[0]?.finalHrSubmittedOn
+        });
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('❌ Error in getExitFormsByEmployee:', error);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+
+getExitFormByEmployee(employeeId: string) {
+  return this.http.get<any[]>(`${this.apiUrl}/api/exit-form/employee/${employeeId}`);
+}
+
+withdrawExitForm(formId: string, withdrawPurpose?: string): Observable<any> {
+  const url = `${this.apiUrl}/api/exit-form/${formId}/withdraw`;
+  console.log('🔄 Calling withdraw API:', url);
+  
+  const body = withdrawPurpose ? { withdrawPurpose } : {};
+  setTimeout(() => window.location.reload(), 1000);
+  
+  return this.http.put(url, body).pipe(
+    tap(response => console.log('✅ Withdraw API response:', response)),
+    catchError(error => {
+      console.error('❌ Withdraw API error:', error);
+      return throwError(error);
+    })
+  );
+}
+
+
+  // ---------------- Get all non-deleted manager reviews ----------------
+  getAllManagerReviews(): Observable<ManagerReview[]> {
+    const url = `${this.apiUrl}/api/getallmanager`;
+    this.loaderService.show();
+    return this.http.get<ManagerReview[]>(url).pipe(
+      tap(res => console.log('All Manager Reviews:', res)),
+      catchError((err: HttpErrorResponse) => {
+        console.error('Error fetching manager reviews:', err);
+        return throwError(() => new Error(err.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+// In your api.service.ts, update these methods:
+
+// ---------------- Create or Update Manager Review ----------------
+submitManagerReview(payload: ManagerReview): Observable<any> {
+  const url = `${this.apiUrl}/api/manager/create`;
+  const headers = new HttpHeaders({ 'username': payload.managerName || 'Unknown' });
+
+  this.loaderService.show();
+  return this.http.post<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log('Review submitted:', res);
+      if (res.success) {
+        // this.openDialog('Success', res.message);
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error submitting review:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to submit review');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// ---------------- Update Manager Review ----------------
+updateManagerReview(id: string, payload: ManagerReview): Observable<any> {
+  const url = `${this.apiUrl}/api/manager/update/${id}`;
+  const headers = new HttpHeaders({
+    'username': payload.managerName || 'Unknown'
+  });
+
+  this.loaderService.show();
+
+  console.log("Sending update payload:", payload);
+  setTimeout(() => window.location.reload(), 1000);
+
+  return this.http.put<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log('Review updated:', res);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error updating review:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to update review');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+
+
+  // ---------------- Logical Delete of Manager Review ----------------
+  deleteManagerReview(id: string, currentUser: string): Observable<any> {
+    const url = `${this.apiUrl}/api/deletemanager/${id}`;
+    const headers = new HttpHeaders({ 'username': currentUser });
+
+    this.loaderService.show();
+    return this.http.delete(url, { headers }).pipe(
+      tap(res => console.log('Review deleted:', res)),
+      catchError((err: HttpErrorResponse) => {
+        console.error('Error deleting review:', err);
+        setTimeout(() => window.location.reload(), 1000);
+        return throwError(() => new Error(err.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // ---------------- Get Reviews by Employee ID ----------------
+  // getManagerReviewsByEmployee(employeeId: string): Observable<ManagerReview[]> {
+  //   const url = `${this.apiUrl}/api/manager/employee/${employeeId}`;
+  //   this.loaderService.show();
+  //   return this.http.get<ManagerReview[]>(url).pipe(
+  //     tap(res => console.log(`Reviews for employee ${employeeId}:`, res)),
+  //     catchError((err: HttpErrorResponse) => {
+  //       console.error('Error fetching reviews by employee:', err);
+  //       return throwError(() => new Error(err.message));
+  //     }),
+  //     finalize(() => this.loaderService.hide())
+  //   );
+  // }
+
+  // Get manager reviews by employee ID
+  getManagerReviewsByEmployee(employeeId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/api/manager/employee/${employeeId}`);
+  }
+
+  //HR PAGE
+  updateHRVerification(payload: any) {
+  return this.http.post(`${this.apiUrl}/api/hr/verify-exit`, payload);
+  setTimeout(() => window.location.reload(), 1000);
+}
+// HR REVIEW API METHODS - SIMPLIFIED VERSION
+
+// Create or Update HR Review (POST) - CORRECTED
+submitHRReview(payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/hr/review`;
+  
+  // Get username from localStorage for header (if needed by backend)
+  const currentUser = localStorage.getItem('username') || 'HR User';
+  
+  const headers = new HttpHeaders({
+    username: currentUser, // Still send username in header if backend needs it
+    'Content-Type': 'application/json'
+  });
+
+  console.log("🚀 API Service - Sending HR Review:");
+  console.log("Header username:", currentUser);
+  console.log("Payload hrName (for DB column):", payload.hrName);
+  console.log("Payload hrGeneralComments (for DB column):", payload.hrGeneralComments);
+
+  this.loaderService.show();
+
+  return this.http.post<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log("✅ Backend Response:", res);
+      console.log("✅ Saved hrName in DB:", res.data?.hrName);
+      console.log("✅ Saved hrGeneralComments in DB:", res.data?.hrGeneralComments);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error("❌ Error:", error);
+      this.openDialog('Error', error.error?.message || 'Failed to submit HR Review.');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Get HR Review by Exit Form ID (NOT HR Review ID)
+getHRReviewByExitFormId(exitFormId: string): Observable<any> {
+  const url = `${this.apiUrl}/api/hr/review/${exitFormId}`;
+  this.loaderService.show();
+
+  return this.http.get<any>(url).pipe(
+    tap(res => {
+      console.log("HR Review Data:", res);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error("Error fetching HR Review:", error);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// DELETE HR Review (clears HR data from exit form)
+deleteHRReview(exitFormId: string): Observable<any> {
+  const url = `${this.apiUrl}/api/hr/review/${exitFormId}`;
+
+  this.loaderService.show();
+
+  return this.http.delete<any>(url).pipe(
+    tap(res => {
+      console.log("HR Review Deleted:", res);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error("Error deleting HR Review:", error);
+      this.openDialog('Error', 'Failed to delete HR Review.');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Get all forms pending HR review (Optional - if needed)
+getPendingHRReviews(): Observable<any> {
+  const url = `${this.apiUrl}/api/hr/review/pending`;
+
+  this.loaderService.show();
+
+  return this.http.get<any>(url).pipe(
+    tap(res => {
+      console.log("Pending HR Reviews:", res);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error("Error fetching pending HR reviews:", error);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Update existing HR Review (PUT) - CORRECTED
+updateHRReview(payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/hr/review/update`;
+  
+  // Get username from localStorage for header
+  const currentUser = localStorage.getItem('username') || 'HR User';
+  
+  const headers = new HttpHeaders({
+    username: currentUser,
+    'Content-Type': 'application/json'
+  });
+
+  console.log("🚀 API Update - Sending to backend:");
+  console.log("Payload hrName (for DB column):", payload.hrName);
+  console.log("Payload hrGeneralComments (for DB column):", payload.hrGeneralComments);
+
+  this.loaderService.show();
+  setTimeout(() => window.location.reload(), 1000);
+
+  return this.http.put<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log("✅ Update Response:", res);
+      console.log("✅ Updated hrName in DB:", res.data?.hrName);
+      console.log("✅ Updated hrGeneralComments in DB:", res.data?.hrGeneralComments);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+      }
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error("❌ Error updating:", error);
+      this.openDialog('Error', error.error?.message || 'Failed to update HR Review.');
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+  // ==================== ASSET CLEARANCE ENDPOINTS ====================
+
+  // ---------------- Submit Asset Clearance ----------------
+submitAssetClearance(exitFormId: string, payload: AssetClearanceData): Observable<any> {
+  const url = `${this.apiUrl}/api/asset-clearance/${exitFormId}`;
+  const currentUser = localStorage.getItem('username') || 'Asset-Manager'; // Get logged-in user
+  const headers = new HttpHeaders({ 'username': currentUser });
+
+  this.loaderService.show();
+  return this.http.post<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log('Asset clearance submitted:', res);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error submitting asset clearance:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to submit asset clearance');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+  // ---------------- Get Asset Clearance by Exit Form ID ----------------
+  getAssetClearance(exitFormId: string): Observable<any> {
+        const url = `${this.apiUrl}/api/asset-clearance/${exitFormId}`;
+    this.loaderService.show();
+    return this.http.get<any>(url).pipe(
+      tap(res => {
+        console.log('Asset clearance fetched:', res);
+        if (res.success) {
+          console.log('Asset clearance data:', res.assetClearance);
+          // setTimeout(() => window.location.reload(), 1000);
+        }
+      }),
+      catchError((err: HttpErrorResponse) => {
+        console.error('Error fetching asset clearance:', err);
+        return throwError(() => new Error(err.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // ==================== UTILITY METHODS ====================
+
+  // ---------------- Parse Asset Clearance String ----------------
+  parseAssetClearanceString(assetString: string): any[] {
+    if (!assetString || assetString.trim() === '') {
+      return [];
+    }
+
+    try {
+      const assets = assetString.split(' # ');
+      return assets.map(asset => {
+        const parts = asset.split(' : ');
+        if (parts.length === 2) {
+          const conditionRemarks = parts[1].split(' || ');
+          return {
+            name: parts[0].trim(),
+            condition: conditionRemarks[0].trim(),
+            comments: conditionRemarks[1] === 'null' ? '' : conditionRemarks[1].trim()
+          };
+        }
+        return null;
+      }).filter(asset => asset !== null);
+    } catch (error) {
+      console.error('Error parsing asset clearance string:', error);
+      return [];
+    }
+  }
+
+  // ---------------- Format Asset Clearance for Display ----------------
+  formatAssetClearanceForDisplay(assetString: string): string {
+    if (!assetString || assetString.trim() === '') {
+      return 'No assets submitted';
+    }
+
+    try {
+      const assets = assetString.split(' # ');
+      return assets.map(asset => {
+        const parts = asset.split(' : ');
+        if (parts.length === 2) {
+          const conditionRemarks = parts[1].split(' || ');
+          let formatted = `${parts[0].trim()} - ${conditionRemarks[0].trim()}`;
+          if (conditionRemarks[1] && conditionRemarks[1] !== 'null') {
+            formatted += ` (${conditionRemarks[1].trim()})`;
+          }
+          return formatted;
+        }
+        return asset;
+      }).join('\n');
+    } catch (error) {
+      console.error('Error formatting asset clearance:', error);
+      return assetString;
+    }
+  }
+
+// ---------------- Update Asset Clearance ----------------
+updateAssetClearance(exitFormId: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/asset-clearance/${exitFormId}`;
+  const currentUser = localStorage.getItem('username') || 'Asset-Manager'; // Get logged-in user
+  const headers = new HttpHeaders({ 'username': currentUser });
+
+  this.loaderService.show();
+  return this.http.put<any>(url, payload, { headers }).pipe(
+    tap((res: any) => {
+      console.log('Asset clearance updated:', res);
+      if (res.success) {
+        this.openDialog('Success', res.message);
+        // setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error updating asset clearance:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to update asset clearance');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// ---------------- Submit or Update Asset Clearance (Smart method) ----------------
+saveAssetClearance(exitFormId: string, payload: any, isUpdate: boolean = false): Observable<any> {
+  if (isUpdate) {
+    return this.updateAssetClearance(exitFormId, payload);
+  } else {
+    return this.submitAssetClearance(exitFormId, payload);
+  }
+}
+
+  // ---------------- Submit Payroll Checks (After Payroll Team fills) ----------------
+submitPayrollChecks(exitFormId: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/payroll/submit/${exitFormId}`;
+  const currentUser = localStorage.getItem('username') || 'Payroll-User'; // Already getting from localStorage
+  const headers = new HttpHeaders({
+    'username': currentUser, // This will be sent to backend
+    'Content-Type': 'application/json'
+  });
+
+
+  this.loaderService.show();
+  return this.http.post<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log('Payroll Checks Submitted:', res);
+      if (res.success) {
+        this.openDialog('Success', 'Payroll submitted! Now pending Final HR Approval.');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error submitting payroll:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to submit payroll checks');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+  // ---------------- Get Payroll Checks (Load existing data) ----------------
+  getPayrollChecks(exitFormId: string): Observable<any> {
+    const url = `${this.apiUrl}/api/payroll/get/${exitFormId}`;
+
+    this.loaderService.show(); 
+    return this.http.get<any>(url).pipe(
+      tap(res => {
+        console.log('Payroll Data Loaded:', res);
+      }),
+      catchError((err: HttpErrorResponse) => {
+        console.error('Error loading payroll data:', err);
+        return throwError(() => new Error(err.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+// ---------------- UPDATE Payroll Checks (Using PUT - Correct REST) ----------------
+updatePayrollChecks(exitFormId: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/payroll/update/${exitFormId}`;
+  const currentUser = localStorage.getItem('username') || 'Payroll-User'; // Get logged-in user
+  const headers = new HttpHeaders({
+    'username': currentUser, // This will be sent to backend
+    'Content-Type': 'application/json'
+  });
+
+  this.loaderService.show();
+  return this.http.put<any>(url, payload, { headers }).pipe(
+    tap(res => {
+      console.log('Payroll Updated (PUT):', res);
+      if (res.success) {
+        this.openDialog('Success', res.message || 'Payroll updated successfully!');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error updating payroll:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to update payroll');
+      return throwError(() => err);
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// ---------------- Final HR Approval → EXIT CLOSED ----------------
+finalHrApproval(exitFormId: string, finalRemarks: string, finalChecklistData: string): Observable<ApiResponse> {
+  const url = `${this.apiUrl}/api/final-hr/approve/${exitFormId}`;
+  
+  // Prepare payload with finalChecklistData
+  const payload = {
+    finalRemarks: finalRemarks,
+    finalChecklistData: finalChecklistData  // This will go to your new column
+  };
+  
+  console.log('Sending payload with finalChecklistData:', payload);
+  
+  const headers = new HttpHeaders({
+    'username': localStorage.getItem('username') || 'HR-Final',
+    'Content-Type': 'application/json'
+  });
+
+  this.loaderService.show();
+  return this.http.post<ApiResponse>(url, payload, { headers }).pipe(
+    tap((res: ApiResponse) => {
+      console.log('Final HR Approval Response:', res);
+      if (res.success) {
+        this.openDialog('SUCCESS', 'Exit Closed Successfully!');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error in final approval:', err);
+      this.openDialog('Error', err.error?.message || 'Failed to close exit');
+      return throwError(() => new Error(err.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Remove or modify the prepareChecklistPayload method since we're now sending finalChecklistData directly
+
+// ADD THIS METHOD IN ApiService
+getFinalHrApprovalData(exitFormId: string): Observable<ApiResponse> {
+  const url = `${this.apiUrl}/api/final-hr/get/${exitFormId}`;
+
+  this.loaderService.show();
+  return this.http.get<ApiResponse>(url).pipe(
+    tap((res: ApiResponse) => {
+      console.log('Final HR Data:', res);
+      if (res.success && res.data) {
+        console.log('Checklist data:', res.data.finalChecklistData);
+      }
+    }),
+    catchError((err: HttpErrorResponse) => {
+      console.error('Error loading Final HR data:', err);
+      return throwError(() => err);
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// SUBMIT HR OFFBOARDING
+// api.service.ts — FINAL VERSION
+submitHrOffboarding(exitFormId: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/hr-offboarding/submit/${exitFormId}`;
+
+  this.loaderService.show();
+  setTimeout(() => window.location.reload(), 1000);
+  return this.http.post<any>(url, payload).pipe(  // Just send { offboarding_checks: "..." }
+    tap(res => console.log('Success:', res)),
+    catchError(err => {
+      console.error('Error:', err);
+      return throwError(() => err);
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// GET HR OFFBOARDING DATA
+getHrOffboardingData(exitFormId: string): Observable<any> {
+  const url = `${this.apiUrl}/api/hr-offboarding/get/${exitFormId}`;
+  this.loaderService.show();
+  return this.http.get<any>(url).pipe(
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// UPDATE HR OFFBOARDING (uses same endpoint as submit)
+updateHrOffboarding(exitFormId: string, payload: any): Observable<any> {
+  const url = `${this.apiUrl}/api/hr-offboarding/submit/${exitFormId}`;
+
+  this.loaderService.show();
+  setTimeout(() => window.location.reload(), 1000);
+  return this.http.post<any>(url, payload).pipe(
+    tap(res => console.log('Update Success:', res)),
+    catchError(err => {
+      console.error('Update Error:', err);
+      return throwError(() => err);
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+ openDialog(title: string, message: string): void {
     this.dialog.open(AlertDialogComponent, {
       width: '400px',
       data: { title, message },
     });
   }
 }
-

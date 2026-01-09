@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { MenuSelectionService } from '../../menu-selection.service';
 import { UserService } from '../../user.service';
+import { ApiService } from '../../api.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -8,56 +10,70 @@ import { UserService } from '../../user.service';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-  selectedMenu: string = 'home';  // Default selection is 'home'
-  selectedSubMenu: string = '';   // Default to no submenu selected
-  userRole: string = '';          // Default user role
-  adminRoles: string[] = ['HR', 'CEO', 'CTO','ACC']; // Admin roles
-  employeeRoles: string[] = ['PM','TL','AS', 'SAS','JA']; // Employee roles
-  isTrainee: boolean=false;
 
-  constructor(private menuSelectionService: MenuSelectionService, private userService: UserService) {}
+  selectedMenu: string = '';
+  selectedSubMenu: string = '';
+  userRole: string = "";
+
+  employeeId: string = localStorage.getItem('employeeId') || '';
+  employeeName: string = localStorage.getItem('username') || '';
+
+  constructor(
+    private menuSelectionService: MenuSelectionService,
+    private userService: UserService,
+    private api: ApiService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
-      this.isTrainee = this.userService.isTrainee();
-    // Retrieve user role from UserService
-    this.userRole = this.userService.role?.trim().toUpperCase() || ''; // Ensure handling null/undefined values
-
-    // Subscribe to track selected menu and submenu
-    this.menuSelectionService.selectedMenu$.subscribe((menu) => {
+    this.userRole = this.userService.role || '';
+    this.menuSelectionService.selectedMenu$.subscribe(menu => {
       this.selectedMenu = menu.mainMenu;
       this.selectedSubMenu = menu.subMenu;
     });
   }
 
-  // Handle menu and submenu selection
-  onMenuSelect(mainMenu: string, subMenu: string = ''): void {
-    // Restrict navigation if role is undefined or empty
-    if (!this.userRole && mainMenu !== 'onboarding') {
-      this.menuSelectionService.setSelectedMenu('onboarding', '');
-      return;
-    }
-
-    // Set menu and submenu for valid cases
-    this.menuSelectionService.setSelectedMenu(mainMenu, subMenu);
+  onMenuSelect(main: string, sub: string = '') {
+    this.menuSelectionService.setSelectedMenu(main, sub);
   }
 
-  // Control menu visibility based on user role
+  // ⭐ MUST HAVE → FIXES YOUR ERROR
   isMenuVisible(menu: string): boolean {
-    if (!this.userRole) {
-      return menu === 'onboarding'; // Show only onboarding if no role assigned
-    }
 
-    // Admin roles can see all menus
-    if (this.adminRoles.includes(this.userRole)) {
+    // EXIT FORM MUST ALWAYS BE VISIBLE
+    if (menu === 'exit-form') {
       return true;
     }
 
-    // Employee roles have restricted access
-    if (this.employeeRoles.includes(this.userRole)) {
-      return !['settings', 'analytics', 'onboarding','report','travel','useradd'].includes(menu); // Hide these menus
-    }
-
-    // Default: Hide all menus
-    return false;
+    // All other menus visible (you can add conditions later)
+    return true;
   }
+
+  // ⭐ FINAL WORKING EXIT FORM CHECK
+ checkExitForm() {
+  this.onMenuSelect('exit-form');
+
+  this.api.getExitFormByEmployee(this.employeeId).subscribe({
+    next: (data) => {
+      console.log("Exit form data:", data);
+
+      if (Array.isArray(data) && data.length > 0) {
+        // Record exists → go to exit-page
+        this.router.navigate(['/dashboard/exit-form']);
+      } else {
+        // No record → go to exit-form
+        // alert("hey");
+        this.router.navigate(['/dashboard/exit-form']);
+      }
+    },
+    error: (err) => {
+      console.error("API Error:", err);
+
+      // If error, allow creating a new form
+      this.router.navigate(['/dashboard/exit-form']);
+    }
+  });
 }
+
+}
+

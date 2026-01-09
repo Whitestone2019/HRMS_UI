@@ -1,0 +1,317 @@
+<div class="container">
+  <h2 class="title">{{ getFormTitle() }}</h2>
+
+  <!-- SUCCESS BANNER WHEN FORM IS SUBMITTED -->
+  <!-- <div class="completion-banner" *ngIf="isSubmitted && !isUpdateMode">
+    <strong>✅ HR Review Completed</strong>
+    <p>
+      {{ getCompletionMessage() }}
+      <br><strong>This form is now locked and cannot be modified.</strong>
+    </p>
+  </div> -->
+
+  <!-- EDIT MODE BANNER -->
+  <div class="edit-mode-banner" *ngIf="isUpdateMode">
+    <strong>✏️ Edit Mode</strong>
+    <p>You are now editing the HR review. Make your changes and click "Save Edits" or "Cancel" to discard changes.</p>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+
+  <div class="card" *ngIf="exitFormId">
+    
+    <!-- Employee Information - 2 labels per row -->
+    <div class="employee-info" *ngIf="employeeData">
+      <h3 class="section-title">Employee Information</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Employee ID:</label>
+          <span>{{employeeData.employeeId || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>Name:</label>
+          <span>{{employeeData.employeeName || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>Department:</label>
+          <span>{{employeeData.department || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>Designation:</label>
+          <span>{{employeeData.designation || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>Exit Type:</label>
+          <span>{{employeeData.exitType || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>Exit Status:</label>
+          <span class="status-{{employeeData.exitStatus}}">{{getExitStatusText(employeeData.exitStatus)}}</span>
+        </div>
+        <div class="info-item">
+          <label>Last Working Day:</label>
+          <span>{{employeeData.lastWorkingDay || 'N/A'}}</span>
+        </div>
+        <div class="info-item">
+          <label>HR Action:</label>
+          <span class="hr-action {{formData?.hrAction?.toLowerCase()}}" *ngIf="formData?.hrAction">
+            {{ formData.hrAction === 'APPROVE' ? 'Approved' : 
+               formData.hrAction === 'REJECT' ? 'Rejected' : 
+               'LWD Revision Requested' }}
+          </span>
+          <span *ngIf="!formData?.hrAction">Pending</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST SECTION -->
+    <div class="checklist-section">
+      <h3 class="section-title">{{ getSectionTitle() }}</h3>
+      <p class="section-subtitle">Please verify the following items and provide remarks for each checked item:</p>
+      
+      <form [formGroup]="hrForm" class="checklist-container">
+        <div class="checklist-grid">
+          <!-- Row 1: Notice Period Details and Leave Balances -->
+          <div class="checklist-row">
+            <!-- Notice Period Details -->
+            <div class="checklist-item">
+              <label class="check-item">
+                <input type="checkbox" 
+                       formControlName="noticePeriodChecked"
+                       [disabled]="isFormDisabled && !isUpdateMode">
+                <span class="check-label">Notice period details</span>
+              </label>
+              
+              <div class="comment-box" *ngIf="hrForm.get('noticePeriodChecked')?.value">
+                <label class="comment-label">Remarks for Notice period details:</label>
+                <textarea 
+                  class="comment-input" 
+                  rows="1" 
+                  formControlName="noticePeriodComment"
+                  placeholder="Enter your remarks about notice period details..."
+                  [readonly]="isFormDisabled && !isUpdateMode"
+                  required>
+                </textarea>
+                <div class="comment-hint" *ngIf="hrForm.get('noticePeriodChecked')?.value && 
+                                             hrForm.get('noticePeriodComment')?.invalid">
+                  ⚠ Remarks are required
+                </div>
+              </div>
+            </div>
+
+            <!-- Leave Balances -->
+            <div class="checklist-item">
+              <label class="check-item">
+                <input type="checkbox" 
+                       formControlName="leaveBalancesChecked"
+                       [disabled]="isFormDisabled && !isUpdateMode">
+                <span class="check-label">Leave balances</span>
+              </label>
+              
+              <div class="comment-box" *ngIf="hrForm.get('leaveBalancesChecked')?.value">
+                <label class="comment-label">Remarks for Leave balances:</label>
+                <textarea 
+                  class="comment-input" 
+                  rows="1" 
+                  formControlName="leaveBalancesComment"
+                  placeholder="Enter your remarks about leave balances..."
+                  [readonly]="isFormDisabled && !isUpdateMode"
+                  required>
+                </textarea>
+                <div class="comment-hint" *ngIf="hrForm.get('leaveBalancesChecked')?.value && 
+                                             hrForm.get('leaveBalancesComment')?.invalid">
+                  ⚠ Remarks are required
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Row 2: Policy Compliance and Exit Eligibility -->
+          <div class="checklist-row">
+            <!-- Policy Compliance -->
+            <div class="checklist-item">
+              <label class="check-item">
+                <input type="checkbox" 
+                       formControlName="policyComplianceChecked"
+                       [disabled]="isFormDisabled && !isUpdateMode">
+                <span class="check-label">Policy compliance</span>
+              </label>
+              
+              <div class="comment-box" *ngIf="hrForm.get('policyComplianceChecked')?.value">
+                <label class="comment-label">Remarks for Policy compliance:</label>
+                <textarea 
+                  class="comment-input" 
+                  rows="1" 
+                  formControlName="policyComplianceComment"
+                  placeholder="Enter your remarks about policy compliance..."
+                  [readonly]="isFormDisabled && !isUpdateMode"
+                  required>
+                </textarea>
+                <div class="comment-hint" *ngIf="hrForm.get('policyComplianceChecked')?.value && 
+                                             hrForm.get('policyComplianceComment')?.invalid">
+                  ⚠ Remarks are required
+                </div>
+              </div>
+            </div>
+
+            <!-- Exit Eligibility -->
+            <div class="checklist-item">
+              <label class="check-item">
+                <input type="checkbox" 
+                       formControlName="exitEligibilityChecked"
+                       [disabled]="isFormDisabled && !isUpdateMode">
+                <span class="check-label">Exit eligibility</span>
+              </label>
+              
+              <div class="comment-box" *ngIf="hrForm.get('exitEligibilityChecked')?.value">
+                <label class="comment-label">Remarks for Exit eligibility:</label>
+                <textarea 
+                  class="comment-input" 
+                  rows="1" 
+                  formControlName="exitEligibilityComment"
+                  placeholder="Enter your remarks about exit eligibility..."
+                  [readonly]="isFormDisabled && !isUpdateMode"
+                  required>
+                </textarea>
+                <div class="comment-hint" *ngIf="hrForm.get('exitEligibilityChecked')?.value && 
+                                             hrForm.get('exitEligibilityComment')?.invalid">
+                  ⚠ Remarks are required
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ✅ MOVE GENERAL COMMENTS INSIDE THE FORM -->
+        <hr />
+
+        <div class="general-comments-section">
+          <div class="comments-header">
+            <h4 class="label">General Comments (Required)</h4>
+            <span class="required-star">*</span>
+          </div>
+          
+          <div class="comments-block">
+            <textarea 
+              class="comments-input" 
+              rows="2" 
+              formControlName="generalComments"
+              placeholder="Enter any additional general comments..."
+              [readonly]="isFormDisabled && !isUpdateMode"
+              required>
+            </textarea>
+            <div class="comment-hint" *ngIf="hrForm.get('generalComments')?.invalid && 
+                                           hrForm.get('generalComments')?.touched">
+              ⚠ General comments are required
+            </div>
+          </div>
+        </div>
+        <!-- ✅ END OF GENERAL COMMENTS SECTION -->
+
+      </form> <!-- ✅ FORM CLOSES AFTER GENERAL COMMENTS -->
+    </div>
+
+    <hr />
+
+    <!-- ACTION BUTTONS - SHOW ONLY WHEN FORM IS NOT SUBMITTED -->
+    <div class="actions-box" *ngIf="!isSubmitted && !isUpdateMode">
+      <h4 class="label">Choose Action</h4>
+      
+      <div class="btn-group">
+        <button 
+          class="action-btn approve" 
+          (click)="submitAction('APPROVE')" 
+          [disabled]="loading || !canSubmit">
+          <span class="spinner" *ngIf="loading"></span>
+          {{ loading ? 'Processing...' : 'Approve' }}
+        </button>
+
+        <button 
+          class="action-btn revise" 
+          (click)="submitAction('REVISE_LWD')" 
+          [disabled]="loading || !canSubmit">
+          <span class="spinner" *ngIf="loading"></span>
+          {{ loading ? 'Processing...' : 'Revise LWD' }}
+        </button>
+
+        <button 
+          class="action-btn reject" 
+          (click)="submitAction('REJECT')" 
+          [disabled]="loading || !canSubmit">
+          <span class="spinner" *ngIf="loading"></span>
+          {{ loading ? 'Processing...' : 'Reject' }}
+        </button>
+      </div>
+
+      <div class="validation-message" *ngIf="!canSubmit && exitFormId && !loading">
+        ⚠ Please check at least one item, provide remarks for all checked items, and add general comments before submitting.
+      </div>
+
+      <div class="form-status" *ngIf="canSubmit">
+        ✅ Form is ready for submission
+      </div>
+    </div>
+
+    <!-- EDIT MODE BUTTONS - SHOW ONLY WHEN IN UPDATE MODE -->
+    <div class="edit-actions-box" *ngIf="isUpdateMode">
+      <h4 class="label">Save Your Changes</h4>
+
+      <div class="btn-group">
+        <button 
+          class="action-btn save-edit" 
+          (click)="saveEdits()" 
+          [disabled]="loading || !canSubmit">
+          <span class="spinner" *ngIf="loading"></span>
+          {{ loading ? 'Saving...' : 'Save Edits' }}
+        </button>
+
+        <button 
+          class="action-btn cancel-edit" 
+          (click)="cancelUpdate()" 
+          [disabled]="loading">
+          Cancel
+        </button>
+      </div>
+
+      <div class="validation-message" *ngIf="!canSubmit && exitFormId && !loading">
+        ⚠ Please check at least one item, provide remarks for all checked items, and add general comments before saving.
+      </div>
+
+      <div class="form-status" *ngIf="canSubmit">
+        ✅ Form is ready to save
+      </div>
+    </div>
+
+    <!-- SHOW FINAL ACTION WHEN SUBMITTED -->
+    <div class="final-action-box" *ngIf="isSubmitted && formData?.hrAction && !isUpdateMode">
+      <strong>Final Action:</strong>
+      <span class="action-tag {{formData.hrAction.toLowerCase()}}">
+        {{ formData.hrAction === 'APPROVE' ? 'Approved' : 
+           formData.hrAction === 'REJECT' ? 'Rejected' : 
+           'LWD Revision Requested' }}
+      </span>
+    </div>
+
+    <!-- UPDATE BUTTON - SHOW ONLY WHEN FORM IS SUBMITTED AND NOT IN UPDATE MODE -->
+    <div class="update-section" *ngIf="canUpdate">
+      <hr />
+      <div class="update-container">
+        <h4 class="label">Need to make changes?</h4>
+        <p class="update-hint">Click below to edit the HR review details while keeping the same action.</p>
+        <button 
+          class="update-btn" 
+          (click)="enterUpdateMode()">
+          ✏️ Update HR Review
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- No Form Data Message -->
+  <div class="no-data" *ngIf="!exitFormId && !errorMessage">
+    <p>No form data available.</p>
+  </div>
+</div>

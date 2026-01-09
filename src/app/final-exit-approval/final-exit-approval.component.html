@@ -1,0 +1,76 @@
+<div class="final-exit-container">
+  <div class="header-section">
+    <h1>Final Exit Closure</h1>
+    <p>Complete all mandatory conditions to close employee exit</p>
+  </div>
+
+  <!-- Success Alert -->
+  <div *ngIf="showSuccess" class="success-alert">
+    Exit has been successfully closed and approved!
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Exit Checklist - Mandatory Conditions</h2>
+      <p class="note">
+        <strong>Note:</strong> Exit can be closed only when ALL conditions below are satisfied.
+      </p>
+    </div>
+
+    <form [formGroup]="checklistForm" (ngSubmit)="onSubmit()" class="card-body">
+      <!-- 2 items per row grid -->
+      <div class="checklist-grid">
+        <div *ngFor="let item of checklistItems" 
+             class="checklist-item"
+             [class.completed]="isChecked(item)">
+          
+          <!-- Checkbox with title and remarks section -->
+          <div class="checkbox-section">
+            <label class="custom-checkbox">
+              <input type="checkbox"
+                     [formControlName]="item.key + '_checked'"
+                     (change)="onCheckboxChange(item)">
+              <span class="checkmark"></span>
+              <div class="checkbox-content">
+                <div class="checkbox-title">{{ item.label }}</div>
+                <div *ngIf="isChecked(item)" class="checkbox-remarks">
+                  <div class="remarks-label">Remarks for {{ item.label }}:</div>
+                  <div class="remarks-box">
+                    <textarea
+                      [formControlName]="item.key + '_comment'"
+                      placeholder="Enter remarks (required)"
+                      rows="2"></textarea>
+                    <small *ngIf="isChecked(item) && checklistForm.get(item.key + '_comment')?.invalid"
+                           class="error-text">Remarks required</small>
+                  </div>
+                </div>
+              </div>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Final Remarks -->
+      <div class="final-remarks">
+        <label>Final HR Remarks <span class="required">*</span></label>
+        <textarea formControlName="finalRemarks"
+                  placeholder="Any final comments..."
+                  rows="3"></textarea>
+      </div>
+
+      <!-- Progress -->
+      <div class="progress-info">
+        <strong>{{ completedCount }} / {{ checklistItems.length }}</strong> conditions completed
+      </div>
+
+      <!-- Submit Button -->
+      <div class="submit-section">
+        <button type="submit" [disabled]="!canSubmit"
+                [class.active]="canSubmit">
+          <span *ngIf="canSubmit">Submit</span>
+          <span *ngIf="!canSubmit">Complete all items with remarks first</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

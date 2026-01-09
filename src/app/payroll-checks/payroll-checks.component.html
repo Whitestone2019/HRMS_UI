@@ -1,0 +1,146 @@
+<div class="payroll-container">
+  <div class="header-card">
+    <!-- <h2>Payroll Checks</h2> -->
+    
+    <!-- User Role Display -->
+    <div class="user-role-badge" [class.acc-role]="isACCRole" [class.hr-role]="isHRRole && !isACCRole">
+      {{ userRoleDisplay }}
+    </div>
+    
+    <!-- <p class="info-text">
+      "The last month salary for an exited employee will be processed within 45 days from the Last Working Day (LWD)."
+    </p> -->
+    <div *ngIf="exitFormId" class="form-id">Form ID: {{ exitFormId }}</div>
+    
+    <!-- Data Status Indicator -->
+    <!-- <div *ngIf="!isLoading" class="data-status">
+      <span class="status-indicator" [class.has-data]="hasDataInDB" [class.no-data]="!hasDataInDB"></span>
+      {{ hasDataInDB ? 'Data exists in database' : 'No data in database' }}
+    </div> -->
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="loading-spinner"></div>
+    <p>Loading payroll data from database...</p>
+  </div>
+
+  <!-- 🟢 Permission Warning for non-authorized users when no data -->
+  <div *ngIf="!isLoading && !canViewForm" class="permission-warning">
+    <h3>⛔ No Data Available</h3>
+    <p>Payroll checks have not been submitted yet. Only ACC/Payroll users can create new payroll checks.</p>
+    <p *ngIf="isHRRole">As an HR user, you can view payroll checks only after they have been submitted by ACC/Payroll.</p>
+  </div>
+
+  <!-- Submitted Banner -->
+  <div *ngIf="!isLoading && canViewForm && isSubmitted && !isEditMode" class="submitted-banner">
+    <h3>Payroll Checks {{ isACCRole ? 'Submitted' : 'View Only' }}</h3>
+    <p *ngIf="isACCRole">This section is now read-only. Click below to make changes.</p>
+    <p *ngIf="isHRRole && !isACCRole">You are viewing payroll checks in read-only mode.</p>
+  </div>
+
+  <!-- 🟢 Show form only if user can view -->
+  <form [formGroup]="payrollForm" (ngSubmit)="submit()" *ngIf="!isLoading && canViewForm">
+    <!-- Single Card with 2 items per row -->
+    <div class="single-card">
+      <div formArrayName="items">
+        <!-- Grid for 2 items per row -->
+        <div class="items-grid">
+          <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="grid-item">
+            
+            <!-- Colored Label Box -->
+            <div class="label-box">
+              <div class="label-content">
+                <span class="label-number">{{ i + 1 }}.</span>
+                <strong class="label-text">{{ item.get('label')?.value }}</strong>
+              </div>
+              <button type="button" 
+                      *ngIf="isFormEditable && i >= defaultItems.length"
+                      (click)="removeItem(i)" 
+                      class="remove-btn"
+                      [disabled]="!isFormEditable">×</button>
+            </div>
+
+            <!-- Radio Buttons Container -->
+            <div class="radio-container">
+              <div class="radio-buttons">
+                <label class="radio-option cleared">
+                  <input type="radio" formControlName="status" value="Cleared" [disabled]="!isFormEditable">
+                  <span class="radio-checkmark"></span>
+                  <span class="radio-text">Cleared</span>
+                </label>
+                
+                <label class="radio-option pending">
+                  <input type="radio" formControlName="status" value="Pending" [disabled]="!isFormEditable">
+                  <span class="radio-checkmark"></span>
+                  <span class="radio-text">Pending</span>
+                </label>
+                
+                <label class="radio-option rejected">
+                  <input type="radio" formControlName="status" value="Rejected" [disabled]="!isFormEditable">
+                  <span class="radio-checkmark"></span>
+                  <span class="radio-text">Rejected</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Comment Box with Border -->
+            <div class="comment-box"
+                 *ngIf="item.get('status')?.value === 'Pending' || item.get('status')?.value === 'Rejected'">
+              <div class="comment-header">
+                <span class="comment-label">Comments:</span>
+                <span class="required-indicator">* Required</span>
+              </div>
+              <div class="textarea-container">
+                <textarea formControlName="comments"
+                          placeholder="Enter reason for Pending/Rejected status..."
+                          rows="2"
+                          [readOnly]="!isFormEditable"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add New Item - Only show if ACC role and editable -->
+      <div class="add-container" *ngIf="isFormEditable && isACCRole">
+        <div class="add-box">
+          <input type="text" formControlName="newItemName" 
+                 placeholder="Add custom payroll item..." 
+                 class="add-input"
+                 [readOnly]="!isFormEditable">
+          <button type="button" 
+                  (click)="addNewItem()" 
+                  class="add-btn"
+                  [disabled]="!isFormEditable">+ Add Item</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Submit / Save Button - Only show for ACC role -->
+    <div class="actions-bar" *ngIf="isACCRole && isFormEditable">
+      <button type="submit" 
+              class="submit-btn" 
+              [disabled]="isSubmitting || !isFormEditable">
+        {{ isSubmitting ? 'Saving...' : (isEditMode ? 'SAVE CHANGES' : 'Submit Payroll Checks') }}
+      </button>
+    </div>
+  </form>
+
+  <!-- UPDATE BUTTON (OUTSIDE FORM) - Only show for ACC role when data exists -->
+  <div *ngIf="canShowUpdateButton" class="update-wrapper">
+    <button type="button" (click)="enableEditMode()" class="update-btn">
+      UPDATE PAYROLL CHECKS
+    </button>
+  </div>
+
+  <!-- 🟢 HR View Notice -->
+  <div *ngIf="isHRRole && !isACCRole && hasDataInDB && !isLoading" class="hr-view-notice">
+    <p><strong>ℹ️ HR View Mode:</strong> You are viewing payroll checks in read-only mode. Only ACC/Payroll users can edit this section.</p>
+  </div>
+
+  <!-- 🟢 ACC Create Notice when no data -->
+  <div *ngIf="isACCRole && !hasDataInDB && !isLoading" class="acc-create-notice">
+    <p><strong>📝 ACC Action Required:</strong> No payroll checks found in database. Please fill and submit the payroll checks.</p>
+  </div>
+</div>

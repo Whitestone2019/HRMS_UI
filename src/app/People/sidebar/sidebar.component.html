@@ -51,6 +51,13 @@
     <i class="fas fa-chart-line"></i> Report's
   </a>
 
+<a 
+  *ngIf="true"
+  (click)="checkExitForm()" 
+  [class.active]="selectedMenu === 'exit-form'">
+  <i class="fas fa-running"></i> Resignation Form
+</a>
+
   <!-- <a *ngIf="isMenuVisible('travel')" routerLink="/dashboard/travel" (click)="onMenuSelect('travel')" 
    [class.active]="selectedMenu === 'travel'">
   <i class="fas fa-plane-departure"></i> Travel

@@ -1,0 +1,328 @@
+<!-- 🟢 SIMPLIFIED Progress Bar (4 STEPS) for users viewing their own forms -->
+<div *ngIf="!hasMultipleForms() && shouldShowSimplifiedProgressBar()" class="step-container">
+  <div class="step-wrapper">
+    <!-- Step 1: User -->
+    <div class="step active-step">
+      <div class="circle circle-completed">1</div>
+      <span class="label label-completed">USER</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 2) : ''"></div>
+
+    <!-- Step 2: Manager -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 2)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 2) : ''">2</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 2) : ''">MANAGER</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 3) : ''"></div>
+
+    <!-- Step 3: HR -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 3)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 3) : ''">3</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 3) : ''">HR</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 4) : ''"></div>
+
+    <!-- Step 4: Approved -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 4)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 4) : ''">✓</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 4) : ''">APPROVED</span>
+    </div>
+  </div>
+  
+  <!-- Simplified Status Info -->
+  <div class="progress-info">
+    <p><strong>Your Exit Process Status:</strong> {{ getFirstForm() ? getStatusText(getFormStatus(getFirstForm()!)) : 'No form' }}</p>
+    <div class="status-legend">
+      <span class="legend-item completed">● Completed</span>
+      <span class="legend-item active">● In Progress</span>
+      <span class="legend-item pending">● Pending</span>
+    </div>
+    <p class="click-instruction">View only - You cannot interact with the process steps</p>
+  </div>
+</div>
+
+<!-- 🟢 FULL Progress Bar (8 STEPS) for special roles viewing others' forms -->
+<div *ngIf="!hasMultipleForms() && !shouldShowSimplifiedProgressBar()" class="step-container">
+  <div class="step-wrapper">
+    <!-- Step 1: User -->
+    <div class="step active-step">
+      <div class="circle circle-completed">1</div>
+      <span class="label label-completed">USER</span>
+    </div>
+    <div class="line line-completed"></div>
+
+    <!-- Step 2: Manager -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 2)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 2) : ''"
+           [class.clickable]="isCircleClickable(2)"
+           [class.disabled]="!isCircleClickable(2)"
+           (click)="isCircleClickable(2) ? navigateToStep(2) : null">2</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 2) : ''">MANAGER</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 2) : ''"></div>
+
+    <!-- Step 3: HR Round 1 -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 3)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 3) : ''"
+           [class.clickable]="isCircleClickable(3)"
+           [class.disabled]="!isCircleClickable(3)"
+           (click)="isCircleClickable(3) ? navigateToStep(3) : null">3</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 3) : ''">HR Round 1</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 3) : ''"></div>
+
+    <!-- Step 4: System Admin -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 4)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 4) : ''"
+           [class.clickable]="isCircleClickable(4)"
+           [class.disabled]="!isCircleClickable(4)"
+           (click)="isCircleClickable(4) ? navigateToStep(4) : null">4</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 4) : ''">System Admin</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 4) : ''"></div>
+
+    <!-- Step 5: HR Round 2 -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 5)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 5) : ''"
+           [class.clickable]="isCircleClickable(5)"
+           [class.disabled]="!isCircleClickable(5)"
+           (click)="isCircleClickable(5) ? navigateToStep(5) : null">5</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 5) : ''">HR Round 2</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 5) : ''"></div>
+
+    <!-- Step 6: Payroll Clearance -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 6)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 6) : ''"
+           [class.clickable]="isCircleClickable(6)"
+           [class.disabled]="!isCircleClickable(6)"
+           (click)="isCircleClickable(6) ? navigateToStep(6) : null">6</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 6) : ''">Payroll</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 6) : ''"></div>
+
+    <!-- Step 7: Final HR Approval -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 7)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 7) : ''"
+           [class.clickable]="isCircleClickable(7)"
+           [class.disabled]="!isCircleClickable(7)"
+           (click)="isCircleClickable(7) ? navigateToStep(7) : null">7</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 7) : ''">Final HR</span>
+    </div>
+    <div class="line" [class]="getFirstForm() ? getFormLineClass(getFirstForm()!, 7) : ''"></div>
+
+    <!-- Step 8: Approved -->
+    <div class="step" [class.active-step]="getFirstForm() && isFormStepActive(getFirstForm()!, 8)">
+      <div class="circle"
+           [class]="getFirstForm() ? getFormCircleClass(getFirstForm()!, 8) : ''">✓</div>
+      <span class="label" [class]="getFirstForm() ? getFormLabelClass(getFirstForm()!, 8) : ''">APPROVED</span>
+    </div>
+  </div>
+</div>
+
+<!-- Progress Status Info for Full View -->
+<div *ngIf="!shouldShowSimplifiedProgressBar()" class="progress-info">
+  <p><strong>Workflow Status:</strong></p>
+  <div class="status-legend">
+    <span class="legend-item completed">● Completed</span>
+    <span class="legend-item active">● In Progress</span>
+    <span class="legend-item onhold">● On Hold</span>
+    <span class="legend-item rejected">● Rejected</span>
+    <span class="legend-item pending">● Pending</span>
+  </div>
+  <p *ngIf="isHR() || isSystemAdmin() || isPayrollUser()" class="click-instruction">
+    Click on active/pending circles to process
+  </p>
+</div>
+
+<!-- HR VIEW CARDS -->
+<div *ngIf="isHR() && currentHRStep" class="hr-view-container">
+  <!-- User Form Card (Step 1) -->
+  <div *ngIf="currentHRStep === 1" class="hr-form-card readonly-card">
+    <h3 class="form-title">User Exit Form Details (View Only)</h3>
+    <div class="form-details">
+      <div class="detail-grid">
+        <div class="detail-item"><strong>Employee Name:</strong> {{ getFirstForm()?.employeeName || 'N/A' }}</div>
+        <div class="detail-item"><strong>Employee ID:</strong> {{ getFirstForm()?.employeeId || 'N/A' }}</div>
+        <div class="detail-item"><strong>Reason for Exit:</strong> {{ getFirstForm()?.reason || 'N/A' }}</div>
+        <div class="detail-item"><strong>Form Status:</strong> {{ getFirstForm() ? getStatusText(getFormStatus(getFirstForm()!)) : 'N/A' }}</div>
+        <div class="detail-item"><strong>Form ID:</strong> {{ getFormId() }}</div>
+        <div class="detail-item"><strong>Submitted On:</strong> {{ getUserSubmittedDate() }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approved Card (Step 8) -->
+  <div *ngIf="currentHRStep === 8" class="hr-form-card approved-card">
+    <h3 class="form-title">Exit Process Completed</h3>
+    <div class="form-details">
+      <div class="detail-grid">
+        <div class="detail-item"><strong>Employee Name:</strong> {{ getFirstForm()?.employeeName || 'N/A' }}</div>
+        <div class="detail-item"><strong>Employee ID:</strong> {{ getFirstForm()?.employeeId || 'N/A' }}</div>
+        <div class="detail-item"><strong>Final Status:</strong> Approved by HR</div>
+        <div class="detail-item"><strong>Completion Date:</strong> {{ getCompletionDate() }}</div>
+        <div class="detail-item"><strong>Final HR Approved On:</strong> {{ getFinalHRSubmittedDate() }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Go to Exit Form Button -->
+<div class="btn-container">
+  <button class="go-btn" (click)="createNewExitForm()">Go to Exit Form</button>
+</div>
+
+<hr />
+
+<!-- Add this after your progress bar section but before the "Go to Exit Form" button -->
+
+<!-- 🟢 INSTRUCTION FOR SELECTING ROUNDS -->
+<div *ngIf="!shouldShowSimplifiedProgressBar() && (isHR() || isSystemAdmin() || isPayrollUser())" 
+     class="selection-instruction">
+  <p class="instruction-text">
+    <strong> Action Required:</strong> Please select a round from the progress bar above to process the Resignation form.
+  </p>
+  
+  <!-- Optional: Add more specific instructions based on user role -->
+  <div *ngIf="isHR()" class="role-specific-instruction">
+    <small>As an HR user, you can click on: <strong>ALL Rounds (Only Completed Rounds)</strong></small>
+  </div>
+  
+  <div *ngIf="isSystemAdmin()" class="role-specific-instruction">
+    <small>As a System Admin, you can click on: <strong>System Admin (4)</strong> for asset clearance</small>
+  </div>
+  
+  <div *ngIf="isPayrollUser()" class="role-specific-instruction">
+    <small>As a Payroll user, you can click on: <strong>Payroll (6)</strong> for dues clearance</small>
+  </div>
+</div>
+
+<!-- 🟢 INSTRUCTION FOR REGULAR USERS (View Only) -->
+<div *ngIf="shouldShowSimplifiedProgressBar()" class="view-only-instruction">
+  <p class="instruction-text">
+    <strong>👁️ View Only:</strong> You are viewing your own exit form. The progress shows your current status.
+  </p>
+  <p class="instruction-text">
+    <small>Note: You cannot interact with the progress steps. Please contact your manager or HR for updates.</small>
+  </p>
+</div>
+
+<!-- ALL STEP FORMS (HR Round 1, Asset, Payroll, etc.) -->
+<div class="step-forms-container" style="margin-top: 30px; padding: 20px; background: #f9f9f9; border-radius: 8px; border: 1px solid #eee;">
+
+  <!-- User Form: Use Component -->
+  <div *ngIf="showUserForm" class="step-form-block">
+    <h3>User Exit Form</h3>
+    <app-exit-form 
+      [exitFormId]="getFirstForm()?.id"
+      (submitted)="onUserFormSubmitted($event)">
+    </app-exit-form>
+  </div>
+
+  <!-- Manager Review: Use Component -->
+  <div *ngIf="showManagerReviewForm" class="step-form-block">
+    <h3>Manager Review</h3>
+    <app-manager-review 
+      [exitFormId]="getFirstForm()?.id"
+      [employeeId]="viewingEmployee"
+      (submitted)="onManagerReviewSubmitted($event)">
+    </app-manager-review>
+  </div>
+
+  <!-- HR Round 1: Use Component like HR Round 2 -->
+  <div *ngIf="showHRVerificationForm" class="step-form-block">
+    <h3>HR Round 1 - Exit Verification</h3>
+    <app-hr-verification 
+      [exitFormId]="getFirstForm()?.id"
+      [employeeId]="viewingEmployee"
+      (submitted)="onHRVerificationSubmitted($event)">
+    </app-hr-verification>
+  </div>
+
+  <!-- Asset Clearance Form -->
+  <div *ngIf="showAssetClearanceForm" class="step-form-block">
+    <h3>System Admin - Asset Clearance</h3>
+    <app-asset-clearance 
+      [exitFormId]="selectedFormForAssetClearance?.id"
+      (submitted)="onAssetClearanceSubmitted($event)">
+    </app-asset-clearance>
+  </div>
+
+  <div *ngIf="showHROffboardingInline && isHR()" class="step-form-block">
+    <h3>HR Round 2 - Offboarding Checklist</h3>
+    <app-hr-offboarding-checklist 
+      [exitFormId]="selectedFormForHROffboarding?.id"
+      (submitted)="onHROffboardingSubmitted($event)">
+    </app-hr-offboarding-checklist>
+    <!-- <div style="text-align: center; margin-top: 20px;">
+      <button class="close-asset-btn" (click)="showHROffboardingInline = false">Close</button>
+    </div> -->
+  </div>
+
+  <!-- Payroll Form - Now works for both Payroll (edit) and HR (view) -->
+  <div *ngIf="showPayrollCheckForm" class="step-form-block">
+    <h3>Payroll & Dues Clearance</h3>
+
+    <!-- Pass readonly mode to the child component -->
+    <app-payroll-checks
+      [exitFormId]="selectedFormForPayroll?.id"
+      [readonly]="showPayrollCheckFormForHR"
+      (submitted)="onPayrollSubmitted($event)">
+    </app-payroll-checks>
+
+    <!-- Optional: Show close button for HR -->
+    <div *ngIf="showPayrollCheckFormForHR" style="text-align: center; margin-top: 20px;">
+      <button class="close-btn" (click)="closeStepCard()">Close Payroll View</button>
+    </div>
+  </div>
+
+  <!-- Final HR Form -->
+  <div *ngIf="showFinalHRForm" class="step-form-block">
+    <h3>Final HR Approval & Exit Release</h3>
+    
+    <div *ngIf="getFirstForm() && getFirstForm()?.id; else noForm">
+      <app-final-exit-approval 
+        [exitFormId]="getFirstForm()!.id"  
+        (submitted)="onFinalHRSubmitted($event)">
+      </app-final-exit-approval>
+    </div>
+    
+    <ng-template #noForm>
+      <div class="error-message">
+        <p>❌ Cannot load exit form. Please ensure a valid form is selected.</p>
+        <p>Form ID: {{ getFirstForm()?.id || 'Missing' }}</p>
+      </div>
+    </ng-template>
+  </div>
+
+  <!-- Rejection/On-Hold Status Display -->
+  <div *ngIf="getFirstForm() && (isFormRejected(getFirstForm()!) || isFormOnHold(getFirstForm()!))" 
+       class="status-alert" 
+       [class.rejected]="isFormRejected(getFirstForm()!)"
+       [class.onhold]="isFormOnHold(getFirstForm()!)">
+    <div class="alert-icon">
+      <span *ngIf="isFormRejected(getFirstForm()!)">❌</span>
+      <span *ngIf="isFormOnHold(getFirstForm()!)">⏸️</span>
+    </div>
+    <div class="alert-message">
+      <strong>{{ getStatusMessage(getFirstForm()!) }}</strong>
+      <p *ngIf="isFormRejected(getFirstForm()!)">This exit form has been rejected and cannot proceed further.</p>
+      <p *ngIf="isFormOnHold(getFirstForm()!)">This exit form is currently on hold. Please contact the relevant authority.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- No Data -->
+<div *ngIf="!loading && exitForms.length === 0" class="no-data">
+  No exit forms found.
+</div>

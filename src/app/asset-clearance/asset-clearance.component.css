@@ -1,0 +1,337 @@
+/* Container */
+.main-container {
+  max-width: 750px;
+  margin: auto;
+  padding: 15px;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+}
+
+.title {
+  text-align: center;
+  margin-bottom: 15px;
+  color: #1a237e;
+  font-size: 22px;
+  font-weight: 600;
+}
+
+/* Card */
+.card {
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Radio buttons */
+.radio-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.radio-option {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.radio-option input[type="radio"] {
+  width: 16px;
+  height: 16px;
+}
+
+.radio-label {
+  font-size: 13px;
+  color: #444;
+}
+
+/* Comment Box */
+.comment-section {
+  margin-top: 8px;
+}
+
+.comment-section label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+  font-size: 13px;
+}
+
+.comment-section textarea {
+  width: 100%;
+  height: 60px;
+  border-radius: 6px;
+  padding: 8px;
+  border: 1px solid #7986cb;
+  background: #f3f4ff;
+  font-size: 13px;
+  resize: vertical;
+}
+
+/* Add new asset */
+.add-container {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.add-container input {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 6px;
+  border: 1px solid #5c6bc0;
+  background: #f4f6ff;
+  font-size: 13px;
+}
+
+/* Buttons */
+.add-btn {
+  padding: 8px 15px;
+  background: #396EB0;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.add-btn:hover {
+  background: #3f4aa3;
+}
+
+.submit-btn {
+  width: 100%;
+  padding: 10px;
+  background: #396EB0;
+  color: white;
+  border: none;
+  margin-top: 20px;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.submit-btn:hover {
+  background: #5982b5;
+}
+
+.remove-btn {
+  background: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  line-height: 1;
+}
+
+.remove-btn:hover {
+  background: #cc0000;
+}
+
+/* Readonly styles */
+.card.readonly {
+  background: #f8f9fa;
+  opacity: 0.85;
+  pointer-events: none;
+}
+
+.card.readonly input,
+.card.readonly textarea {
+  background: #eee;
+  cursor: not-allowed;
+}
+
+/* Validation */
+.validation-error {
+  color: #dc3545;
+  font-size: 12px;
+  margin-top: 4px;
+  padding: 4px 6px;
+  background: #f8d7da;
+  border-radius: 4px;
+  border-left: 3px solid #dc3545;
+}
+
+.validation-message {
+  margin-top: 10px;
+  padding: 8px;
+  background: #fff3cd;
+  border: 1px solid #ffeaa7;
+  border-radius: 6px;
+  color: #856404;
+  text-align: center;
+  font-size: 13px;
+}
+
+.submit-btn.disabled {
+  background: #6c757d !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}
+
+/* Loading */
+.loading-state {
+  text-align: center;
+  padding: 30px;
+}
+
+.spinner {
+  border: 3px solid #f3f3f3;
+  border-top: 3px solid #1a237e;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Mode indicators */
+.form-info {
+  margin-bottom: 15px;
+}
+
+.form-info p {
+  margin: 0 0 5px 0;
+  font-size: 13px;
+}
+
+.mode-indicator {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.update-mode {
+  background: #fff3cd;
+  color: #856404;
+  border: 1px solid #ffeaa7;
+}
+
+.create-mode {
+  background: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.view-mode {
+  background: #d1ecf1;
+  color: #0c5460;
+  border: 1px solid #bee5eb;
+}
+
+/* Update button */
+.submit-btn.update-btn {
+  background: #396EB0 !important;
+  color: whitesmoke !important;
+}
+
+.submit-btn.update-btn:hover {
+  background: #5982b5 !important;
+}
+
+/* Edit/Cancel buttons */
+.edit-btn {
+  padding: 10px 20px;
+  background: #396EB0;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 160px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+}
+
+.cancel-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b6b 0%, #ff4757 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  min-width: 100px;
+  box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+}
+
+.button-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.view-message,
+.edit-mode-message {
+  text-align: center;
+  font-size: 13px;
+  color: #666;
+  margin-top: 8px;
+}
+
+/* Edit mode label button */
+.edit-btn.edit-mode-label {
+  background: #6c757d;
+  cursor: default;
+  box-shadow: none;
+}
+
+.edit-btn.edit-mode-label:hover {
+  background: #6c757d;
+  transform: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .main-container {
+    padding: 10px;
+  }
+  
+  .title {
+    font-size: 18px;
+  }
+  
+  .card-header {
+    font-size: 15px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .edit-btn, .cancel-btn {
+    min-width: 100%;
+    max-width: 250px;
+  }
+}

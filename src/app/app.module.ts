@@ -81,6 +81,16 @@ import { TeamAttendanceBreakdownPieComponent } from './People/overview/team-atte
 //import { EmployeeHistoryComponent } from './People/employee-history/employee-history.component';
 import { CalendarsPageComponent } from './calendars-page/calendars-page.component';
 
+import { ExitFormComponent } from './exit-form/exit-form.component';
+import { ExitPageComponent } from './exit-page/exit-page.component';
+import { ManagerReviewComponent } from './manager-review/manager-review.component'; // Import Manager Review components
+import { ExitpageDatasComponent } from './exitpage-datas/exitpage-datas.component';
+import { HrVerificationComponent } from './hr-verification/hr-verification.component';
+import { AssetClearanceComponent } from './asset-clearance/asset-clearance.component';
+import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-approval.component';
+import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
+import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -135,6 +145,16 @@ import { CalendarsPageComponent } from './calendars-page/calendars-page.componen
    PayrollAdjustmentComponent,
    TeamAttendanceBreakdownPieComponent,
    CalendarsPageComponent,
+    ExitFormComponent,
+    ExitPageComponent,
+    ManagerReviewComponent, // Added ManagerReviewComponent
+    // CommentsDialog // Added CommentsDialog
+    ExitpageDatasComponent,
+    HrVerificationComponent,
+    AssetClearanceComponent,
+    FinalExitApprovalComponent,
+    PayrollChecksComponent,
+    HrOffboardingChecklistComponent,
 
   ],
   imports: [

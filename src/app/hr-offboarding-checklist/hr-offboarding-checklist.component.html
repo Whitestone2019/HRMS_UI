@@ -1,0 +1,126 @@
+<div class="offboarding-container">
+
+  <!-- Header -->
+  <div class="header-card">
+    <!-- <h2>HR Offboarding Checklist</h2> -->
+    <!-- <p class="subtitle">Verify return of all physical items</p> -->
+    <div class="form-id" *ngIf="exitFormId">Form ID: <strong>{{ exitFormId }}</strong></div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="isLoading" class="loading">Loading checklist...</div>
+
+  <!-- VIEW MODE: Submitted -->
+  <div *ngIf="isSubmitted && !isEditMode && !isLoading" class="view-mode">
+    <div class="completed-header">
+      <h3>HR Offboarding Completed</h3>
+      <p>This section has been submitted and is now read-only.</p>
+    </div>
+
+    <div class="items-grid">
+      <div *ngFor="let item of items.controls" class="view-item">
+        <div class="item-label">{{ item.get('label')?.value }}</div>
+        <div class="status-display">
+          <span class="status-dot"
+                [ngClass]="{
+                  'cleared': item.get('status')?.value === 'Cleared',
+                  'pending': item.get('status')?.value === 'Pending',
+                  'rejected': item.get('status')?.value === 'Issues found'
+                }"></span>
+          <span class="status-name">
+            {{ item.get('status')?.value }}
+            <span *ngIf="item.get('comments')?.value" class="comment-text">
+              — {{ item.get('comments')?.value }}
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UPDATE BUTTON -->
+    <div class="update-btn-row">
+      <button class="update-btn" (click)="enableEditMode()">
+        Update Checklist
+      </button>
+    </div>
+  </div>
+
+  <!-- EDIT / SUBMIT FORM -->
+  <form [formGroup]="form" (ngSubmit)="submit()" *ngIf="!isLoading && (!isSubmitted || isEditMode)">
+    <div formArrayName="items">
+      <div class="items-grid">
+        <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="item-card">
+          <div class="item-title">
+            <strong>{{ item.get('label')?.value }}</strong>
+            <button type="button" 
+                    *ngIf="isFormEditable() && i >= defaultItems.length"
+                    (click)="removeItem(i)" 
+                    class="remove-btn">×</button>
+          </div>
+
+          <!-- All 3 radio buttons in a single row -->
+          <div class="radio-buttons-row">
+            <label class="radio-option cleared">
+              <input type="radio" 
+                     formControlName="status" 
+                     value="Cleared"
+                     [disabled]="!isFormEditable()">
+              <span class="radio-checkmark"></span>
+              <span class="radio-text">Cleared</span>
+            </label>
+
+            <label class="radio-option pending">
+              <input type="radio" 
+                     formControlName="status" 
+                     value="Pending"
+                     [disabled]="!isFormEditable()">
+              <span class="radio-checkmark"></span>
+              <span class="radio-text">Pending</span>
+            </label>
+
+            <label class="radio-option rejected">
+              <input type="radio" 
+                     formControlName="status" 
+                     value="Issues found"
+                     [disabled]="!isFormEditable()">
+              <span class="radio-checkmark"></span>
+              <span class="radio-text">Issues found</span>
+            </label>
+          </div>
+
+          <div class="comments-section"
+               *ngIf="item.get('status')?.value === 'Pending' || item.get('status')?.value === 'Issues found'">
+            <textarea formControlName="comments"
+                      placeholder="Enter reason/comments (required)"
+                      rows="2"
+                      [readOnly]="!isFormEditable()"></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Item Section -->
+    <div class="add-item-row" *ngIf="isFormEditable()">
+      <input type="text" 
+             formControlName="newItem" 
+             placeholder="Add new item..." 
+             class="add-input">
+      <button type="button" 
+              (click)="addCustomItem()" 
+              class="add-btn">+ Add Item</button>
+    </div>
+
+    <!-- Submit/Cancel Buttons -->
+    <div class="submit-row">
+      <button type="submit" 
+              class="submit-btn" 
+              [disabled]="isSubmitting || !isFormEditable()">
+        {{ isSubmitting ? 'Saving...' : (isEditMode ? 'Update Checklist' : 'Submit Checklist') }}
+      </button>
+      <button type="button" 
+              *ngIf="isEditMode" 
+              (click)="cancelEdit()" 
+              class="cancel-btn">Cancel</button>
+    </div>
+  </form>
+</div>

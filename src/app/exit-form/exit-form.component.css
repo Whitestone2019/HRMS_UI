@@ -1,0 +1,517 @@
+.page-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+}
+
+.exit-card {
+  width: 650px;
+  background: #ffffff;
+  padding: 35px;
+  border-radius: 14px;
+  box-shadow: 0px 10px 25px rgba(0,0,0,0.15);
+  animation: fadeIn 0.3s ease-in-out;
+  border-top: 4px solid #1976d2;
+}
+
+.form-title {
+  text-align: center;
+  font: 400 1.75rem / 2.25rem Roboto, sans-serif;
+  color: #1976d2;
+}
+
+.subtitle {
+  text-align: center;
+  margin-top: 6px;
+  margin-bottom: 25px;
+  font-size: 14px;
+  color: #555;
+}
+
+.form-group {
+  margin-bottom: 22px;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.underline-input {
+  width: 100%;
+  border-bottom: 2px solid #c5c9ce;
+  padding-bottom: 4px;
+}
+
+.line-input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 16px;
+  padding: 6px;
+}
+
+.line-input:focus {
+  border-bottom: 2px solid #1976d2;
+}
+
+.submit-btn {
+  width: 100%;
+  background: #396EB0;
+  border: none;
+  color: white;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 17px;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.submit-btn:hover {
+  background: #125aa6;
+}
+
+.submit-btn:disabled {
+  background: gray;
+  cursor: not-allowed;
+}
+
+/* NEW → Two fields per row */
+.row-2 {
+  display: flex;
+  gap: 30px;
+}
+
+.row-2 .form-group {
+  flex: 1;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.file-box input[type="file"] {
+  width: 100%;
+  padding: 8px 0;
+}
+
+.file-name {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #1976d2;
+}
+
+/* MAIN FIX */
+.no-overflow {
+  overflow: visible !important;
+}
+
+.dropdown-select {
+  width: 100%;
+  padding: 6px 0;
+  border: none;
+  border-bottom: 2px solid #444;
+  background: transparent;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.disabled-input {
+  background: #f2f2f2 !important;
+  color: #666;
+  cursor: not-allowed;
+}
+
+.back-btn-container {
+  margin-bottom: 20px;
+}
+
+.back-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.back-btn:hover {
+  background: #5a6268;
+}
+
+.view-btn {
+  background: #17a2b8;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.view-btn:hover {
+  background: #138496;
+}
+
+.disabled-input {
+  background-color: #f8f9fa;
+  color: #6c757d;
+}
+
+
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.withdraw-btn {
+  padding: 12px 24px;
+  background: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.withdraw-btn:hover:not(:disabled) {
+  background: #c82333;
+  transform: translateY(-2px);
+}
+
+.withdraw-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.withdraw-btn.loading {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Manager Review Banner */
+.manager-review-banner {
+  background: #e8f4fd;
+  border-left: 4px solid #2196F3;
+  padding: 12px 16px;
+  margin: 15px 0;
+  border-radius: 4px;
+}
+
+.manager-review-banner strong {
+  color: #2196F3;
+  display: block;
+  margin-bottom: 5px;
+}
+
+.manager-review-banner p {
+  margin: 0;
+  color: #555;
+  font-size: 14px;
+}
+
+/* Form Header */
+.form-header {
+  margin-bottom: 20px;
+}
+
+/* Date Note */
+.date-note {
+  font-size: 12px;
+  color: #666;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Edit Mode Buttons */
+.edit-mode-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 25px;
+}
+
+.cancel-btn {
+  background: #E55050;
+  color: whitesmoke;
+  border: 1px solid #ddd;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.cancel-btn:hover:not(:disabled) {
+  background: #C70039;
+}
+
+.reset-btn {
+  background: #ff9800;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.reset-btn:hover:not(:disabled) {
+  background: #f57c00;
+}
+
+/* Withdraw Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-container {
+  background: white;
+  border-radius: 8px;
+  width: 500px;
+  max-width: 90%;
+  max-height: 80%;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.3s ease-out;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eaeaea;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  color: #d32f2f;
+  font-size: 20px;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-btn:hover:not(:disabled) {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.close-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.warning-text {
+  background-color: #fff3cd;
+  border: 1px solid #ffeaa7;
+  color: #856404;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.modal-body .form-group {
+  margin-bottom: 20px;
+}
+
+.modal-body .form-group label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: #333;
+}
+
+.purpose-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+}
+
+.purpose-textarea:focus {
+  outline: none;
+  border-color: #1976d2;
+  box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.1);
+}
+
+.purpose-textarea:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.helper-text {
+  display: block;
+  margin-top: 5px;
+  color: #666;
+  font-size: 12px;
+}
+
+.modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid #eaeaea;
+}
+
+.modal-footer .cancel-btn {
+  padding: 10px 20px;
+  background: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.modal-footer .cancel-btn:hover:not(:disabled) {
+  background: #5a6268;
+}
+
+.modal-footer .confirm-btn {
+  padding: 10px 20px;
+  background: #d32f2f;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+}
+
+.modal-footer .confirm-btn:hover:not(:disabled) {
+  background: #c62828;
+}
+
+.modal-footer .cancel-btn:disabled,
+.modal-footer .confirm-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Role Info Banner Styles */
+.role-info-banner {
+  margin: 20px 0;
+}
+
+.banner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.banner-content {
+  background: #f8f9fa;
+  padding: 15px 25px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  max-width: 600px;
+  width: 100%;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.hr-banner {
+  border-left-color: #1976d2;
+  background: #e8f4fd;
+  color: #1976d2;
+}
+
+.hr-banner strong {
+  color: #1976d2;
+}
+
+.manager-banner {
+  border-left-color: #ff9800;
+  background: #fff3e0;
+  color: #ef6c00;
+}
+
+.manager-banner strong {
+  color: #ef6c00;
+}
+
+/* Alternative: If you want the text itself centered within each banner */
+.banner-content {
+  background: #f8f9fa;
+  padding: 15px 25px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  box-shadow: 0 2px 8px rgba(244, 5, 5, 0.1);
+  text-align: center;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Alternative 2: If you want them stacked and centered */
+.role-info-banner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.banner-content {
+  background: #f8f9fa;
+  padding: 15px 25px;
+  border-radius: 8px;
+  border-left: 4px solid;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  margin: 5px 0;
+  width: 100%;
+  max-width: 600px;
+  animation: fadeIn 0.5s ease-out;
+}

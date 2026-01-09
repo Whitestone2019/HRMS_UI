@@ -1,0 +1,277 @@
+<div class="page-wrapper" (click)="closeDropdowns()">
+  <div class="exit-card">
+
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading">
+      <div class="spinner"></div>
+      Loading form data...
+    </div>
+
+    <div *ngIf="!loading && formDataLoaded">
+      <!-- Header Section -->
+      <div class="form-header">
+        <h2 class="form-title">{{ formTitle }}</h2>
+        
+        <!-- Role-based info banner -->
+        <div *ngIf="isEditMode || (isHR || isManager)" class="role-info-banner">
+  <div class="banner-container">
+    <div *ngIf="isHR" class="hr-banner banner-content">
+      <strong>HR User</strong> - You can edit all fields including notice start date
+    </div>
+    <div *ngIf="isManager && !isHR" class="manager-banner banner-content">
+      <strong>Manager</strong> - You can edit only the notice start date
+      <span *ngIf="isWaiverAction" style="color: #d32f2f; font-weight: bold;"> (Waiver Mode)</span>
+    </div>
+    <div *ngIf="isEmployee && !isHR && !isManager && isEditMode" class="employee-banner banner-content">
+      <strong>Employee</strong> - You can edit your form
+    </div>
+  </div>
+</div>
+        
+        <p class="subtitle">{{ employeeName }} (ID: {{ employeeId }})</p>
+        
+        <!-- Manager Review Banner -->
+        <!-- <div *ngIf="fromManagerReview" class="manager-review-banner">
+          <strong>📝 Manager Review Mode</strong>
+          <p>You are editing this exit form as part of manager review process.</p>
+        </div> -->
+        
+        <!-- Waiver Action Banner -->
+        <div *ngIf="isWaiverAction" class="waiver-banner">
+          <strong>WAIVER ACTION</strong>
+          <p>You are adjusting the notice start date for a waiver request.</p>
+        </div>
+      </div>
+
+      <!-- Back Button -->
+      <div class="back-btn-container">
+        <button class="back-btn" (click)="goBack()">
+          ← Back 
+          <span *ngIf="fromManagerReview">to Manager Review</span>
+          <span *ngIf="!fromManagerReview && (isHR || isManager)">to Dashboard</span>
+          <span *ngIf="!fromManagerReview && !isHR && !isManager">to Dashboard</span>
+        </button>
+      </div>
+
+      <form [formGroup]="exitForm" (ngSubmit)="submitForm()">
+
+        <!-- Employee ID + Name -->
+        <div class="row-2">
+          <div class="form-group">
+            <label>Employee ID:</label>
+            <div class="underline-input">
+              <input 
+                type="text" 
+                class="line-input disabled-input"
+                formControlName="employeeId"
+                [disabled]="true"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Employee Name:</label>
+            <div class="underline-input">
+              <input 
+                type="text" 
+                class="line-input disabled-input"
+                formControlName="employeeName"
+                [disabled]="true"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Notice Start Date + Reason -->
+        <div class="row-2">
+          <div class="form-group">
+            <label>Notice Start Date:</label>
+            <div class="underline-input">
+              <input 
+                type="date" 
+                class="line-input" 
+                formControlName="noticeStartDate" 
+                (change)="onDateChange($event)"
+                [disabled]="!isNoticeDateEditable()"
+              />
+              <!-- Permission hint -->
+              <div class="permission-hint" *ngIf="isHR || isManager || isWaiverAction">
+                <span *ngIf="isNoticeDateEditable()" class="can-edit">
+                   You can edit this date
+                </span>
+                <span *ngIf="!isNoticeDateEditable()" class="cannot-edit">
+                  This field is read-only
+                </span>
+              </div>
+              <div *ngIf="isWaiverAction" class="waiver-instruction">
+                <small>Select a new date to adjust the notice period for waiver</small>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Reason:</label>
+            <div class="underline-input no-overflow">
+              <select 
+                class="dropdown-select" 
+                formControlName="reason"
+                (click)="keepOpen($event, 'reasonDropdown')"
+                [disabled]="!areOtherFieldsEditable()"
+              >
+                <option value="">-- Select Reason --</option>
+                <option value="Resignation">Resignation</option>
+                <option value="Termination">Termination</option>
+                <option value="Retirement">Retirement</option>
+                <option value="Contract End">Contract End</option>
+                <option value="Career Growth">Career Growth</option>
+                <option value="Personal Reasons">Personal Reasons</option>
+                <option value="Health Issues">Health Issues</option>
+                <option value="Other">Other</option>
+              </select>
+              <div *ngIf="isManager && !isHR && isEditMode" class="field-info">
+                <small>Only HR can edit this field</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="form-group">
+          <label>Comments / Remarks:</label>
+          <div class="underline-input">
+            <textarea 
+              class="line-input" 
+              formControlName="comments"
+              [disabled]="!areOtherFieldsEditable()"
+              placeholder="Enter comments for exit form..."
+            ></textarea>
+            <div *ngIf="isManager && !isHR && isEditMode" class="field-info">
+              <small>Only HR can edit this field</small>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notice Period + Notice End Date -->
+        <div class="row-2">
+          <div class="form-group">
+            <label>Notice Period (Auto 90 Days):</label>
+            <div class="underline-input">
+              <input type="number" class="line-input" formControlName="noticePeriod" [disabled]="true" />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Notice End Date (Auto):</label>
+            <div class="underline-input">
+              <input type="date" class="line-input" formControlName="noticeEndDate" [disabled]="true" />
+              <div class="date-info" *ngIf="isEditMode && isNoticeDateEditable()">
+                <small>Auto-calculated 90 days from start date</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Attachment -->
+        <div class="form-group">
+          <label>Attachment (Optional):</label>
+          <div class="underline-input no-overflow">
+            <input 
+              type="file" 
+              (change)="onFileSelected($event)" 
+              [disabled]="!areOtherFieldsEditable()"
+            />
+            <div *ngIf="isManager && !isHR && isEditMode" class="field-info">
+              <small>Only HR can edit this field</small>
+            </div>
+          </div>
+          <p class="file-name" *ngIf="selectedFileName">Selected: {{ selectedFileName }}</p>
+        </div>
+
+        <!-- Action Buttons Container -->
+        <div class="action-buttons">
+          <!-- Edit Mode Buttons - ONLY SUBMIT AND CANCEL -->
+          <div *ngIf="isEditMode" class="edit-mode-buttons">
+            <button 
+              class="submit-btn" 
+              type="submit"
+              [disabled]="exitForm.invalid || isSubmitting"
+              [class.loading]="isSubmitting"
+            >
+              {{ isSubmitting ? 'Saving...' : 'Submit' }}
+            </button>
+            
+            <button 
+              class="cancel-btn" 
+              type="button"
+              (click)="cancelEdit()"
+              [disabled]="isSubmitting"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <!-- View Mode - Withdraw Button for HR, Manager, and Employee -->
+          <div *ngIf="!isEditMode && hasExistingForm" class="view-mode-buttons">
+            <button 
+              *ngIf="canWithdraw()"
+              class="withdraw-btn" 
+              (click)="openWithdrawModal()"
+              [disabled]="withdrawing"
+              [class.loading]="withdrawing"
+            >
+              {{ withdrawing ? 'Withdrawing...' : 'Withdraw Exit' }}
+            </button>
+          </div>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- Withdraw Modal -->
+<div *ngIf="showWithdrawModal" class="modal-overlay" (click)="closeWithdrawModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Withdraw Exit Form</h3>
+      <button class="close-btn" (click)="closeWithdrawModal()" [disabled]="withdrawing">&times;</button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="warning-text">
+        <strong> Warning:</strong> Are you sure you want to withdraw your exit form? 
+        This action cannot be undone.
+      </p>
+      
+      <div class="form-group">
+        <label for="withdrawPurpose">Reason for Withdrawal (Optional):</label>
+        <textarea 
+          id="withdrawPurpose"
+          [(ngModel)]="withdrawPurpose"
+          placeholder="Enter reason for withdrawing exit form..."
+          class="purpose-textarea"
+          rows="4"
+          [disabled]="withdrawing"
+        ></textarea>
+        <small class="helper-text">This information will be recorded for reference.</small>
+      </div>
+      
+      <div class="modal-footer">
+        <button 
+          class="cancel-btn" 
+          (click)="closeWithdrawModal()"
+          [disabled]="withdrawing"
+        >
+          Cancel
+        </button>
+        <button 
+          class="confirm-btn" 
+          (click)="confirmWithdraw()"
+          [disabled]="withdrawing"
+        >
+          {{ withdrawing ? 'Processing...' : 'Confirm Withdrawal' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

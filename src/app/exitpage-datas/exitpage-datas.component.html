@@ -1,0 +1,172 @@
+<div class="main-container">
+  <h2 class="title">Employees Exit Forms Under You</h2>
+
+  <!-- Debug Info -->
+  <!-- <div class="debug-info" style="font-size: 12px; color: #666; margin-bottom: 10px; padding: 8px; background: #f5f5f5; border-radius: 4px;">
+    <strong>Debug:</strong> Total: {{ exitForms.length }} records | 
+    Page {{ currentPage }} of {{ totalPages }} | 
+    Showing {{ filteredForms.length }} of {{ exitForms.length }} records | 
+    Items per page: {{ itemsPerPage }}
+    <button (click)="testFilteredForms()" style="margin-left: 10px; font-size: 10px; padding: 2px 6px;">Test Data</button>
+  </div> -->
+
+  <div *ngIf="loading" class="loading-box">
+    <div class="spinner"></div>
+    Loading data...
+  </div>
+
+  <div *ngIf="!loading && exitForms.length === 0" class="no-data">
+    No exit forms found for your team.
+  </div>
+
+  <div *ngIf="!loading && exitForms.length > 0">
+    <!-- Table Container - FIXED: Added wrapper with overflow -->
+    <div class="table-container" style="overflow-x: auto; width: 100%;">
+      <table class="styled-table">
+        <thead>
+          <tr>
+            <th>Emp ID</th>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Reason</th>
+            <th>Status</th>
+            <th>Comments</th>
+            <th>Attach</th>
+            <th width="170px">Actions</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <!-- FIXED: Ensure we're using filteredForms correctly -->
+          <ng-container *ngIf="filteredForms.length > 0; else noFormsOnPage">
+            <tr *ngFor="let form of filteredForms">
+              <!-- Employee ID -->
+              <td [attr.data-fulltext]="form.employeeId">
+                {{ form.employeeId }}
+              </td>
+              
+              <!-- Employee Name -->
+              <td [attr.data-fulltext]="form.employeeName">
+                {{ form.employeeName }}
+              </td>
+              
+              <!-- Notice Start -->
+              <td [attr.data-fulltext]="formatDate(form.noticeStartDate)">
+                {{ formatDate(form.noticeStartDate) }}
+              </td>
+              
+              <!-- Notice End -->
+              <td [attr.data-fulltext]="formatDate(form.noticeEndDate)">
+                {{ formatDate(form.noticeEndDate) }}
+              </td>
+              
+              <!-- Reason -->
+              <td [attr.data-fulltext]="form.reason">
+                {{ form.reason }}
+              </td>
+              
+              <!-- Status -->
+              <td>
+                <span class="status" [class]="getStatusClass(form.status)">
+                  {{ getStatusText(form.status) }}
+                </span>
+              </td>
+              
+              <!-- Comments -->
+              <td [attr.data-fulltext]="form.comments || '-'">
+                {{ form.comments || '-' }}
+              </td>
+              
+              <!-- Attachment -->
+              <td [attr.data-fulltext]="form.attachment ? 'Attachment available' : 'No attachment'">
+                {{ form.attachment ? '📎' : '-' }}
+              </td>
+
+              <!-- Actions -->
+              <td class="action-buttons">
+                <!-- Download All Forms Button -->
+                <button *ngIf="canDownloadPdf()" 
+                        class="download-btn" 
+                        (click)="downloadAllUserForms(form)"
+                        [disabled]="isFormDownloading(form) || !canDownloadForm(form)"
+                        [attr.title]="(isFormDownloading(form) || !canDownloadForm(form)) ? getDownloadButtonTitle(form) : null"
+                        [class.downloading]="isFormDownloading(form)"
+                        [class.approved-status]="form.status === 6">
+                  <span *ngIf="isFormDownloading(form)" class="spinner-small"></span>
+                  <span *ngIf="!isFormDownloading(form)">
+                    Download
+                  </span>
+                </button>
+                
+                <!-- View Button -->
+                <button class="view-btn" (click)="openForm(form)" title="View Details">
+                  View
+                </button>
+              </td>
+            </tr>
+          </ng-container>
+          
+          <ng-template #noFormsOnPage>
+            <tr>
+              <td colspan="9" style="text-align: center; padding: 20px; color: #666;">
+                No records found on this page.
+              </td>
+            </tr>
+          </ng-template>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination Controls - FIXED: Show only when needed -->
+    <div *ngIf="exitForms.length > itemsPerPage" class="pagination-container">
+      <div class="pagination-info">
+        Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, exitForms.length) }} of {{ exitForms.length }} records
+      </div>
+      
+      <div class="pagination-controls">
+        <!-- Previous Button -->
+        <button class="pagination-btn" 
+                [disabled]="currentPage === 1" 
+                (click)="previousPage()"
+                title="Previous Page">
+          Previous
+        </button>
+        
+        <!-- Page Numbers -->
+        <div class="page-numbers">
+          <button *ngFor="let page of pageNumbers" 
+                  class="page-number" 
+                  [class.active]="page === currentPage"
+                  (click)="goToPage(page)"
+                  [title]="'Go to page ' + page">
+            {{ page }}
+          </button>
+        </div>
+        
+        <!-- Next Button -->
+        <button class="pagination-btn" 
+                [disabled]="currentPage === totalPages" 
+                (click)="nextPage()"
+                title="Next Page">
+          Next
+        </button>
+      </div>
+    </div>
+
+    <!-- Show message if no pagination needed -->
+    <div *ngIf="exitForms.length <= itemsPerPage && exitForms.length > 0" class="no-pagination-message">
+      Showing all {{ exitForms.length }} records
+    </div>
+  </div>
+
+  <!-- Downloading overlay for specific form -->
+  <div *ngIf="downloadingPdf && selectedFormForDownload" class="download-overlay">
+    <div class="download-box">
+      <div class="spinner"></div>
+      <p>Generating PDF for {{ selectedFormForDownload.employeeName }}</p>
+      <p class="small-text">Status: {{ getStatusText(selectedFormForDownload.status) }}</p>
+      <p class="small-text">Compiling data from all 6 exit forms...</p>
+    </div>
+  </div>
+</div>
