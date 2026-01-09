@@ -23,7 +23,17 @@ type TableRow = [string, string];
   styleUrls: ['./exitpage-datas.component.css']
 })
 export class ExitpageDatasComponent implements OnInit {
+  Math = Math;
 
+  // OR create a helper method (better approach)
+  min(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+
+  // Add this method to exitpage-datas.component.ts
+getEndIndex(): number {
+  return Math.min(this.currentPage * this.itemsPerPage, this.exitForms.length);
+}
   exitForms: ExitForm[] = [];
   filteredForms: ExitForm[] = [];
   loading = false;

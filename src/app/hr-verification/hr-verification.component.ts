@@ -14,6 +14,8 @@ export class HrVerificationComponent implements OnInit {
 
   @Output() submitted = new EventEmitter<any>();
 
+  employeeData: any = null;
+
   // CHANGE THIS LINE:
   // currentUser = 'hr_user'; // OLD
   currentUser: string = ''; // NEW
@@ -34,12 +36,16 @@ export class HrVerificationComponent implements OnInit {
   ngOnInit(): void {
   // Get user info from localStorage - IMPROVED VERSION
   this.getUserInfoFromLocalStorage();
+
+  this.initializeEmployeeData();
   
   console.log('🎯 HR User Info for Database:', {
     id: this.currentUser,
     name: this.currentUserName,
     isNameValid: this.currentUserName && this.currentUserName.trim() !== ''
   });
+
+  
 
   // Show alert to verify what we have
   // if (this.currentUserName && this.currentUserName.trim() !== '') {
@@ -56,6 +62,51 @@ export class HrVerificationComponent implements OnInit {
     this.loadFormData();
   }
 }
+
+// ✅ ADD THIS METHOD: Initialize employee data
+  private initializeEmployeeData(): void {
+    // If formData has employee info, use it
+    if (this.formData) {
+      this.employeeData = {
+        employeeId: this.formData.employeeId || this.employeeId || 'N/A',
+        employeeName: this.formData.employeeName || 'N/A',
+        department: this.formData.department || 'N/A',
+        designation: this.formData.designation || 'N/A',
+        exitType: this.formData.exitType || 'N/A',
+        exitStatus: this.formData.hrAction || 'pending', // Use hrAction as status
+        lastWorkingDay: this.formData.lastWorkingDay || 'N/A'
+      };
+    } else {
+      // Default empty data
+      this.employeeData = {
+        employeeId: this.employeeId || 'N/A',
+        employeeName: 'N/A',
+        department: 'N/A',
+        designation: 'N/A',
+        exitType: 'N/A',
+        exitStatus: 'pending',
+        lastWorkingDay: 'N/A'
+      };
+    }
+  }
+
+  // ✅ ADD THIS METHOD: Missing method for exit status text
+  getExitStatusText(status: string): string {
+    if (!status) return 'Unknown';
+    
+    const statusMap: { [key: string]: string } = {
+      'pending': 'Pending',
+      'approved': 'Approved',
+      'rejected': 'Rejected',
+      'in_progress': 'In Progress',
+      'completed': 'Completed',
+      'APPROVE': 'Approved',
+      'REJECT': 'Rejected',
+      'REVISE_LWD': 'Revision Requested'
+    };
+    
+    return statusMap[status.toLowerCase()] || status;
+  }
 
 // NEW METHOD: Get user info from localStorage properly
 private getUserInfoFromLocalStorage(): void {
@@ -126,6 +177,7 @@ private getUserInfoFromLocalStorage(): void {
     }
   }
 }
+
 
   private createForm(): void {
     this.hrForm = this.fb.group({
@@ -454,6 +506,8 @@ submitHRReview(action: string): void {
   });
 }
 
+
+
   // Submit action (Approve/Reject/Revise)
   submitAction(action: string): void {
     this.submitHRReview(action);
@@ -486,4 +540,7 @@ submitHRReview(action: string): void {
     if (action === 'REVISE_LWD') return `LWD Revision Requested by ${by} on ${date}`;
     return `Action taken by ${by} on ${date}`;
   }
+
+  
 }
+

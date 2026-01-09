@@ -223,7 +223,7 @@
   <div *ngIf="showUserForm" class="step-form-block">
     <h3>User Exit Form</h3>
     <app-exit-form 
-      [exitFormId]="getFirstForm()?.id"
+      [exitFormId]="getFirstForm()?.id || ''"
       (submitted)="onUserFormSubmitted($event)">
     </app-exit-form>
   </div>
@@ -232,7 +232,7 @@
   <div *ngIf="showManagerReviewForm" class="step-form-block">
     <h3>Manager Review</h3>
     <app-manager-review 
-      [exitFormId]="getFirstForm()?.id"
+      [exitFormId]="getFirstForm()?.id || ''"
       [employeeId]="viewingEmployee"
       (submitted)="onManagerReviewSubmitted($event)">
     </app-manager-review>
@@ -242,7 +242,7 @@
   <div *ngIf="showHRVerificationForm" class="step-form-block">
     <h3>HR Round 1 - Exit Verification</h3>
     <app-hr-verification 
-      [exitFormId]="getFirstForm()?.id"
+      [exitFormId]="getFirstForm()?.id || ''"
       [employeeId]="viewingEmployee"
       (submitted)="onHRVerificationSubmitted($event)">
     </app-hr-verification>
@@ -274,10 +274,10 @@
 
     <!-- Pass readonly mode to the child component -->
     <app-payroll-checks
-      [exitFormId]="selectedFormForPayroll?.id"
-      [readonly]="showPayrollCheckFormForHR"
-      (submitted)="onPayrollSubmitted($event)">
-    </app-payroll-checks>
+  [exitFormId]="selectedFormForPayroll?.id || ''"
+  [readonly]="showPayrollCheckFormForHR"
+  (submitted)="onPayrollSubmitted($event)">
+</app-payroll-checks>
 
     <!-- Optional: Show close button for HR -->
     <div *ngIf="showPayrollCheckFormForHR" style="text-align: center; margin-top: 20px;">
@@ -290,12 +290,12 @@
     <h3>Final HR Approval & Exit Release</h3>
     
     <div *ngIf="getFirstForm() && getFirstForm()?.id; else noForm">
-      <app-final-exit-approval 
-        [exitFormId]="getFirstForm()!.id"  
-        (submitted)="onFinalHRSubmitted($event)">
-      </app-final-exit-approval>
-    </div>
-    
+  <app-final-exit-approval 
+    [exitFormId]="getFirstForm()!.id || ''"  
+    (submitted)="onFinalHRSubmitted($event)">
+  </app-final-exit-approval>
+</div>
+
     <ng-template #noForm>
       <div class="error-message">
         <p>❌ Cannot load exit form. Please ensure a valid form is selected.</p>

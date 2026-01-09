@@ -121,7 +121,7 @@
     <!-- Pagination Controls - FIXED: Show only when needed -->
     <div *ngIf="exitForms.length > itemsPerPage" class="pagination-container">
       <div class="pagination-info">
-        Showing {{ ((currentPage - 1) * itemsPerPage) + 1 }} to {{ Math.min(currentPage * itemsPerPage, exitForms.length) }} of {{ exitForms.length }} records
+       Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getEndIndex() }}
       </div>
       
       <div class="pagination-controls">

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ApiService, ExitForm } from '../api.service';
 import { Router, ActivatedRoute } from '@angular/router';
@@ -10,6 +10,7 @@ import { Location } from '@angular/common';
   styleUrls: ['./exit-form.component.css']
 })
 export class ExitFormComponent implements OnInit {
+  @Input() exitFormId: string = '';
   exitForm!: FormGroup;
   selectedFileName: string = '';
   openDropdown: string | null = null;
