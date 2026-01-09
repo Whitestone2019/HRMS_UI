@@ -8,11 +8,10 @@ import { ApiService } from '../api.service';
   styleUrls: ['./hr-verification.component.css']
 })
 export class HrVerificationComponent implements OnInit {
-  
   @Input() exitFormId: string = '';
   @Input() employeeId: string = '';
   @Input() formData: any = null;
-  
+
   @Output() submitted = new EventEmitter<any>();
 
   // CHANGE THIS LINE:

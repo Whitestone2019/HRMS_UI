@@ -1,9 +1,9 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { Component, Input, OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../../../api.service';
 import { UserService } from '../../../../user.service';
-
+ 
 @Component({
   selector: 'app-basic-details',
   standalone: true,
@@ -11,9 +11,9 @@ import { UserService } from '../../../../user.service';
   template: `
     <div class="form-section">
       <h4>Basic Details</h4>
-
-      <!-- Employee ID Selection Dropdown (Visible for Admin & HR) -->
-      <div *ngIf="canSelectEmployee" class="form-group">
+ 
+      <!-- Employee ID Selection Dropdown (Visible only for Admin/HR when creating new) -->
+      <div *ngIf="canSelectEmployee && !isEditMode" class="form-group">
         <label>Select Employee ID</label>
         <select (change)="onEmployeeChange($event)" (click)="$event.stopPropagation()">
           <option value="" disabled selected>Select Employee ID</option>
@@ -22,7 +22,13 @@ import { UserService } from '../../../../user.service';
           </option>
         </select>
       </div>
-
+ 
+      <!-- Show selected/edited Employee ID (read-only) -->
+      <div class="form-group" *ngIf="form.get('empid')?.value">
+        <label>Employee ID</label>
+        <input type="text" [value]="form.get('empid')?.value" readonly>
+      </div>
+ 
       <div [formGroup]="form">
         <div class="form-group-title">Personal Information</div>
         <div class="form-row">
@@ -30,26 +36,19 @@ import { UserService } from '../../../../user.service';
             <label>First Name*</label>
             <input type="text" formControlName="firstname" placeholder="Enter first name" readonly>
           </div>
-        
           <div class="form-group">
             <label>Last Name</label>
             <input type="text" formControlName="lastname" placeholder="Enter last name" readonly>
           </div>
-
-           <!-- <div class="form-group">
-            <label>Date of Birth</label>
-           <input type="date" formControlName="dateofbirth" readonly>
-          </div> -->
         </div>
-
-       <div class="form-row">
-  <div class="form-group">
-    <label>Date of Joining*</label>
-    <input type="date" formControlName="dateOfJoin" (focus)="openDatePicker($event)">
-  </div>
-</div>
-
-
+ 
+        <div class="form-row">
+          <div class="form-group">
+            <label>Date of Joining*</label>
+            <input type="date" formControlName="dateOfJoin" (focus)="openDatePicker($event)">
+          </div>
+        </div>
+ 
         <div class="form-group-title">Contact Information</div>
         <div class="form-row">
           <div class="form-group">
@@ -61,14 +60,14 @@ import { UserService } from '../../../../user.service';
             <input type="email" formControlName="emailid" readonly>
           </div>
         </div>
-
+ 
         <div class="form-row">
           <div class="form-group">
-            <label>Mobile Number*</label>
+            <label>Mobile Number</label>
             <input type="tel" formControlName="phonenumber" readonly>
           </div>
         </div>
-
+ 
         <div class="form-group-title">Employment Details</div>
         <div class="form-row">
           <div class="form-group">
@@ -84,134 +83,111 @@ import { UserService } from '../../../../user.service';
     </div>
   `,
   styles: [`
-    .form-section {
-      animation: fadeIn 0.3s ease-in-out;
-    }
-    .form-group-title {
-      font-size: 1.1rem;
-      font-weight: 500;
-      color: #2196F3;
-      margin: 2rem 0 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid #e0e0e0;
-    }
-    .form-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin-bottom: 1rem;
-    }
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-      color: #555;
-      font-weight: 500;
-    }
-    input, select {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-      font-size: 1rem;
-      transition: all 0.3s ease;
-    }
-    input:focus, select:focus {
-      outline: none;
-      border-color: #2196F3;
-      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1);
-    }
+    /* Your existing styles unchanged */
+    .form-section { animation: fadeIn 0.3s ease-in-out; }
+    .form-group-title { font-size: 1.1rem; font-weight: 500; color: #2196F3; margin: 2rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid #e0e0e0; }
+    .form-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1rem; }
+    label { display: block; margin-bottom: 0.5rem; color: #555; font-weight: 500; }
+    input, select { width: 100%; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; transition: all 0.3s ease; }
+    input:focus, select:focus { outline: none; border-color: #2196F3; box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.1); }
+    input[readonly] { background-color: #f9f9f9; }
   `]
 })
-export class BasicDetailsComponent implements OnInit {
+export class BasicDetailsComponent implements OnInit, OnChanges {
   @Input() form!: FormGroup;
+ 
   userRole: string = '';
   employeeList: any[] = [];
   canSelectEmployee: boolean = false;
-  employeeId: string = '';
-
-  constructor(private apiService: ApiService, private fb: FormBuilder, private userService: UserService) {}
-
+  isEditMode: boolean = false;  // Track if we're in edit mode
+ 
+  constructor(
+    private apiService: ApiService,
+    private fb: FormBuilder,
+    private userService: UserService
+  ) {}
+ 
   ngOnInit(): void {
-   // this.initializeForm();
     this.userRole = this.userService.role || '';
-    this.employeeId = localStorage.getItem('employeeId') || '';
-
-    if (this.userService.isAdmin()) {
-      this.canSelectEmployee = true;
+    this.canSelectEmployee = this.userService.isAdmin();
+ 
+    // Detect edit mode: if empid exists in form, we're likely editing
+    const currentEmpId = this.form.get('empid')?.value;
+    this.isEditMode = !!currentEmpId;
+ 
+    if (this.canSelectEmployee && !this.isEditMode) {
       this.loadAllEmployees();
-    } else {
-      this.loadEmployeeDetails(this.employeeId);
+    }
+ 
+    // If not admin and no data loaded yet, optionally load from localStorage (fallback)
+    if (!this.canSelectEmployee && !this.isEditMode) {
+      const employeeId = localStorage.getItem('employeeId');
+      if (employeeId && !currentEmpId) {
+        this.loadEmployeeDetails(employeeId);
+      }
     }
   }
+ 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['form'] && this.form) {
+      const empId = this.form.get('empid')?.value;
+      this.isEditMode = !!empId;
+    }
+  }
+ 
   openDatePicker(event: Event) {
     const input = event.target as HTMLInputElement;
-    input.showPicker(); // This will force the date picker to open (supported in modern browsers)
+    if (input.showPicker) {
+      input.showPicker();
+    }
   }
-
+ 
   loadAllEmployees() {
     this.apiService.getAllEmployeeIds().subscribe(
       (data: any[]) => {
         this.employeeList = data;
       },
-      (error) => {
-        console.error('Error fetching employee IDs:', error);
-      }
+      (error) => console.error('Error fetching employee IDs:', error)
     );
   }
+ 
   loadEmployeeDetails(empId: string) {
-    if (!empId) {
-      console.warn('No employee ID found.');
-      return;
-    }
-  
+    if (!empId) return;
+ 
     this.apiService.getEmployeeDetails(empId).subscribe(
       (data) => {
-        console.log('Loaded Employee Details:', data);
-        // /alert(`Raw DOB from API: ${data.dateofbirth}`); // Debugging
-  
-        // Ensure the date format is correct
-        if (data.dateofbirth) {
-          data.dateofbirth = this.formatDate(data.dateofbirth);
-          alert(`Formatted DOB: ${data.dateofbirth}`); // Debugging
+        console.log('Loaded Employee Details for ID:', empId, data);
+ 
+        // Format date if needed
+        if (data.dateOfJoin) {
+          data.dateOfJoin = this.formatDate(data.dateOfJoin);
         }
-  
-        this.form.patchValue(data);
+ 
+        this.form.patchValue({
+          ...data,
+          empid: data.empid || data.employeeId || empId  // Ensure empid is set
+        });
       },
-      (error) => {
-        console.error('Error fetching employee details:', error);
-      }
+      (error) => console.error('Error loading employee details:', error)
     );
   }
+ 
   formatDate(date: string | Date): string {
-    if (!date) return ''; // Handle null values
-
-    // If the date is already in 'YYYY-MM-DD' format, return it directly
-    if (typeof date === 'string' && date.length === 10 && date.includes('-')) {
-        return date;
-    }
-
-    // Parse the date correctly
+    if (!date) return '';
     const d = new Date(date);
-    if (isNaN(d.getTime())) {
-        console.error('Invalid date:', date);
-        return '';
-    }
-
-    return d.toISOString().split('T')[0]; // Returns 'YYYY-MM-DD'
-}
-     
-  
-
+    return isNaN(d.getTime()) ? '' : d.toISOString().split('T')[0];
+  }
+ 
   onEmployeeChange(event: Event) {
     const target = event.target as HTMLSelectElement;
-    const selectedEmpId = target?.value;
-
+    const selectedEmpId = target.value;
     if (selectedEmpId) {
       this.loadEmployeeDetails(selectedEmpId);
     }
   }
-
+ 
   trackByEmployeeId(index: number, employee: any): string {
-    return employee.employeeId;
+    return employee.employeeId || employee.empid;
   }
 }
+ 

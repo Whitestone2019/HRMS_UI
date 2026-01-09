@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { AddEmployeeFormComponent } from '../forms/add-employee-form.component';
 import { ApiService } from '../../../api.service';
 import { Router } from '@angular/router';
-
+ 
 @Component({
   selector: 'app-employee-list',
   standalone: true,
@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
           </div>
         </div>
       </div>
-
+ 
       <table class="employee-table">
         <thead>
           <tr>
@@ -38,22 +38,23 @@ import { Router } from '@angular/router';
             <td>{{ employee.emailid }}</td>
             <td>{{ employee.department }}</td>
             <td>{{ employee.annualCTC | currency: 'INR' }}</td>
-           <td>
-  <button class="btn view" (click)="viewSalaryDetails(employee); $event.stopPropagation();">
-    View Salary
-  </button>
-  <button class="btn edit" (click)="editEmployee(employee); $event.stopPropagation();">
-    Edit
-  </button>
-</td>
+            <td>
+              <button class="btn view" (click)="viewSalaryDetails(employee); $event.stopPropagation();">
+                View Salary
+              </button>
+              <button class="btn edit" (click)="editEmployee(employee); $event.stopPropagation();">
+                Edit
+              </button>
+            </td>
           </tr>
         </tbody>
       </table>
-
+ 
+      <!-- Salary Details Section -->
       <div *ngIf="selectedEmployee" class="salary-details">
         <h4>Salary Details for {{ selectedEmployee.firstname }} {{ selectedEmployee.lastname }}</h4>
         <p><strong>Annual CTC:</strong> {{ selectedEmployee.annualCTC | currency: 'INR' }}</p>
-
+ 
         <h4>Earnings</h4>
         <table class="salary-table">
           <thead>
@@ -75,7 +76,7 @@ import { Router } from '@angular/router';
             </tr>
           </tbody>
         </table>
-
+ 
         <h4>Deductions</h4>
         <table class="salary-table">
           <thead>
@@ -97,93 +98,70 @@ import { Router } from '@angular/router';
             </tr>
           </tbody>
         </table>
+ 
+        <!-- New: Payroll Deductions Table -->
+        <h4>Payroll Deductions</h4>
+        <table class="salary-table">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Amount / Percentage</th>
+              <th>Monthly Amount</th>
+              <th>Annual Amount</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ded of parsedPayrollDeductions">
+              <td>{{ ded.name }}</td>
+              <td>{{ ded.type || 'Statutory' }}</td>
+              <td>{{ ded.amount !== undefined ? (ded.amount | currency: 'INR') : (ded.percentage + '%') }}</td>
+              <td>{{ ded.monthlyAmount | currency: 'INR' }}</td>
+              <td>{{ ded.annualAmount | currency: 'INR' }}</td>
+            </tr>
+            <tr *ngIf="parsedPayrollDeductions.length === 0">
+              <td colspan="5" style="text-align: center; color: #666;">No payroll deductions defined</td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-
+ 
       <app-add-employee-form></app-add-employee-form>
     </div>
   `,
   styles: [`
-    .employee-list {
-      font-family: 'Zoho Sans', Arial, sans-serif;
-      font-size: 14px;
-      color: #333;
+    /* Your existing styles + minor addition */
+    .employee-list { font-family: 'Zoho Sans', Arial, sans-serif; font-size: 14px; color: #333; }
+    .employee-table, .salary-table { width: 100%; border-collapse: collapse; margin-top: 10px; background: #fff; }
+    .employee-table th, .employee-table td, .salary-table th, .salary-table td {
+      padding: 12px; border: 1px solid #ddd; text-align: left;
     }
-    .employee-table, .salary-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      background: #fff;
-    }
-    .employee-table th, .employee-table td,
-    .salary-table th, .salary-table td {
-      padding: 12px;
-      border: 1px solid #ddd;
-      text-align: left;
-    }
-    .employee-table th, .salary-table th {
-      background-color: #f1f3f6;
-      font-weight: 600;
-    }
-    .salary-details {
-      margin-top: 20px;
-      padding: 15px;
-      border: 1px solid #ccc;
-      background: #fafafa;
-      border-radius: 5px;
-    }
-    .salary-details h4 {
-      margin-top: 15px;
-      font-size: 14px;
-      font-weight: 600;
-    }
-    .btn.view {
-      background-color: #0066cc;
-      color: white;
-      border: none;
-      padding: 6px 12px;
-      cursor: pointer;
-      border-radius: 4px;
-      font-size: 13px;
-    }
-    .btn.view:hover {
-      background-color: #004999;
-    }
-    .search-box input {
-      padding: 6px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      width: 200px;
-      font-size: 13px;
-    }
-      .btn.edit {
-  background-color: #28a745;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  cursor: pointer;
-  border-radius: 4px;
-  font-size: 13px;
-  margin-left: 5px;
-}
-.btn.edit:hover {
-  background-color: #218838;
-}
+    .employee-table th, .salary-table th { background-color: #f1f3f6; font-weight: 600; }
+    .salary-details { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #fafafa; border-radius: 5px; }
+    .salary-details h4 { margin-top: 20px; margin-bottom: 10px; font-size: 15px; font-weight: 600; }
+    .btn.view { background-color: #0066cc; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 13px; }
+    .btn.view:hover { background-color: #004999; }
+    .btn.edit { background-color: #28a745; color: white; border: none; padding: 6px 12px; cursor: pointer; border-radius: 4px; font-size: 13px; margin-left: 5px; }
+    .btn.edit:hover { background-color: #218838; }
+    .search-box input { padding: 6px; border: 1px solid #ccc; border-radius: 4px; width: 200px; font-size: 13px; }
   `]
 })
 export class EmployeeListComponent implements OnInit {
   @ViewChild(AddEmployeeFormComponent) addEmployeeForm!: AddEmployeeFormComponent;
+ 
   employees: any[] = [];
   selectedEmployee: any = null;
   searchTerm = '';
   parsedEarnings: any[] = [];
   parsedDeductions: any[] = [];
-
-  constructor(private apiService: ApiService,private router:Router) {}
-
+  parsedPayrollDeductions: any[] = [];  // ← Added
+ 
+  constructor(private apiService: ApiService, private router: Router) {}
+ 
   ngOnInit() {
     this.fetchEmployees();
   }
-
+ 
   fetchEmployees() {
     this.apiService.getAllEmployeessalary().subscribe(
       (data) => {
@@ -193,7 +171,7 @@ export class EmployeeListComponent implements OnInit {
       (error) => console.error('Error fetching employees', error)
     );
   }
-
+ 
   get filteredEmployees() {
     return this.employees.filter(emp =>
       (emp.empid?.toLowerCase() || '').includes(this.searchTerm.toLowerCase()) ||
@@ -202,31 +180,35 @@ export class EmployeeListComponent implements OnInit {
       (emp.emailid?.toLowerCase() || '').includes(this.searchTerm.toLowerCase())
     );
   }
-
+ 
   selectEmployee(employee: any) {
     this.viewSalaryDetails(employee);
   }
-
+ 
   editEmployee(employee: any) {
     this.router.navigate(['/payroll/overview/employees'], { state: { employee } });
   }
-
+ 
   viewSalaryDetails(employee: any) {
     this.selectedEmployee = employee;
     this.parsedEarnings = this.parseJsonArray(employee.earnings);
     this.parsedDeductions = this.parseJsonArray(employee.deductions);
+    this.parsedPayrollDeductions = this.parseJsonArray(employee.payrollDeductions); // ← Added
   }
-
+ 
   private parseJsonArray(data: any): any[] {
     if (!data) return [];
     if (Array.isArray(data)) return data;
     try {
-      const parsedData = JSON.parse(data);
-      return typeof parsedData === "string" ? JSON.parse(parsedData) : parsedData;
+      let parsed = JSON.parse(data);
+      if (typeof parsed === 'string') {
+        parsed = JSON.parse(parsed); // Handle double-stringified
+      }
+      return Array.isArray(parsed) ? parsed : [];
     } catch (error) {
       console.warn("Invalid JSON format:", data, error);
       return [];
     }
   }
-  
 }
+ 

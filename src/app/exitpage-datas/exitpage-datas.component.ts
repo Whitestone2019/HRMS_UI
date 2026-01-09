@@ -19,7 +19,7 @@ type TableRow = [string, string];
 
 @Component({
   selector: 'app-exitpage-datas',
-  templateUrl: './exitpage-datas.component.html',
+  templateUrl:'./exitpage-datas.component.html',
   styleUrls: ['./exitpage-datas.component.css']
 })
 export class ExitpageDatasComponent implements OnInit {

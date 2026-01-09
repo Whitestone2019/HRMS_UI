@@ -45,7 +45,7 @@ interface AssetClearanceItem {
 
 @Component({
   selector: 'app-exit-page',
-  templateUrl: './exit-page.component.html',
+  templateUrl:'./exit-page.component.html',
   styleUrls: ['./exit-page.component.css']
 })
 export class ExitPageComponent implements OnInit, OnDestroy {
@@ -69,6 +69,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     noticePeriod: '',
     remarks: ''
   };
+
 
   showUserForm: boolean = false;
   showManagerReviewForm: boolean = false;
