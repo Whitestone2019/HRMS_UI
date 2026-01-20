@@ -1,0 +1,215 @@
+/* Celebration Modal Styles */
+.celebration-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85); /* Light black transparent background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Full-screen GIF background */
+.gif-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.full-screen-gif {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Makes GIF fit the entire screen */
+  opacity: 0.7; /* Slightly transparent GIF */
+}
+
+.celebration-content {
+  background: rgba(255, 255, 255, 0.1); /* Very light transparent white */
+  backdrop-filter: blur(10px); /* Blur effect for modern browsers */
+  -webkit-backdrop-filter: blur(10px); /* For Safari */
+  padding: 40px;
+  border-radius: 15px;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.6s ease-out;
+  position: relative;
+  z-index: 2; /* Above the GIF */
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Subtle border */
+}
+
+/* Removed all colored backgrounds from celebration-message */
+.celebration-message {
+  padding: 30px;
+  border-radius: 10px;
+  animation: pulse 2s infinite;
+  background: transparent; /* No background color */
+}
+
+/* Removed birthday and anniversary specific backgrounds */
+.celebration-message.birthday,
+.celebration-message.anniversary {
+  background: transparent;
+  border-left: none;
+}
+
+.celebration-title {
+  color: white; /* White text for better visibility on dark background */
+  font-size: 2.5em;
+  margin-bottom: 25px;
+  font-weight: bold;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.8);
+  animation: bounce 1s infinite alternate;
+}
+
+.celebration-details {
+  color: #f0f0f0; /* Light gray text */
+  font-size: 1.5em;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.celebration-details p {
+  margin: 15px 0;
+}
+
+.years-badge {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.2); /* Semi-transparent white */
+  color: white;
+  padding: 12px 25px;
+  border-radius: 50px;
+  font-size: 1.8em;
+  font-weight: bold;
+  margin: 20px 0;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Removed close button styles since button is removed from HTML */
+
+/* Test Controls (Remove in production) */
+.test-controls {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 10000;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.test-controls button {
+  background: rgba(76, 175, 80, 0.8);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(5px);
+}
+
+.test-controls button:hover {
+  background: rgba(69, 160, 73, 0.9);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100px) scale(0.9);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes bounce {
+  from { transform: translateY(0); }
+  to { transform: translateY(-15px); }
+}
+
+/* Confetti canvas positioning */
+canvas {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none !important;
+  z-index: 9998 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .celebration-content {
+    padding: 25px;
+    width: 95%;
+  }
+  
+  .celebration-title {
+    font-size: 2em;
+  }
+  
+  .celebration-details {
+    font-size: 1.3em;
+  }
+  
+  .years-badge {
+    font-size: 1.5em;
+    padding: 10px 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .celebration-content {
+    padding: 20px;
+  }
+  
+  .celebration-title {
+    font-size: 1.7em;
+  }
+  
+  .celebration-details {
+    font-size: 1.1em;
+  }
+  
+  .years-badge {
+    font-size: 1.3em;
+    padding: 8px 16px;
+  }
+  
+  .test-controls {
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    font-size: 0.9em;
+  }
+}

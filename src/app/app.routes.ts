@@ -74,6 +74,7 @@ import { AssetClearanceComponent } from './asset-clearance/asset-clearance.compo
 import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-approval.component';
 import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
 import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
+import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -168,6 +169,7 @@ export const routes: Routes = [
           { path: 'final-round', component: FinalExitApprovalComponent},//final hr round
           { path: 'payroll-check', component: PayrollChecksComponent},
           { path: 'hr-offboard', component: HrOffboardingChecklistComponent},//hr round 2
+          { path: 'celebration', component: CelebrationPageComponent},
     ]
   },
   {

@@ -66,6 +66,14 @@ export class LoginComponent implements OnInit {
         return;
       }
 
+      // LOG THE FULL RESPONSE TO SEE ALL DATA
+      console.log('✅ Login successful - FULL RESPONSE:', response);
+      console.log('📅 Checking for celebration data in API response:');
+      console.log('   todayCelebrations:', response.todayCelebrations);
+      console.log('   celebrationCount:', response.celebrationCount);
+      console.log('   employeeId (logged in user):', response.employeeId);
+      console.log('   All response keys:', Object.keys(response));
+
       this.saveUserSession(response, token);
       this.navigateToDashboard();
 
@@ -174,6 +182,14 @@ export class LoginComponent implements OnInit {
         return;
       }
 
+      // Log fingerprint login response
+      console.log('✅ Fingerprint login successful:', loginRes);
+      console.log('📅 Celebration data in fingerprint login:', {
+        todayCelebrations: loginRes.todayCelebrations,
+        celebrationCount: loginRes.celebrationCount,
+        employeeId: loginRes.employeeId
+      });
+
       this.saveUserSession(loginRes, token);
       this.isFingerprintScanning = false;
       this.fingerprintStatus = 'Login successful!';
@@ -198,38 +214,117 @@ export class LoginComponent implements OnInit {
   }
 
   private saveUserSession(response: any, token: string) {
+    // Store auth token
     localStorage.setItem('authToken', token);
+    
+    // Store user data in UserService
     this.userService.username = response.username;
     this.userService.employeeId = response.employeeId;
     this.userService.role = response.role;
     this.userService.reportTo = response.reportTo;
     this.userService.managerName = response.managerName;
 
+    // Store individual keys in localStorage
     localStorage.setItem('username', response.username);
     localStorage.setItem('employeeId', response.employeeId);
     localStorage.setItem('userRole', response.role ?? '');
-    localStorage.setItem('managerId', response.reportTo ?? '');
+    localStorage.setItem('reportTo', response.reportTo ?? '');
     localStorage.setItem('managerName', response.managerName ?? '');
+    
+    // ✅ CRITICAL: STORE DATES IN LOCALSTORAGE
+    localStorage.setItem('dateOfBirth', response.dateOfBirth || '');
+    localStorage.setItem('dateOfJoining', response.dateOfJoining || '');
+    
+    // ✅ CRITICAL: STORE TODAY'S CELEBRATIONS - This is the key data!
+    if (response.todayCelebrations && Array.isArray(response.todayCelebrations)) {
+      localStorage.setItem('todayCelebrations', JSON.stringify(response.todayCelebrations));
+      console.log('🎉 TodayCelebrations stored in localStorage:', response.todayCelebrations);
+      console.log('🎉 Number of celebrations:', response.todayCelebrations.length);
+      
+      // Log each celebration for debugging
+      response.todayCelebrations.forEach((celebration: any, index: number) => {
+        console.log(`   Celebration ${index + 1}:`, {
+          employeeName: celebration.employeeName,
+          employeeId: celebration.employeeId,
+          type: celebration.type,
+          message: celebration.message,
+          years: celebration.years
+        });
+      });
+    } else {
+      console.log('⚠️ No todayCelebrations in response or not an array');
+      localStorage.removeItem('todayCelebrations');
+    }
+    
+    // ✅ STORE CELEBRATION COUNT
+    if (response.celebrationCount !== undefined) {
+      localStorage.setItem('celebrationCount', response.celebrationCount.toString());
+      console.log('🎉 Celebration count stored:', response.celebrationCount);
+    }
+    
+    // ✅ CREATE EMPLOYEE DATES OBJECT FOR CELEBRATIONS
+    const employeeDates = {
+      dateOfBirth: response.dateOfBirth,
+      dateOfJoining: response.dateOfJoining
+    };
+    localStorage.setItem('employeeDates', JSON.stringify(employeeDates));
+    console.log('📅 Employee dates stored:', employeeDates);
+    
+    // ✅ CREATE CONSOLIDATED userData OBJECT WITH ALL DATA
+    const userData = {
+      employeeId: response.employeeId,
+      username: response.username,
+      dateOfBirth: response.dateOfBirth || null,
+      dateOfJoining: response.dateOfJoining || null,
+      email: response.email || '',
+      role: response.role || '',
+      token: response.token || '',
+      reportTo: response.reportTo || '',
+      managerName: response.managerName || '',
+      message: response.message || '',
+      todayCelebrations: response.todayCelebrations || [],
+      celebrationCount: response.celebrationCount || 0
+    };
+    
+    // ✅ STORE CONSOLIDATED DATA
+    localStorage.setItem('userData', JSON.stringify(userData));
+    console.log('💾 userData stored in localStorage with celebrations');
+    
+    console.log('✅ ALL CELEBRATION DATA STORED:', {
+      dateOfBirth: response.dateOfBirth,
+      dateOfJoining: response.dateOfJoining,
+      todayCelebrations: response.todayCelebrations,
+      celebrationCount: response.celebrationCount,
+      loggedInEmployeeId: response.employeeId
+    });
 
+    // Store session data
     sessionStorage.setItem('sessionUsername', this.user.username);
     sessionStorage.setItem('sessionPassword', this.user.password);
+    
+    // ✅ TRIGGER CELEBRATION EVENT WITH FULL RESPONSE
+    const loginEvent = new CustomEvent('userLoggedIn', { 
+      detail: response 
+    });
+    window.dispatchEvent(loginEvent);
+    
+    console.log('🎉 Celebration event dispatched with response');
   }
 
   private navigateToDashboard() {
-  // Critical: Set the menu via MenuSelectionService so sidebar updates correctly
-  this.menuSelectionService.setSelectedMenu('home', '');
+    // Critical: Set the menu via MenuSelectionService so sidebar updates correctly
+    this.menuSelectionService.setSelectedMenu('home', '');
 
-  // Optional: Also update localStorage directly if other parts still read it
-  localStorage.setItem('mainMenu', 'home');
-  localStorage.setItem('subMenu', '');
-  localStorage.setItem('activeSidebar', 'my-space');
+    // Also update localStorage directly if other parts still read it
+    localStorage.setItem('mainMenu', 'home');
+    localStorage.setItem('subMenu', '');
+    localStorage.setItem('activeSidebar', 'my-space');
 
-  // Navigate to dashboard
-  this.router.navigate(['/dashboard']).then(() => {
-    // Optional: extra safety
-    this.userService.setActiveMenu('home');
-  });
-}
+    // Navigate to dashboard
+    this.router.navigate(['/dashboard']).then(() => {
+      this.userService.setActiveMenu('home');
+    });
+  }
 
   getFingerprintQualityClass(): string {
     if (this.fingerprintQuality >= 80) return 'high';

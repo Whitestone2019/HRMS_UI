@@ -90,6 +90,7 @@ import { AssetClearanceComponent } from './asset-clearance/asset-clearance.compo
 import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-approval.component';
 import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
 import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
+import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
 
 @NgModule({
   declarations: [
@@ -155,6 +156,7 @@ import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-o
     FinalExitApprovalComponent,
     PayrollChecksComponent,
     HrOffboardingChecklistComponent,
+    CelebrationPageComponent,
 
   ],
   imports: [

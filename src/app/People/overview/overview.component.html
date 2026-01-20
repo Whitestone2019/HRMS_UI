@@ -42,6 +42,45 @@
   </div>
   
   <div class="content">
+    <!-- Other Employees Celebrations Notification Card - UPDATED FOR GROUPED CELEBRATIONS -->
+    <div *ngIf="showOtherCelebrations && groupedOtherCelebrations.length > 0" class="celebration-notification-card">
+      <div class="celebration-notification-header">
+        <h3>🎉 Today's Celebrations</h3>
+        <button class="close-btn" (click)="hideOtherCelebrations()">×</button>
+      </div>
+      <div class="celebration-notification-content">
+        <!-- Grouped celebrations display -->
+        <div *ngFor="let group of groupedOtherCelebrations" class="celebration-group">
+          <div class="celebration-group-header">
+            <div class="celebration-group-icon" [ngClass]="{'birthday-icon': group.type === 'birthday', 'anniversary-icon': group.type === 'anniversary'}">
+              {{ group.type === 'birthday' ? '🎂' : '🏢' }}
+              <span class="celebration-count">({{ group.count }})</span>
+            </div>
+            <div class="celebration-group-title" [ngClass]="{'birthday-title': group.type === 'birthday', 'anniversary-title': group.type === 'anniversary'}">
+              {{ group.title }}
+            </div>
+          </div>
+          
+          <div class="celebration-group-names">
+            <span class="grouped-usernames">
+              {{ formatNameList(group.usernames) }}
+            </span>
+            <span *ngIf="group.type === 'anniversary' && group.yearsArray.length > 0" class="group-years">
+              ({{ group.yearsArray.join(', ') }} {{ group.yearsArray.length === 1 ? 'year' : 'years' }})
+            </span>
+          </div>
+          
+          <div class="celebration-group-message">
+            {{ group.message }}
+          </div>
+          
+          <div class="celebration-group-action">
+            Let's wish them today! 🎉
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="greeting">
       <img alt="Greeting Image" height="50" src="https://storage.googleapis.com/a1aa/image/J4oA29iMvR5iEd3wnSSLboIKIETtV1GY5r51w13ew1ayvG3JA.jpg" width="50"/>
       <div class="text">
@@ -52,6 +91,7 @@
         "Success is liking yourself, liking what you do, and liking how you do it." - Maya Angelou
       </div>
     </div>
+    
     <div class="menu-content">
       <app-attendance-pie-chart
         [label]="yesterday_label"
@@ -81,5 +121,76 @@
         <p>Loading team attendance breakdown...</p>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- Celebration Modal (Full Screen) - UPDATED FOR MULTIPLE CELEBRATIONS -->
+<div *ngIf="showCelebrationModal && currentCelebration" class="celebration-modal-fullscreen">
+  <!-- Full-screen GIF background -->
+  <div class="gif-background">
+    <img [src]="currentCelebration.type === 'birthday' ? birthdayGifUrl : anniversaryGifUrl" 
+         alt="Celebration Animation" 
+         class="gif-image">
+  </div>
+  
+  <!-- Celebration Content -->
+  <div class="celebration-content">
+    <!-- Celebration counter (only show if multiple celebrations) -->
+    <div *ngIf="celebrationTypes.length > 1" class="celebration-counter">
+      Celebration {{ currentCelebrationIndex + 1 }} of {{ celebrationTypes.length }}
+    </div>
+    
+    <!-- Celebration Title with separate colors -->
+    <div class="celebration-title-section">
+      <h2 class="celebration-title-text" [ngClass]="{'birthday-title': currentCelebration.type === 'birthday', 'anniversary-title': currentCelebration.type === 'anniversary'}">
+        {{ currentCelebration.title }}
+      </h2>
+      <h2 class="celebration-username-text">
+        {{ currentCelebration.username }}!
+      </h2>
+      <h3 class="celebration-message-text" *ngIf="currentCelebration.message">
+        {{ currentCelebration.message }}
+      </h3>
+    </div>
+    
+    <!-- Birthday Celebration Content -->
+    <div *ngIf="currentCelebration.type === 'birthday'" class="celebration-details">
+      <!-- <p>🎉 Wishing you a day filled with happiness and joy! 🎉</p> -->
+      <p>May all your dreams and wishes come true!</p>
+      <div class="years-badge" *ngIf="currentCelebration.years > 0">
+        {{ currentCelebration.years }} {{ currentCelebration.years === 1 ? 'Year' : 'Years' }} Old
+      </div>
+    </div>
+    
+    <!-- Anniversary Celebration Content -->
+    <div *ngIf="currentCelebration.type === 'anniversary'" class="celebration-details">
+      <p>🎯 Celebrating Excellence & Dedication! 🎯</p>
+  <p>Your commitment continues to inspire us all. Keep shining!</p>
+      <div class="years-badge">
+        {{ currentCelebration.years }} {{ currentCelebration.years === 1 ? 'Year' : 'Years' }}
+      </div>
+    </div>
+    
+    <!-- Combined celebrations preview (only show if multiple) -->
+    <div *ngIf="celebrationTypes.length > 1" class="combined-celebrations-preview">
+      <div class="preview-title">🎉 All Your Celebrations Today:</div>
+      <div class="preview-items">
+        <div *ngFor="let celebration of celebrationTypes; let i = index" 
+             class="preview-item"
+             [ngClass]="{'active': i === currentCelebrationIndex}">
+          <span class="preview-icon">
+            {{ celebration === 'birthday' ? '🎂' : '🏢' }}
+          </span>
+          <span class="preview-text">
+            {{ celebration === 'birthday' ? 'Birthday' : 'Anniversary' }}
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Close button -->
+    <!-- <button class="close-celebration-btn" (click)="closeCelebrationModal()">
+      🎉 Continue Celebrating! 🎉
+    </button> -->
   </div>
 </div>

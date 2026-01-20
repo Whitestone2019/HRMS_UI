@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { IdCardPhotoComponent } from './id-card-photo/id-card-photo.component';
 import { UserService } from '../../user.service';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
+import { Subscription, interval } from 'rxjs';
 
 @Component({
   selector: 'app-overview',
@@ -24,6 +25,33 @@ export class OverviewComponent implements OnInit, OnDestroy {
   userRole: string = localStorage.getItem('userRole') || 'Unknown';
   managerId: string = localStorage.getItem('managerId') || 'Unknown';
   managerName: string = localStorage.getItem('managerName') || 'Unknown';
+
+  // CELEBRATION VARIABLES - UPDATED FOR MULTIPLE CELEBRATIONS
+  showCelebrationModal = false;
+  celebrationMessages: string[] = []; // Array to store multiple celebration messages
+  celebrationTitles: string[] = []; // Array to store multiple celebration titles
+  celebrationUsernames: string[] = []; // Array to store multiple usernames
+  celebrationTypes: ('birthday' | 'anniversary')[] = []; // Array to store multiple celebration types
+  yearsCompletedArray: number[] = []; // Array to store years for multiple celebrations
+  
+  // Current celebration index (for cycling through multiple celebrations)
+  currentCelebrationIndex = 0;
+  
+  // Notification cards for other employees' celebrations
+  showOtherCelebrations = false;
+  otherCelebrations: any[] = [];
+  
+  // Celebration GIF URLs
+  birthdayGifUrl = '/HRMS/assets/images/celebration.gif';
+  anniversaryGifUrl = '/HRMS/assets/images/celebration.gif';
+  
+  // Grouped celebrations for other employees
+  groupedOtherCelebrations: any[] = [];
+  
+  // Private celebration variables
+  private celebrationCheckInterval!: Subscription;
+  private dateOfBirth: string | null = null;
+  private dateOfJoining: string | null = null;
 
   // Track if photo is uploaded
   hasUploaded: boolean = false;
@@ -83,39 +111,412 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.subscribeToAttendanceUpdates();
     this.getAttendancePieData();
     this.checkTimerStatusOnLoad();
-    this.loadProfilePicture(); // Load profile picture
-    this.checkIfAlreadyUploaded(); // Check if photo already uploaded
+    this.loadProfilePicture();
+    this.checkIfAlreadyUploaded();
     this.loadOverallAttendanceSummary();
     this.isAdmin = this.userService.isAdmin();
+    
+    // CELEBRATION INITIALIZATION
+    this.initializeCelebrationSystem();
+    
+    // Listen for login events to trigger celebrations
+    window.addEventListener('userLoggedIn', (event: any) => {
+      console.log('🎉 Login event received in OverviewComponent');
+      if (event.detail) {
+        this.handleLoginResponseForCelebrations(event.detail);
+      }
+    });
+    
+    // Check localStorage for celebration data on component load
+    setTimeout(() => {
+      this.checkForCelebrations();
+    }, 1000);
   }
 
   ngOnDestroy(): void {
     this.stopTimer();
-    this.cleanupObjectUrl(); // Clean up blob URL to prevent memory leaks
+    this.cleanupObjectUrl();
+    
+    // CELEBRATION CLEANUP
+    if (this.celebrationCheckInterval) {
+      this.celebrationCheckInterval.unsubscribe();
+    }
   }
 
   // ======================
-  // UPDATED PROFILE PICTURE METHODS
+  // UPDATED CELEBRATION METHODS FOR MULTIPLE CELEBRATIONS
+  // ======================
+
+  private initializeCelebrationSystem(): void {
+    console.log('🎉 Celebration System Initialized');
+    
+    // Load user data for celebrations
+    this.loadCelebrationUserData();
+    
+    // Check for celebrations immediately
+    this.checkForCelebrations();
+    
+    // Check every 5 minutes for celebrations
+    this.celebrationCheckInterval = interval(300000).subscribe(() => {
+      console.log('\n⏰ Periodic check for celebrations...');
+      this.checkForCelebrations();
+    });
+  }
+
+  private loadCelebrationUserData(): void {
+    try {
+      // Check if user is logged in
+      const authToken = localStorage.getItem('authToken');
+      
+      if (!authToken) {
+        console.log('🔒 No auth token found - user not logged in');
+        return;
+      }
+      
+      console.log('✅ User is logged in with auth token');
+      
+      // Try to get dates from storage
+      const datesDataStr = localStorage.getItem('employeeDates');
+      if (datesDataStr) {
+        try {
+          const datesData = JSON.parse(datesDataStr);
+          this.dateOfBirth = datesData.dateOfBirth;
+          this.dateOfJoining = datesData.dateOfJoining;
+          console.log('📅 Loaded dates from employeeDates:', {
+            dateOfBirth: this.dateOfBirth,
+            dateOfJoining: this.dateOfJoining
+          });
+        } catch (error) {
+          console.error('Error parsing employeeDates:', error);
+        }
+      }
+      
+      // Also check userData storage
+      const userDataStr = localStorage.getItem('userData');
+      if (userDataStr) {
+        try {
+          const userData = JSON.parse(userDataStr);
+          if (!this.dateOfBirth && userData.dateOfBirth) {
+            this.dateOfBirth = userData.dateOfBirth;
+          }
+          if (!this.dateOfJoining && userData.dateOfJoining) {
+            this.dateOfJoining = userData.dateOfJoining;
+          }
+        } catch (error) {
+          console.error('Error parsing userData:', error);
+        }
+      }
+      
+    } catch (error) {
+      console.error('❌ Error loading user data from storage:', error);
+    }
+  }
+
+  private checkForCelebrations(): void {
+    console.log('\n🔍 Checking for celebrations...');
+    console.log('===============================');
+    
+    // Load current data
+    this.loadCelebrationUserData();
+    
+    // Check if we have todayCelebrations data in localStorage
+    const todayCelebrationsStr = localStorage.getItem('todayCelebrations');
+    if (todayCelebrationsStr) {
+      console.log('🎉 Found todayCelebrations data in localStorage');
+      try {
+        const todayCelebrations = JSON.parse(todayCelebrationsStr);
+        console.log('📊 TodayCelebrations data:', todayCelebrations);
+        console.log('📊 Number of celebrations:', todayCelebrations.length);
+        
+        if (Array.isArray(todayCelebrations)) {
+          this.processTodayCelebrations(todayCelebrations);
+        } else {
+          console.log('❌ todayCelebrations is not an array');
+          this.showOtherCelebrations = false;
+        }
+      } catch (error) {
+        console.error('❌ Error parsing todayCelebrations:', error);
+        this.showOtherCelebrations = false;
+      }
+    } else {
+      console.log('📝 No todayCelebrations data found in localStorage');
+      this.showOtherCelebrations = false;
+    }
+  }
+
+  private processTodayCelebrations(todayCelebrations: any[]): void {
+    if (!todayCelebrations || todayCelebrations.length === 0) {
+      console.log('📝 No celebrations found in todayCelebrations array');
+      this.showOtherCelebrations = false;
+      return;
+    }
+    
+    console.log(`🎉 Processing ${todayCelebrations.length} celebration(s) from API response`);
+    console.log('👤 Current user ID:', this.employeeId);
+    console.log('👤 Current username:', this.username);
+    
+    // Separate celebrations for current user and others
+    const currentUserCelebrations = todayCelebrations.filter(
+      celebration => celebration.employeeId === this.employeeId
+    );
+    
+    const otherCelebrations = todayCelebrations.filter(
+      celebration => celebration.employeeId !== this.employeeId
+    );
+    
+    console.log(`Current user celebrations: ${currentUserCelebrations.length}`);
+    console.log(`Other celebrations: ${otherCelebrations.length}`);
+    
+    // Process current user's celebrations
+    if (currentUserCelebrations.length > 0) {
+      console.log('✅ Found celebration(s) for current user');
+      
+      // Show modal for current user's celebrations (handles multiple)
+      this.triggerCelebrationsForCurrentUser(currentUserCelebrations);
+    } else {
+      console.log('👤 No celebrations found for current user');
+      // No modal for current user
+    }
+    
+    // Process other users' celebrations
+    if (otherCelebrations.length > 0) {
+      console.log(`👥 Found ${otherCelebrations.length} celebration(s) for other employees`);
+      this.showOtherEmployeeCelebrations(otherCelebrations);
+    } else {
+      console.log('👥 No celebrations found for other employees');
+      this.showOtherCelebrations = false;
+    }
+  }
+
+  private triggerCelebrationsForCurrentUser(celebrations: any[]): void {
+    console.log('\n🎉🎉🎉 TRIGGERING CELEBRATION MODAL FOR CURRENT USER 🎉🎉🎉');
+    console.log(`Processing ${celebrations.length} celebration(s) for current user`);
+    
+    // Reset arrays
+    this.celebrationMessages = [];
+    this.celebrationTitles = [];
+    this.celebrationUsernames = [];
+    this.celebrationTypes = [];
+    this.yearsCompletedArray = [];
+    this.currentCelebrationIndex = 0;
+    
+    // Process each celebration
+    celebrations.forEach((celebration, index) => {
+      console.log(`Celebration ${index + 1}:`, {
+        type: celebration.type,
+        employeeName: celebration.employeeName,
+        employeeId: celebration.employeeId,
+        years: celebration.years,
+        message: celebration.message
+      });
+      
+      this.celebrationTypes.push(celebration.type);
+      this.yearsCompletedArray.push(celebration.years || 0);
+      
+      // Set separate title and username
+      if (celebration.type === 'birthday') {
+        this.celebrationTitles.push('Happy Birthday');
+        this.celebrationUsernames.push(celebration.employeeName || this.username);
+      } else if (celebration.type === 'anniversary') {
+        this.celebrationTitles.push('Congratulations');
+        this.celebrationUsernames.push(celebration.employeeName || this.username);
+      }
+      
+      // Use the message from API if available
+      if (celebration.message) {
+        this.celebrationMessages.push(celebration.message);
+      } else {
+        // Generate default message based on type
+        if (celebration.type === 'birthday') {
+          this.celebrationMessages.push(`Wishing you a wonderful day filled with joy and happiness!`);
+        } else if (celebration.type === 'anniversary') {
+          const yearsText = celebration.years ? `for completing ${celebration.years} ${celebration.years === 1 ? 'year' : 'years'}!` : '';
+          this.celebrationMessages.push(`Thank you for your dedication and hard work! ${yearsText}`);
+        }
+      }
+    });
+    
+    this.showCelebrationModal = true;
+    
+    // Set up auto-rotation if there are multiple celebrations
+    if (celebrations.length > 1) {
+      this.setupCelebrationRotation();
+    }
+    
+    // Auto-close modal after 15 seconds (per celebration)
+    setTimeout(() => {
+      this.closeCelebrationModal();
+    }, celebrations.length * 15000);
+  }
+
+  private setupCelebrationRotation(): void {
+    // Rotate celebrations every 8 seconds if there are multiple
+    const rotationInterval = setInterval(() => {
+      if (!this.showCelebrationModal) {
+        clearInterval(rotationInterval);
+        return;
+      }
+      
+      this.currentCelebrationIndex = (this.currentCelebrationIndex + 1) % this.celebrationTypes.length;
+      console.log(`🔄 Rotated to celebration ${this.currentCelebrationIndex + 1} of ${this.celebrationTypes.length}`);
+    }, 8000);
+  }
+
+  private showOtherEmployeeCelebrations(celebrations: any[]): void {
+    console.log('\n📢 SHOWING OTHER CELEBRATIONS NOTIFICATION');
+    console.log('Number of other celebrations:', celebrations.length);
+    
+    // Group celebrations by type
+    const birthdayCelebrations = celebrations.filter(c => c.type === 'birthday');
+    const anniversaryCelebrations = celebrations.filter(c => c.type === 'anniversary');
+    
+    // Clear previous grouped celebrations
+    this.groupedOtherCelebrations = [];
+    
+    // Create grouped celebration entries
+    if (birthdayCelebrations.length > 0) {
+      this.groupedOtherCelebrations.push({
+        type: 'birthday',
+        title: 'Happy Birthday',
+        usernames: birthdayCelebrations.map(c => c.employeeName || 'Unknown'),
+        yearsArray: birthdayCelebrations.map(c => c.years || 0),
+        count: birthdayCelebrations.length,
+        message: `Wishing ${this.formatNameList(birthdayCelebrations.map(c => c.employeeName))} a wonderful day!`
+      });
+    }
+    
+    if (anniversaryCelebrations.length > 0) {
+      this.groupedOtherCelebrations.push({
+        type: 'anniversary',
+        title: 'Congratulations',
+        usernames: anniversaryCelebrations.map(c => c.employeeName || 'Unknown'),
+        yearsArray: anniversaryCelebrations.map(c => c.years || 0),
+        count: anniversaryCelebrations.length,
+        message: `Congratulations to ${this.formatNameList(anniversaryCelebrations.map(c => c.employeeName))} for their work anniversary!`
+      });
+    }
+    
+    console.log('Grouped celebrations to display:', this.groupedOtherCelebrations);
+    this.showOtherCelebrations = true;
+    
+    // Auto-hide after 30 seconds
+    setTimeout(() => {
+      this.hideOtherCelebrations();
+    }, 30000);
+  }
+
+  // FIXED: Made this method public since it's called from the template
+  formatNameList(names: string[]): string {
+    if (!names || names.length === 0) return '';
+    
+    // Filter out any null/undefined names
+    const validNames = names.filter(name => name && name.trim() !== '');
+    
+    if (validNames.length === 0) return '';
+    if (validNames.length === 1) return validNames[0];
+    if (validNames.length === 2) return `${validNames[0]} & ${validNames[1]}`;
+    
+    // For more than 2 names, show first two with "& others"
+    return `${validNames[0]}, ${validNames[1]} & ${validNames.length - 2} other${validNames.length - 2 > 1 ? 's' : ''}`;
+  }
+
+  // Helper method to get current celebration data
+  get currentCelebration(): any {
+    if (this.celebrationTypes.length === 0) return null;
+    
+    return {
+      type: this.celebrationTypes[this.currentCelebrationIndex],
+      title: this.celebrationTitles[this.currentCelebrationIndex],
+      username: this.celebrationUsernames[this.currentCelebrationIndex],
+      message: this.celebrationMessages[this.currentCelebrationIndex],
+      years: this.yearsCompletedArray[this.currentCelebrationIndex]
+    };
+  }
+
+  closeCelebrationModal(): void {
+    console.log('❌ Closing celebration modal');
+    this.showCelebrationModal = false;
+    this.celebrationMessages = [];
+    this.celebrationTitles = [];
+    this.celebrationUsernames = [];
+    this.celebrationTypes = [];
+    this.yearsCompletedArray = [];
+    this.currentCelebrationIndex = 0;
+  }
+
+  hideOtherCelebrations(): void {
+    this.showOtherCelebrations = false;
+    console.log('📢 Hiding other celebrations notification');
+  }
+
+  // Public method to trigger celebration check from login
+  public handleLoginResponseForCelebrations(loginResponse: any): void {
+    console.log('\n🔑 Direct login response received for celebrations');
+    this.processLoginResponseForCelebrations(loginResponse);
+  }
+
+  private processLoginResponseForCelebrations(loginResponse: any): void {
+    if (!loginResponse) return;
+    
+    console.log('🎉 Processing login response for celebrations');
+    console.log('Logged in user from response:', loginResponse.employeeId, loginResponse.username);
+    
+    // Update current user data from login response
+    if (loginResponse.employeeId) {
+      this.employeeId = loginResponse.employeeId;
+      localStorage.setItem('employeeId', loginResponse.employeeId);
+    }
+    
+    if (loginResponse.username) {
+      this.username = loginResponse.username;
+      localStorage.setItem('username', loginResponse.username);
+    }
+    
+    // Check for todayCelebrations array
+    if (loginResponse.todayCelebrations && Array.isArray(loginResponse.todayCelebrations)) {
+      console.log(`✅ Found todayCelebrations array with ${loginResponse.todayCelebrations.length} item(s)`);
+      // Store todayCelebrations in localStorage for later use
+      localStorage.setItem('todayCelebrations', JSON.stringify(loginResponse.todayCelebrations));
+      
+      // Log all celebrations for debugging
+      loginResponse.todayCelebrations.forEach((celebration: any, index: number) => {
+        console.log(`   Celebration ${index + 1}:`, {
+          employeeName: celebration.employeeName,
+          employeeId: celebration.employeeId,
+          type: celebration.type,
+          message: celebration.message,
+          years: celebration.years
+        });
+      });
+      
+      // Process celebrations immediately
+      this.processTodayCelebrations(loginResponse.todayCelebrations);
+    } else {
+      console.log('❌ No todayCelebrations array in login response or not an array');
+      localStorage.removeItem('todayCelebrations');
+    }
+    
+    // Check for celebrations after a delay
+    setTimeout(() => {
+      this.checkForCelebrations();
+    }, 500);
+  }
+
+  // ======================
+  // EXISTING METHODS (UNCHANGED BELOW)
   // ======================
 
   loadProfilePicture(): void {
     this.isProfilePictureLoading = true;
-    
-    // Clean up any existing object URL first
     this.cleanupObjectUrl();
     
     this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
       next: (blob: Blob) => {
-        // Check if blob is not empty (photo exists)
         if (blob && blob.size > 0) {
-          // Create object URL from blob
           this.objectUrl = URL.createObjectURL(blob);
-          
-          // Sanitize the URL for security and use it
           this.profilePicture = this.sanitizer.bypassSecurityTrustUrl(this.objectUrl);
-          this.hasUploaded = true; // Photo exists
+          this.hasUploaded = true;
         } else {
-          // If blob is empty, use default Google Storage image
           this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
           this.hasUploaded = false;
         }
@@ -123,8 +524,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error('Error loading profile picture:', error);
-        
-        // Use default Google Storage image on error
         this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
         this.hasUploaded = false;
         this.isProfilePictureLoading = false;
@@ -139,37 +538,25 @@ export class OverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Handle image loading errors
   onProfilePictureError(): void {
-    // If blob image fails to load, fall back to default Google Storage image
     this.profilePicture = 'https://storage.googleapis.com/a1aa/image/oQEVSAf4BeghEk50BK00HRRTlWINaRzTbHB9MpfA7AjCf14OB.jpg';
     this.cleanupObjectUrl();
   }
 
-  // Check if photo is already uploaded (but keep button visible always)
   checkIfAlreadyUploaded(): void {
     this.apiService.getPhotoByEmpId(this.employeeId).subscribe({
       next: (blob: Blob) => {
-        // Check if blob exists and has content
-        if (blob && blob.size > 0) {
-          this.hasUploaded = true;
-          // Clean up the temporary blob URL
+        this.hasUploaded = blob && blob.size > 0;
+        if (this.hasUploaded) {
           const tempUrl = URL.createObjectURL(blob);
           URL.revokeObjectURL(tempUrl);
-        } else {
-          this.hasUploaded = false;
         }
       },
       error: () => {
-        // If API call fails, assume no photo uploaded
         this.hasUploaded = false;
       }
     });
   }
-
-  // ======================
-  // EXISTING METHODS (UNCHANGED)
-  // ======================
 
   private subscribeToAttendanceUpdates(): void {
     this.attendanceService.isCheckedIn$.subscribe((status) => {
@@ -323,10 +710,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.attendanceService.stopTimer();
   }
 
-  // ======================
-  // LOCATION SERVICES
-  // ======================
-
   private getBrowserLocation(): Promise<{ lat: number; lon: number }> {
     return new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -385,10 +768,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
     .catch(() => 'Approximate location');
   }
 
-  // ======================
-  // HELPER METHODS
-  // ======================
-
   private formatDuration(seconds: number): string {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -418,10 +797,6 @@ export class OverviewComponent implements OnInit, OnDestroy {
   stopTimer(): void {
     this.attendanceService.stopTimer();
   }
-
-  // ======================
-  // UI METHODS
-  // ======================
 
   toggleDropdown(): void {
     const dropdown = document.getElementById('dropdownMenu');
@@ -475,15 +850,12 @@ export class OverviewComponent implements OnInit, OnDestroy {
     this.router.navigate(['dashboard/addcandidate']);
   }
 
-  // REMOVED *ngIf="!hasUploaded" - Button is always visible
   openIdCardDialog(): void {
-    // 🧩 Button is always visible for re-uploading
     this.dialog.open(IdCardPhotoComponent, {
       width: '600px',
       disableClose: true,
       data: { employeeId: this.employeeId }
     }).afterClosed().subscribe(result => {
-      // After dialog closes, refresh the profile picture
       if (result === 'success') {
         this.loadProfilePicture();
         this.checkIfAlreadyUploaded();

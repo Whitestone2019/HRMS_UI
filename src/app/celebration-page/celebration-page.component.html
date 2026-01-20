@@ -1,0 +1,45 @@
+<!-- Celebration Modal -->
+<div *ngIf="showModal" class="celebration-modal">
+  <!-- Full-screen GIF background -->
+  <div class="gif-background">
+    <img [src]="celebrationType === 'birthday' ? birthdayGifUrl : anniversaryGifUrl" 
+         alt="Celebration Animation" 
+         class="full-screen-gif">
+  </div>
+  
+  <!-- Celebration Content -->
+  <div class="celebration-content">
+    <div class="celebration-message">
+      
+      <!-- Celebration Title -->
+      <h2 class="celebration-title">{{ celebrationMessage }}</h2>
+      
+      <!-- Birthday Celebration Content -->
+      <div *ngIf="celebrationType === 'birthday'" class="celebration-details">
+        <!-- <p>🎉 Wishing you a day filled with happiness and joy! 🎉</p> -->
+        <p>May all your dreams and wishes come true!</p>
+      </div>
+      
+      <!-- Anniversary Celebration Content -->
+      <div *ngIf="celebrationType === 'anniversary'" class="celebration-details">
+        <p>🌟 Thank you for your dedication and hard work! 🌟</p>
+        <p>Here's to many more successful years ahead!</p>
+        <div class="years-badge">{{ yearsCompleted }} {{ yearsCompleted === 1 ? 'Year' : 'Years' }}</div>
+      </div>
+      
+    </div>
+  </div>
+
+</div>
+
+<!-- Debug Controls (Remove in production by setting *ngIf="false") -->
+<!-- <div class="debug-panel" *ngIf="true">
+  <h4>🎉 Celebration Debug</h4>
+  <div class="debug-buttons">
+    <button (click)="testBirthday()">Test Birthday</button>
+    <button (click)="testAnniversary()">Test Anniversary</button>
+    <button (click)="showCurrentData()">Show Current Data</button>
+    <button (click)="refreshCelebrationCheck()">Refresh Check</button>
+    <button (click)="debugUserData()">Debug All Data</button>
+  </div>
+</div> -->

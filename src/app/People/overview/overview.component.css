@@ -742,3 +742,533 @@
   background-color: #2196F3;
   color: white;
 }
+
+/* Celebration Notification Card Styles */
+.celebration-notification-card {
+  background: whitesmoke;
+  border-radius: 15px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  color: black;
+  animation: slideIn 0.5s ease-out;
+  position: relative;
+  overflow: hidden;
+  border-left: 5px solid #ff6b6b;
+  /* height: 420px; */
+}
+
+.celebration-notification-card::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.celebration-notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  position: relative;
+  z-index: 1;
+}
+
+/* .celebration-notification-header h3 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: black;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+} */
+
+.celebration-notification-header h3::before {
+  content: '🎉';
+  font-size: 1.8rem;
+}
+
+.close-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.celebration-notification-content {
+  position: relative;
+  z-index: 1;
+}
+
+.celebration-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  border-left: 3px solid transparent;
+}
+
+.celebration-item:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateX(5px);
+}
+
+.celebration-item:last-child {
+  margin-bottom: 0;
+}
+
+.celebration-icon {
+  font-size: 1.8rem;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+}
+
+.birthday-icon {
+  background: rgba(255, 107, 107, 0.3);
+  border: 2px solid #ff6b6b;
+}
+
+.anniversary-icon {
+  background: rgba(76, 175, 80, 0.3);
+  border: 2px solid #4CAF50;
+}
+
+.celebration-details {
+  flex: 1;
+}
+
+.celebration-message {
+  margin: 0 0 5px 0;
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: black;
+}
+
+.celebration-time {
+  margin: 0;
+  font-size: 0.9rem;
+  color: black;
+  font-style: italic;
+}
+
+/* Animation for notification card */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pulsing effect for notification card */
+.celebration-notification-card {
+  animation: pulseNotification 2s infinite alternate;
+}
+
+@keyframes pulseNotification {
+  0% {
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  }
+  100% {
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+  }
+}
+
+/* Responsive styles for notification card */
+@media (max-width: 768px) {
+  .celebration-notification-card {
+    padding: 15px;
+    margin: 15px 0;
+  }
+  
+  .celebration-notification-header h3 {
+    font-size: 1.3rem;
+  }
+  
+  .celebration-message {
+    font-size: 1rem;
+  }
+  
+  .celebration-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .celebration-notification-card {
+    padding: 12px;
+    margin: 12px 0;
+  }
+  
+  .celebration-notification-header h3 {
+    font-size: 1.1rem;
+  }
+  
+  .celebration-item {
+    gap: 10px;
+    padding: 10px;
+  }
+  
+  .celebration-message {
+    font-size: 0.9rem;
+  }
+  
+  .celebration-time {
+    font-size: 0.8rem;
+  }
+}
+
+/* Celebration Modal Styles */
+.celebration-modal-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gif-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.gif-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.3;
+}
+
+.celebration-content {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 40px;
+  border-radius: 20px;
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  z-index: 10;
+}
+
+.celebration-counter {
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.celebration-title-section {
+  margin-bottom: 30px;
+}
+
+.celebration-title-text {
+  font-size: 3em;
+  margin: 0;
+  font-weight: 900;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.celebration-username-text {
+  font-size: 2.5em;
+  margin: 10px 0;
+  color: #2c3e50;
+  font-weight: 700;
+}
+
+.celebration-message-text {
+  font-size: 1.5em;
+  color: #666;
+  margin-top: 20px;
+}
+
+.birthday-title {
+  color: #e74c3c;
+}
+
+.anniversary-title {
+  color: #3498db;
+}
+
+.celebration-details {
+  margin: 25px 0;
+}
+
+.celebration-details p {
+  font-size: 1.2em;
+  margin: 10px 0;
+  color: #555;
+}
+
+.years-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 10px 25px;
+  border-radius: 50px;
+  font-size: 1.2em;
+  font-weight: bold;
+  margin-top: 15px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.combined-celebrations-preview {
+  margin: 30px 0;
+  padding: 20px;
+  background: rgba(245, 245, 245, 0.9);
+  border-radius: 15px;
+  border-left: 5px solid #f39c12;
+}
+
+.preview-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.preview-items {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  background: white;
+  border-radius: 20px;
+  border: 2px solid #ddd;
+  transition: all 0.3s ease;
+}
+
+.preview-item.active {
+  border-color: #f39c12;
+  background: #fff8e1;
+  transform: scale(1.05);
+}
+
+.preview-icon {
+  font-size: 1.2em;
+}
+
+.preview-text {
+  font-weight: 600;
+  color: #555;
+}
+
+.close-celebration-btn {
+  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+  color: white;
+  border: none;
+  padding: 15px 40px;
+  font-size: 1.1em;
+  font-weight: bold;
+  border-radius: 50px;
+  cursor: pointer;
+  margin-top: 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+}
+
+.close-celebration-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(240, 147, 251, 0.6);
+}
+
+/* Celebration Notification Card Styles */
+/* .celebration-notification-card {
+  background: white;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  margin-bottom: 25px;
+  overflow: hidden;
+  border-left: 5px solid #4CAF50;
+} */
+
+.celebration-notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* padding: 15px 20px; */
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-bottom: 1px solid #eee;
+}
+
+.celebration-notification-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3em;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5em;
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+.close-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+/* .celebration-notification-content {
+  padding: 20px;
+} */
+
+.celebration-group {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.celebration-group:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.celebration-group-header {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.celebration-group-icon {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 1.5em;
+}
+
+.celebration-count {
+  font-size: 0.8em;
+  background: #e0e0e0;
+  padding: 2px 8px;
+  border-radius: 10px;
+  color: #666;
+}
+
+.celebration-group-title {
+  font-size: 1.4em;
+  font-weight: bold;
+}
+
+.celebration-group-names {
+  font-size: 1.2em;
+  margin: 10px 0;
+  color: #2c3e50;
+  font-weight: 600;
+}
+
+.grouped-usernames {
+  color: #e74c3c;
+}
+
+.group-years {
+  color: #3498db;
+  font-size: 0.9em;
+  margin-left: 10px;
+}
+
+.celebration-group-message {
+  color: #666;
+  margin: 10px 0;
+  font-size: 1em;
+}
+
+.celebration-group-action {
+  color: #4CAF50;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
+/* Animation for celebration modal */
+@keyframes celebrationPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1); }
+}
+
+.celebration-content {
+  animation: celebrationPulse 2s infinite;
+}
+
+@media (max-width: 768px) {
+  .celebration-content {
+    padding: 20px;
+    max-width: 95%;
+  }
+  
+  .celebration-title-text {
+    font-size: 2em;
+  }
+  
+  .celebration-username-text {
+    font-size: 1.8em;
+  }
+  
+  .preview-items {
+    flex-direction: column;
+    align-items: center;
+  }
+}
