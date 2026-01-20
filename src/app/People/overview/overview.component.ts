@@ -23,7 +23,7 @@ export class OverviewComponent implements OnInit, OnDestroy {
   username: string = localStorage.getItem('username') || 'Guest';
   employeeId: string = localStorage.getItem('employeeId') || 'Unknown';
   userRole: string = localStorage.getItem('userRole') || 'Unknown';
-  managerId: string = localStorage.getItem('managerId') || 'Unknown';
+  managerId: string = localStorage.getItem('reportTo') || 'Unknown';
   managerName: string = localStorage.getItem('managerName') || 'Unknown';
 
   // CELEBRATION VARIABLES - UPDATED FOR MULTIPLE CELEBRATIONS
