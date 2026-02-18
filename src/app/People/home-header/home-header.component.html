@@ -22,6 +22,8 @@
     <a *ngIf="selectedMenu === 'leave-summary'" routerLink="/dashboard/leave-request" routerLinkActive="active">Leave Request</a>
 
     <a *ngIf="selectedMenu === 'leave-summary' && isHR" routerLink="/dashboard/calendar-page" routerLinkActive="active">Leave Calendar</a>
+
+    <a *ngIf="selectedMenu === 'leave-summary' && isHR" routerLink="/dashboard/hrleaveapproval" routerLinkActive="active">Renivew Leave Request</a>
     <!-- Show settings-related links when 'settings' is selected -->
     <a *ngIf="selectedMenu === 'settings'" routerLink="/dashboard/operations" routerLinkActive="active">Settings</a>
     <a *ngIf="selectedMenu === 'settings'" routerLink="/analytics" routerLinkActive="active">Analytics</a>
@@ -29,6 +31,18 @@
      <!-- ⭐ NEW EXIT FORM MENUS ⭐ -->
     <a *ngIf="selectedMenu === 'exit-form'" routerLink="/dashboard/exit-form" routerLinkActive="active">Exit Form</a>
     <a *ngIf="selectedMenu === 'exit-form'" routerLink="/dashboard/exitpage-data" routerLinkActive="active">Exit Form Status</a>
+
+     <a *ngIf="selectedMenu === 'admin-upload'" routerLink="/dashboard/admin/upload" routerLinkActive="active">Upload</a>
+    <a *ngIf="selectedMenu === 'admin-upload'" routerLink="/dashboard/admin/list" routerLinkActive="active">Admin List</a>
+
+    <div *ngIf="selectedMenu === 'Policy'">
+      <!-- For Admin Users -->
+      <ng-container *ngIf="isAdmin">
+        <a routerLink="/dashboard/admin/upload" routerLinkActive="active">Upload Policy</a>
+        <a routerLink="/dashboard/admin/list" routerLinkActive="active">Policy List</a>
+      </ng-container>
+      
+    </div>
 
   </nav>
 </div>

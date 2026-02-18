@@ -29,54 +29,120 @@
     <div class="button-group">
       <button *ngIf="employeeStatus === 'Out'" (click)="checkIn()" class="checkin-btn">Check-in</button>
       <button *ngIf="employeeStatus === 'In'" (click)="checkOut()" class="checkout-btn">Check-out</button>
-
-      <!-- Button is ALWAYS VISIBLE (removed *ngIf="!hasUploaded") -->
-      <button (click)="openIdCardDialog()" class="idcard-btn">
-        Upload ID Card Photo
-      </button>
-
-      <button (click)="PersonalDetails()" class="idcard-btn">
-        Personal Details
-      </button>
+      <button (click)="openIdCardDialog()" class="idcard-btn">Upload ID Card Photo</button>
+      <button (click)="PersonalDetails()" class="idcard-btn">Personal Details</button>
     </div>
   </div>
   
   <div class="content">
-    <!-- Other Employees Celebrations Notification Card - UPDATED FOR GROUPED CELEBRATIONS -->
+    <!-- ============================================ -->
+    <!-- DIVIDED CELEBRATION CARD - 2 COLUMN LAYOUT   -->
+    <!-- ============================================ -->
     <div *ngIf="showOtherCelebrations && groupedOtherCelebrations.length > 0" class="celebration-notification-card">
       <div class="celebration-notification-header">
         <h3>🎉 Today's Celebrations</h3>
         <button class="close-btn" (click)="hideOtherCelebrations()">×</button>
       </div>
+      
       <div class="celebration-notification-content">
-        <!-- Grouped celebrations display -->
-        <div *ngFor="let group of groupedOtherCelebrations" class="celebration-group">
-          <div class="celebration-group-header">
-            <div class="celebration-group-icon" [ngClass]="{'birthday-icon': group.type === 'birthday', 'anniversary-icon': group.type === 'anniversary'}">
-              {{ group.type === 'birthday' ? '🎂' : '🏢' }}
-              <span class="celebration-count">({{ group.count }})</span>
+        <!-- DIVIDED INTO 2 COLUMNS - BIRTHDAY LEFT, ANNIVERSARY RIGHT -->
+        <div class="celebrations-split-container">
+          
+          <!-- LEFT COLUMN - BIRTHDAYS -->
+          <div class="celebration-column birthday-column" *ngIf="getBirthdayGroup() as birthdayGroup">
+            <div class="column-header birthday-header">
+              <span class="column-icon">🎂</span>
+              <span class="column-title">Birthday</span>
+              <span class="column-count" *ngIf="birthdayGroup.count > 0">({{ birthdayGroup.count }})</span>
             </div>
-            <div class="celebration-group-title" [ngClass]="{'birthday-title': group.type === 'birthday', 'anniversary-title': group.type === 'anniversary'}">
-              {{ group.title }}
+            
+            <div *ngIf="birthdayGroup.count > 0" class="column-content">
+              <div class="celebration-group-names">
+                <span class="grouped-usernames birthday-names">
+                  {{ formatNameList(birthdayGroup.usernames) }}
+                </span>
+              </div>
+              
+              <div class="celebration-group-message birthday-message">
+                {{ birthdayGroup.message }}
+              </div>
+              
+              <div class="celebration-group-action">
+                <button class="wish-group-button birthday-wish-btn" 
+                        (click)="sendGroupWish(birthdayGroup)" 
+                        [disabled]="birthdayGroup.isSending">
+                  <span *ngIf="!birthdayGroup.isSending">
+                    <i class="fas fa-gift"></i> Send Wish ({{ birthdayGroup.count }})
+                  </span>
+                  <span *ngIf="birthdayGroup.isSending">
+                    <i class="fas fa-spinner fa-spin"></i> Sending {{ birthdayGroup.successCount }}/{{ birthdayGroup.count }}...
+                  </span>
+                </button>
+                
+                <div *ngIf="birthdayGroup.wishSent" class="wish-sent-confirmation birthday-success">
+                  ✅ {{ birthdayGroup.wishSuccessMessage || 'Wish sent successfully!' }}
+                </div>
+                
+                <div *ngIf="birthdayGroup.wishError" class="wish-error birthday-error">
+                  ❌ {{ birthdayGroup.wishError }}
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="birthdayGroup.count === 0" class="no-celebrations">
+              <span class="no-celebration-text">No birthdays today</span>
             </div>
           </div>
           
-          <div class="celebration-group-names">
-            <span class="grouped-usernames">
-              {{ formatNameList(group.usernames) }}
-            </span>
-            <span *ngIf="group.type === 'anniversary' && group.yearsArray.length > 0" class="group-years">
-              ({{ group.yearsArray.join(', ') }} {{ group.yearsArray.length === 1 ? 'year' : 'years' }})
-            </span>
+          <!-- RIGHT COLUMN - ANNIVERSARIES -->
+          <div class="celebration-column anniversary-column" *ngIf="getAnniversaryGroup() as anniversaryGroup">
+            <div class="column-header anniversary-header">
+              <span class="column-icon">🏢</span>
+              <span class="column-title">Anniversary</span>
+              <span class="column-count" *ngIf="anniversaryGroup.count > 0">({{ anniversaryGroup.count }})</span>
+            </div>
+            
+            <div *ngIf="anniversaryGroup.count > 0" class="column-content">
+              <div class="celebration-group-names">
+                <span class="grouped-usernames anniversary-names">
+                  {{ formatNameList(anniversaryGroup.usernames) }}
+                </span>
+                <span *ngIf="anniversaryGroup.yearsArray.length > 0" class="group-years anniversary-years">
+                  ({{ anniversaryGroup.yearsArray.join(', ') }} {{ anniversaryGroup.yearsArray.length === 1 ? 'year' : 'years' }})
+                </span>
+              </div>
+              
+              <div class="celebration-group-message anniversary-message">
+                {{ anniversaryGroup.message }}
+              </div>
+              
+              <div class="celebration-group-action">
+                <button class="wish-group-button anniversary-wish-btn" 
+                        (click)="sendGroupWish(anniversaryGroup)" 
+                        [disabled]="anniversaryGroup.isSending">
+                  <span *ngIf="!anniversaryGroup.isSending">
+                    <i class="fas fa-gift"></i> Send Wish ({{ anniversaryGroup.count }})
+                  </span>
+                  <span *ngIf="anniversaryGroup.isSending">
+                    <i class="fas fa-spinner fa-spin"></i> Sending {{ anniversaryGroup.successCount }}/{{ anniversaryGroup.count }}...
+                  </span>
+                </button>
+                
+                <div *ngIf="anniversaryGroup.wishSent" class="wish-sent-confirmation anniversary-success">
+                  ✅ {{ anniversaryGroup.wishSuccessMessage || 'Wish sent successfully!' }}
+                </div>
+                
+                <div *ngIf="anniversaryGroup.wishError" class="wish-error anniversary-error">
+                  ❌ {{ anniversaryGroup.wishError }}
+                </div>
+              </div>
+            </div>
+            
+            <div *ngIf="anniversaryGroup.count === 0" class="no-celebrations">
+              <span class="no-celebration-text">No anniversaries today</span>
+            </div>
           </div>
           
-          <div class="celebration-group-message">
-            {{ group.message }}
-          </div>
-          
-          <div class="celebration-group-action">
-            Let's wish them today! 🎉
-          </div>
         </div>
       </div>
     </div>
@@ -84,7 +150,7 @@
     <div class="greeting">
       <img alt="Greeting Image" height="50" src="https://storage.googleapis.com/a1aa/image/J4oA29iMvR5iEd3wnSSLboIKIETtV1GY5r51w13ew1ayvG3JA.jpg" width="50"/>
       <div class="text">
-        <h2>Good Morning {{ username }}</h2>
+        <h2>Good {{ getGreeting() }} {{ username }}</h2>
         <p>Have a productive day!</p>
       </div>
       <div class="quote">
@@ -124,7 +190,7 @@
   </div>
 </div>
 
-<!-- Celebration Modal (Full Screen) - UPDATED FOR MULTIPLE CELEBRATIONS -->
+<!-- Celebration Modal (Full Screen) -->
 <div *ngIf="showCelebrationModal && currentCelebration" class="celebration-modal-fullscreen">
   <!-- Full-screen GIF background -->
   <div class="gif-background">
@@ -155,7 +221,6 @@
     
     <!-- Birthday Celebration Content -->
     <div *ngIf="currentCelebration.type === 'birthday'" class="celebration-details">
-      <!-- <p>🎉 Wishing you a day filled with happiness and joy! 🎉</p> -->
       <p>May all your dreams and wishes come true!</p>
       <div class="years-badge" *ngIf="currentCelebration.years > 0">
         {{ currentCelebration.years }} {{ currentCelebration.years === 1 ? 'Year' : 'Years' }} Old
@@ -165,7 +230,7 @@
     <!-- Anniversary Celebration Content -->
     <div *ngIf="currentCelebration.type === 'anniversary'" class="celebration-details">
       <p>🎯 Celebrating Excellence & Dedication! 🎯</p>
-  <p>Your commitment continues to inspire us all. Keep shining!</p>
+      <p>Your commitment continues to inspire us all. Keep shining!</p>
       <div class="years-badge">
         {{ currentCelebration.years }} {{ currentCelebration.years === 1 ? 'Year' : 'Years' }}
       </div>
@@ -187,10 +252,5 @@
         </div>
       </div>
     </div>
-    
-    <!-- Close button -->
-    <!-- <button class="close-celebration-btn" (click)="closeCelebrationModal()">
-      🎉 Continue Celebrating! 🎉
-    </button> -->
   </div>
 </div>

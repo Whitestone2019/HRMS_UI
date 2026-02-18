@@ -1,0 +1,356 @@
+<div class="container">
+  <!-- Header Section -->
+  <div class="header-section">
+    <div class="header-left">
+      <h1>HR Leave Approvals</h1>
+      <p class="subtitle">Manage special leave requests requiring HR approval</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-secondary" (click)="refreshData()" [disabled]="isLoading">
+        <i class="fas fa-sync-alt" [class.fa-spin]="isLoading"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Cards -->
+  <div class="stats-cards">
+    <div class="stat-card pending">
+      <div class="stat-icon">
+        <i class="fas fa-clock"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ pendingCount }}</h3>
+        <p>Pending Requests</p>
+      </div>
+    </div>
+    
+    <div class="stat-card approved">
+      <div class="stat-icon">
+        <i class="fas fa-check-circle"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ approvedCount }}</h3>
+        <p>Approved</p>
+      </div>
+    </div>
+    
+    <div class="stat-card rejected">
+      <div class="stat-icon">
+        <i class="fas fa-times-circle"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ rejectedCount }}</h3>
+        <p>Rejected</p>
+      </div>
+    </div>
+    
+    <div class="stat-card total">
+      <div class="stat-icon">
+        <i class="fas fa-list-alt"></i>
+      </div>
+      <div class="stat-info">
+        <h3>{{ totalCount }}</h3>
+        <p>Total Requests</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-content">
+      <i class="fas fa-spinner fa-spin fa-3x"></i>
+      <p>Loading HR leave approvals...</p>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div *ngIf="!isLoading && hasData" class="table-section">
+    <div class="table-responsive">
+      <table class="approvals-table">
+        <thead>
+          <tr>
+            <th>Employee ID</th>
+            <th>Leave Type</th>
+            <th>Requested Date</th>
+            <th>Status</th>
+            <th>HR Name</th>
+            <th>Manager Name</th>
+            <!-- <th>Created On</th> -->
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Remove the click event from TR and add it to each cell -->
+          <tr *ngFor="let approval of displayedApprovals; trackBy: trackByApprovalId" class="clickable-row">
+            
+            <!-- Make each cell clickable -->
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              <div class="employee-id">{{ approval.employeeId || 'N/A' }}</div>
+            </td>
+            
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              <div class="leave-type-cell">
+                <i [class]="getLeaveTypeIcon(approval.leaveType || '')" 
+                   [style.color]="getLeaveTypeColor(approval.leaveType || '')"></i>
+                <span>{{ (approval.leaveType || 'N/A') | titlecase }}</span>
+              </div>
+            </td>
+            
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              {{ formatDate(approval.requestedDate) }}
+            </td>
+            
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              <span [class]="'status-badge ' + getStatusClass(approval.status)">
+                {{ getStatusDisplay(approval.status) }}
+              </span>
+            </td>
+            
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              {{ approval.hrName || 'N/A' }}
+            </td>
+            
+            <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              {{ approval.managerName || 'N/A' }}
+            </td>
+            
+            <!-- <td class="cell-content clickable-cell" (click)="openDetailsModal(approval)">
+              <div class="date-info">
+                {{ formatDateTime(approval.createdOn) }}
+              </div>
+            </td> -->
+            
+            <!-- Actions column - NOT clickable for modal -->
+            <td class="cell-content">
+              <div class="action-buttons">
+                <!-- Action buttons - only show for pending requests -->
+                <ng-container *ngIf="approval.status === 'pending'">
+                  <button class="btn-action approve-btn" (click)="openApprovalModal(approval, 'approved')"
+                          title="Approve Request">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  <button class="btn-action reject-btn" (click)="openApprovalModal(approval, 'rejected')"
+                          title="Reject Request">
+                    <i class="fas fa-times"></i>
+                  </button>
+                  <button class="btn-action hold-btn" (click)="openApprovalModal(approval, 'onhold')"
+                          title="Put On Hold">
+                    <i class="fas fa-pause"></i>
+                  </button>
+                </ng-container>
+                
+                <!-- Status Update Buttons for non-pending requests -->
+                <ng-container *ngIf="approval.status !== 'pending'">
+                  <button class="btn-action pending-btn" (click)="openApprovalModal(approval, 'pending')"
+                          title="Mark as Pending">
+                    <i class="fas fa-clock"></i>
+                  </button>
+                </ng-container>
+                
+                <button class="btn-action delete-btn" (click)="deleteApproval(approval)"
+                        title="Delete Request">
+                  <i class="fas fa-trash"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="totalPages > 1">
+      <button [disabled]="currentPage === 0" (click)="changePage(currentPage - 1)">
+        <i class="fas fa-chevron-left"></i> Previous
+      </button>
+      
+      <span class="page-info">
+        Page {{ currentPage + 1 }} of {{ totalPages }}
+        <span class="items-info">({{ totalItems }} total requests)</span>
+      </span>
+      
+      <button [disabled]="currentPage >= totalPages - 1" (click)="changePage(currentPage + 1)">
+        Next <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- No Data State -->
+  <div *ngIf="!isLoading && !hasData" class="no-data-section">
+    <div class="no-data-content">
+      <i class="fas fa-inbox fa-4x"></i>
+      <h3>No HR Leave Approvals Found</h3>
+      <p>There are no special leave requests requiring HR approval at the moment.</p>
+      <button class="btn btn-secondary" (click)="refreshData()">
+        <i class="fas fa-sync-alt"></i> Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Row Details Modal - FIXED -->
+  <div *ngIf="showDetailsModal" class="details-modal-overlay" (click)="closeDetailsModal()">
+    <div class="details-modal-content" (click)="$event.stopPropagation()">
+      <div class="details-modal-header">
+        <h3>
+          <i [class]="getLeaveTypeIcon(selectedApproval?.leaveType || '')"
+             [style.color]="getLeaveTypeColor(selectedApproval?.leaveType || '')"></i>
+          Leave Request Details
+        </h3>
+        <button class="details-close-btn" (click)="closeDetailsModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="details-modal-body">
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-label">Employee ID</div>
+            <div class="detail-value">{{ selectedApproval?.employeeId || 'N/A' }}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Leave Type</div>
+            <div class="detail-value">
+              <i [class]="getLeaveTypeIcon(selectedApproval?.leaveType || '')"
+                 [style.color]="getLeaveTypeColor(selectedApproval?.leaveType || '')"></i>
+              {{ selectedApproval?.leaveType || 'N/A' }}
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Requested Date</div>
+            <div class="detail-value">{{ formatDate(selectedApproval?.requestedDate) }}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Status</div>
+            <div class="detail-value">
+              <span [class]="'status-badge ' + getStatusClass(selectedApproval?.status)">
+                {{ getStatusDisplay(selectedApproval?.status) }}
+              </span>
+            </div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">HR Name</div>
+            <div class="detail-value">{{ selectedApproval?.hrName || 'N/A' }}</div>
+          </div>
+          
+          <div class="detail-item">
+            <div class="detail-label">Manager Name</div>
+            <div class="detail-value">{{ selectedApproval?.managerName || 'N/A' }}</div>
+          </div>
+          
+          <!-- <div class="detail-item">
+            <div class="detail-label">Created On</div>
+            <div class="detail-value">{{ formatDateTime(selectedApproval?.createdOn) }}</div>
+          </div> -->
+          
+          <div class="detail-item full-width" *ngIf="selectedApproval?.remarks">
+            <div class="detail-label">Remarks</div>
+            <div class="detail-value remarks-text">{{ selectedApproval?.remarks }}</div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons in Modal -->
+        <div class="details-modal-actions">
+          <div *ngIf="selectedApproval?.status === 'pending'" class="action-buttons-group">
+            <button class="btn details-btn-approve" (click)="openApprovalModal(selectedApproval!, 'approved')">
+              <i class="fas fa-check"></i> Approve
+            </button>
+            <button class="btn details-btn-reject" (click)="openApprovalModal(selectedApproval!, 'rejected')">
+              <i class="fas fa-times"></i> Reject
+            </button>
+            <button class="btn details-btn-hold" (click)="openApprovalModal(selectedApproval!, 'onhold')">
+              <i class="fas fa-pause"></i> On Hold
+            </button>
+          </div>
+          
+          <div *ngIf="selectedApproval?.status !== 'pending'" class="action-buttons-group">
+            <button class="btn details-btn-pending" (click)="openApprovalModal(selectedApproval!, 'pending')">
+              <i class="fas fa-clock"></i> Mark as Pending
+            </button>
+            <button class="btn details-btn-delete" (click)="deleteApproval(selectedApproval!)">
+              <i class="fas fa-trash"></i> Delete Request
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Approval Modal (Existing) - Keep this as is -->
+  <div class="approval-modal" *ngIf="showApprovalModal">
+    <div class="modal-overlay" (click)="closeApprovalModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>
+          <i class="fas fa-check-circle" *ngIf="modalStatus === 'approved'"></i>
+          <i class="fas fa-times-circle" *ngIf="modalStatus === 'rejected'"></i>
+          <i class="fas fa-pause-circle" *ngIf="modalStatus === 'onhold'"></i>
+          <i class="fas fa-clock" *ngIf="modalStatus === 'pending'"></i>
+          {{ modalStatus | titlecase }} Leave Request
+        </h3>
+        <button class="close-btn" (click)="closeApprovalModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <!-- Approval Details -->
+        <div class="approval-details">
+          <div class="detail-row">
+            <div class="detail-label">Employee ID:</div>
+            <div class="detail-value">{{ selectedApproval?.employeeId || 'N/A' }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Leave Type:</div>
+            <div class="detail-value">{{ selectedApproval?.leaveType || 'N/A' | titlecase }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Requested Date:</div>
+            <div class="detail-value">{{ formatDate(selectedApproval?.requestedDate) }}</div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Current Status:</div>
+            <div class="detail-value">
+              <span [class]="'status-badge ' + getStatusClass(selectedApproval?.status)">
+                {{ getStatusDisplay(selectedApproval?.status) }}
+              </span>
+            </div>
+          </div>
+          <div class="detail-row">
+            <div class="detail-label">Manager Name:</div>
+            <div class="detail-value">{{ selectedApproval?.managerName || 'N/A' }}</div>
+          </div>
+        </div>
+        
+        <!-- Remarks Textarea -->
+        <div class="remarks-section">
+          <label for="remarks">Remarks (Optional):</label>
+          <textarea 
+            id="remarks" 
+            [(ngModel)]="modalRemarks" 
+            placeholder="Enter remarks for this action..."
+            rows="4"
+            class="remarks-textarea"></textarea>
+        </div>
+        
+        <!-- Action Buttons -->
+        <div class="modal-actions">
+          <button class="btn btn-secondary" (click)="closeApprovalModal()" [disabled]="isSubmitting">
+            Cancel
+          </button>
+          <button class="btn btn-primary" (click)="submitApprovalAction()" [disabled]="isSubmitting">
+            <span *ngIf="isSubmitting">
+              <i class="fas fa-spinner fa-spin"></i> Processing...
+            </span>
+            <span *ngIf="!isSubmitting">
+              Confirm {{ modalStatus | titlecase }}
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

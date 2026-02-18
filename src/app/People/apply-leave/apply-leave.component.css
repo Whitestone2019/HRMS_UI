@@ -288,3 +288,68 @@ body {
     gap: 15px;
   }
 }
+
+/* Add to your existing CSS */
+
+.available-days-info {
+  margin-top: 5px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  background-color: #f8f9fa;
+}
+
+.text-success {
+  color: #28a745;
+}
+
+.text-danger {
+  color: #dc3545;
+}
+
+.text-info {
+  color: #17a2b8;
+}
+
+.date-range-info {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background-color: #e7f3ff;
+  border-left: 4px solid #007bff;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.no-days-warning {
+  margin-top: 8px;
+  padding: 5px 10px;
+  background-color: #fff3cd;
+  border-left: 4px solid #ffc107;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.date-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.date-input-group input[type="date"] {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.date-input-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: white;
+}
+
+.btn-submit:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}

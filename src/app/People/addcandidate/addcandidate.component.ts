@@ -8,6 +8,19 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 export interface Role { roleid: string; rolename: string; }
 export interface Emp { empid: string; firstname: string; lastname?: string; }
 
+// Define allowed document types
+export type DocumentType = 'photo' | 'aadhar' | 'pan' | 'tenth' | 'twelfth' | 'degree';
+
+// Define document interface
+export interface DocumentInfo {
+  name: string;
+  url: string;
+  mime: string;
+  blob?: Blob;
+  originalName?: string;
+  originalMime?: string;
+}
+
 @Component({
   selector: 'app-addcandidate',
   templateUrl: './addcandidate.component.html',
@@ -52,10 +65,19 @@ export class AddCandidateComponent implements OnInit {
   successMessage = '';
   sameAsPresentAddress = false;
 
+  // ✅ FIXED: Use specific type with index signature
   existingFiles: {
-    photo?: string; aadhar?: string; pan?: string;
-    tenth?: string; twelfth?: string; degree?: string;
+    photo?: DocumentInfo;
+    aadhar?: DocumentInfo;
+    pan?: DocumentInfo;
+    tenth?: DocumentInfo;
+    twelfth?: DocumentInfo;
+    degree?: DocumentInfo;
+    [key: string]: DocumentInfo | undefined; // Add index signature
   } = {};
+
+  // ✅ FIXED: Define allowed document keys array with correct type
+  documentKeys: DocumentType[] = ['photo', 'aadhar', 'pan', 'tenth', 'twelfth', 'degree'];
 
   constructor(
     private apiService: ApiService,
@@ -65,8 +87,8 @@ export class AddCandidateComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.apiService.getRoles().subscribe(data => this.roles = data);
-    this.apiService.getManagers().subscribe(data => this.managers = data);
+    this.loadRoles();
+    this.loadManagers();
 
     this.route.queryParams.subscribe(params => {
       const empIdFromUrl = params['empId'];
@@ -103,9 +125,24 @@ export class AddCandidateComponent implements OnInit {
     });
   }
 
+  loadRoles(): void {
+    this.apiService.getRoles().subscribe({
+      next: (data) => this.roles = data,
+      error: (err) => console.error('Failed to load roles:', err)
+    });
+  }
+
+  loadManagers(): void {
+    this.apiService.getManagers().subscribe({
+      next: (data) => this.managers = data,
+      error: (err) => console.error('Failed to load managers:', err)
+    });
+  }
+
   loadEmployeeData(empId: string): void {
     this.apiService.getEmployeeDetailsById(empId).subscribe({
       next: (res: any) => {
+        console.log('Employee data loaded:', res);
         Object.assign(this.candidateDetails, res);
 
         this.educationList = res.education?.length ? res.education : [this.emptyEducation()];
@@ -114,39 +151,157 @@ export class AddCandidateComponent implements OnInit {
 
         if (res.documents) {
           this.processDocumentsForPreview(res.documents);
-          this.existingFiles = {
-            photo: res.documents.photo?.originalname || res.documents.photo?.name,
-            aadhar: res.documents.aadhar?.originalname || res.documents.aadhar?.name,
-            pan: res.documents.pan?.originalname || res.documents.pan?.name,
-            tenth: res.documents.tenth?.originalname || res.documents.tenth?.name,
-            twelfth: res.documents.twelfth?.originalname || res.documents.twelfth?.name,
-            degree: res.documents.degree?.originalname || res.documents.degree?.name,
-          };
         }
       },
-      error: () => alert('Failed to load employee data')
-    });
-  }
-
-  processDocumentsForPreview(documents: any): void {
-    const keys = ['photo', 'aadhar', 'pan', 'tenth', 'twelfth', 'degree'];
-    keys.forEach(key => {
-      const doc = documents[key];
-      if (doc?.data && doc?.mime) {
-        try {
-          const binary = atob(doc.data);
-          const array = Uint8Array.from(binary, c => c.charCodeAt(0));
-          const blob = new Blob([array], { type: doc.mime });
-          documents[key].url = URL.createObjectURL(blob);
-          documents[key].name = doc.name || `${key} document`;
-        } catch (e) {
-          console.error('Blob error:', e);
-        }
+      error: (err) => {
+        console.error('Failed to load employee data:', err);
+        alert('Failed to load employee data');
       }
     });
   }
 
-  onFileSelected(event: any, type: string): void {
+  // ✅ FIXED: Type-safe document processing
+  processDocumentsForPreview(documents: any): void {
+    this.documentKeys.forEach(key => {
+      const doc = documents[key];
+      if (doc?.data && doc?.mime && doc?.name) {
+        try {
+          // Convert base64 to blob
+          const binary = atob(doc.data);
+          const array = Uint8Array.from(binary, c => c.charCodeAt(0));
+          const blob = new Blob([array], { type: doc.mime });
+          
+          // Create object URL
+          const url = URL.createObjectURL(blob);
+          
+          // Store document with ALL original metadata
+          documents[key] = {
+            ...doc,
+            url: url,
+            blob: blob,
+            originalName: doc.name,
+            originalMime: doc.mime
+          };
+          
+          // ✅ FIXED: Type-safe assignment with key assertion
+          this.existingFiles[key] = {
+            name: doc.name,
+            url: url,
+            mime: doc.mime,
+            blob: blob
+          };
+          
+          console.log(`✅ Processed ${key}: ${doc.name} (${doc.mime})`);
+        } catch (e) {
+          console.error(`❌ Error processing ${key}:`, e);
+        }
+      }
+    });
+    
+    // Store documents back to candidateDetails
+    this.candidateDetails.documents = documents;
+  }
+
+  // ✅ FIXED: Download with original filename and extension
+  downloadDocument(doc: any): void {
+    if (!doc) {
+      console.error('No document data available');
+      return;
+    }
+    
+    try {
+      let blob: Blob;
+      let filename: string;
+      let mimeType: string;
+      
+      // Case 1: We have stored blob directly
+      if (doc.blob) {
+        blob = doc.blob;
+        filename = doc.originalName || doc.name || 'document';
+        mimeType = doc.originalMime || doc.mime || 'application/octet-stream';
+      } 
+      // Case 2: We have base64 data
+      else if (doc.data) {
+        const binary = atob(doc.data);
+        const array = Uint8Array.from(binary, c => c.charCodeAt(0));
+        mimeType = doc.mime || 'application/octet-stream';
+        blob = new Blob([array], { type: mimeType });
+        filename = doc.name || `document.${this.getExtensionFromMime(mimeType)}`;
+      }
+      // Case 3: We have URL but need to fetch blob
+      else if (doc.url) {
+        this.downloadFromUrl(doc.url, doc.name || 'document');
+        return;
+      } else {
+        console.error('No document data available');
+        alert('Cannot download: No document data available');
+        return;
+      }
+      
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      console.log(`✅ Downloaded: ${filename}`);
+    } catch (error) {
+      console.error('❌ Download failed:', error);
+      alert('Failed to download document. Please try again.');
+    }
+  }
+
+  // Helper: Download from URL
+  downloadFromUrl(url: string, filename: string): void {
+    fetch(url)
+      .then(res => res.blob())
+      .then(blob => {
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(blobUrl);
+      })
+      .catch(err => {
+        console.error('Download failed:', err);
+        alert('Failed to download document');
+      });
+  }
+
+  // Helper: Get file extension from mime type
+  getExtensionFromMime(mime: string): string {
+    const map: { [key: string]: string } = {
+      'image/jpeg': 'jpg',
+      'image/jpg': 'jpg',
+      'image/png': 'png',
+      'image/gif': 'gif',
+      'image/bmp': 'bmp',
+      'image/webp': 'webp',
+      'application/pdf': 'pdf',
+      'text/plain': 'txt',
+      'application/msword': 'doc',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'docx',
+      'application/vnd.ms-excel': 'xls',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+      'application/vnd.ms-powerpoint': 'ppt',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'pptx'
+    };
+    return map[mime] || 'bin';
+  }
+
+  // Helper: Get extension from blob
+  getExtensionFromBlob(blob: Blob): string {
+    return this.getExtensionFromMime(blob.type);
+  }
+
+  onFileSelected(event: any, type: DocumentType): void {
     const file = event.target.files[0];
     if (file) {
       switch (type) {
@@ -157,6 +312,11 @@ export class AddCandidateComponent implements OnInit {
         case 'twelfth': this.twelfthFile = file; break;
         case 'degree': this.degreeFile = file; break;
       }
+      console.log(`📁 Selected ${type}: ${file.name} (${file.type})`);
+      
+      // Update success message
+      this.successMessage = `${file.name} uploaded successfully!`;
+      setTimeout(() => this.successMessage = '', 3000);
     }
   }
 
@@ -182,27 +342,80 @@ export class AddCandidateComponent implements OnInit {
     this.candidateDetails.permanentcountry = 'India';
   }
 
-  emptyEducation() { return { institution: '', qualification: '', regnum: '', percentage: '', duration: '', fieldofstudy: '', yearofgraduation: '', additionalnotes: '' }; }
-  emptyProfessional() { return { organisation: '', location: '', orgempid: '', orgdept: '', orgrole: '', joiningdate: '', relievingdate: '', ctc: '', additionalinformation: '' }; }
-  emptySkill() { return { skill: '', proficiencylevel: '', certification: '', yearsExperience: '', lastupdated: '' }; }
+  emptyEducation() { 
+    return { 
+      institution: '', 
+      qualification: '', 
+      regnum: '', 
+      percentage: '', 
+      duration: '', 
+      fieldofstudy: '', 
+      yearofgraduation: '', 
+      additionalnotes: '' 
+    }; 
+  }
+  
+  emptyProfessional() { 
+    return { 
+      organisation: '', 
+      location: '', 
+      orgempid: '', 
+      orgdept: '', 
+      orgrole: '', 
+      joiningdate: '', 
+      relievingdate: '', 
+      ctc: '', 
+      additionalinformation: '' 
+    }; 
+  }
+  
+  emptySkill() { 
+    return { 
+      skill: '', 
+      proficiencylevel: '', 
+      certification: '', 
+      yearsExperience: '', 
+      lastupdated: '' 
+    }; 
+  }
 
-  addEducation() { this.educationList.push(this.emptyEducation()); }
-  addProfessional() { this.professionalList.push(this.emptyProfessional()); }
-  addSkill() { this.skillList.push(this.emptySkill()); }
-  removeEdu(i: number) { if (this.educationList.length > 1) this.educationList.splice(i, 1); }
-  removeProfessional(i: number) { if (this.professionalList.length > 1) this.professionalList.splice(i, 1); }
-  removeSkill(i: number) { if (this.skillList.length > 1) this.skillList.splice(i, 1); }
+  addEducation() { 
+    this.educationList.push(this.emptyEducation()); 
+  }
+  
+  addProfessional() { 
+    this.professionalList.push(this.emptyProfessional()); 
+  }
+  
+  addSkill() { 
+    this.skillList.push(this.emptySkill()); 
+  }
+  
+  removeEdu(i: number) { 
+    if (this.educationList.length > 1) this.educationList.splice(i, 1); 
+  }
+  
+  removeProfessional(i: number) { 
+    if (this.professionalList.length > 1) this.professionalList.splice(i, 1); 
+  }
+  
+  removeSkill(i: number) { 
+    if (this.skillList.length > 1) this.skillList.splice(i, 1); 
+  }
 
   onSubmit1(form: NgForm): void {
+    // Mark all fields as touched
     Object.keys(form.controls).forEach(key => {
       form.controls[key].markAsTouched();
     });
 
+    // Check form validity
     if (!form.valid) {
       alert('Please fill all required fields correctly.');
       return;
     }
 
+    // Check required documents for add mode
     if (this.mode === 'add') {
       const required = [this.photoFile, this.aadharFile, this.panFile, this.tenthFile, this.twelfthFile, this.degreeFile];
       if (required.some(f => !f)) {
@@ -211,6 +424,7 @@ export class AddCandidateComponent implements OnInit {
       }
     }
 
+    // Prepare payload
     const payload = {
       empid: this.candidateDetails.empid,
       firstname: this.candidateDetails.firstName,
@@ -257,9 +471,11 @@ export class AddCandidateComponent implements OnInit {
       skillSet: this.skillList.filter(s => s.skill?.trim())
     };
 
+    // Create FormData
     const formData = new FormData();
     formData.append('data', JSON.stringify(payload));
 
+    // Append files
     if (this.photoFile) formData.append('photo', this.photoFile);
     if (this.aadharFile) formData.append('aadharDoc', this.aadharFile);
     if (this.panFile) formData.append('panDoc', this.panFile);
@@ -267,12 +483,17 @@ export class AddCandidateComponent implements OnInit {
     if (this.twelfthFile) formData.append('twelfthOrDiploma', this.twelfthFile);
     if (this.degreeFile) formData.append('degreeCertificate', this.degreeFile);
 
+    // Submit
     this.apiService.uploadEmployeeWithDocuments(formData).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Upload successful:', response);
         alert(this.mode === 'add' ? 'Employee added successfully!' : 'Employee updated successfully!');
         this.location.back();
       },
-      error: (err) => alert(err.error?.error || 'Operation failed')
+      error: (err) => {
+        console.error('Upload failed:', err);
+        alert(err.error?.error || 'Operation failed');
+      }
     });
   }
 
@@ -282,17 +503,25 @@ export class AddCandidateComponent implements OnInit {
       return;
     }
 
-    const payload = { empid: this.EmployeeID, roleid: this.selectedRoleId, managerid: this.reportingManager };
+    const payload = { 
+      empid: this.EmployeeID, 
+      roleid: this.selectedRoleId, 
+      managerid: this.reportingManager 
+    };
+    
     this.apiService.approveEmployee(payload).subscribe({
       next: () => {
         alert('Employee approved successfully!');
         this.location.back();
       },
-      error: () => alert('Approval failed')
+      error: (err) => {
+        console.error('Approval failed:', err);
+        alert('Approval failed');
+      }
     });
   }
 
-  openDocument(doc: any) {
+  openDocument(doc: any): void {
     if (doc?.url) {
       this.currentDocUrl = this.sanitizer.bypassSecurityTrustResourceUrl(doc.url);
       this.currentDocTitle = doc.name || 'Document';
@@ -300,13 +529,13 @@ export class AddCandidateComponent implements OnInit {
     }
   }
 
-  closeDocumentModal() {
+  closeDocumentModal(): void {
     this.showDocModal = false;
     this.currentDocUrl = null;
     this.currentDocTitle = '';
   }
 
-  cancelAction() {
+  cancelAction(): void {
     this.location.back();
   }
 }

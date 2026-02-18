@@ -13,21 +13,21 @@
           <input type="text" id="empid" formControlName="empid" readonly />
         </div>
 
-      <div class="form-group request-type-group">
-  <div class="request-type-row">
-    <label class="request-type-label">Request Type <span class="required">*</span></label>
-    <div class="request-type-options">
-      <label for="req-leave">
-        <input type="radio" id="req-leave" formControlName="requestType" value="leave" (change)="onRequestTypeChange()" />
-        Leave
-      </label>
-      <label for="req-permission">
-        <input type="radio" id="req-permission" formControlName="requestType" value="permission" (change)="onRequestTypeChange()" />
-        Permission
-      </label>
-    </div>
-  </div>
-</div>
+        <div class="form-group request-type-group">
+          <div class="request-type-row">
+            <label class="request-type-label">Request Type <span class="required">*</span></label>
+            <div class="request-type-options">
+              <label for="req-leave">
+                <input type="radio" id="req-leave" formControlName="requestType" value="leave" (change)="onRequestTypeChange()" />
+                Leave
+              </label>
+              <label for="req-permission">
+                <input type="radio" id="req-permission" formControlName="requestType" value="permission" (change)="onRequestTypeChange()" />
+                Permission
+              </label>
+            </div>
+          </div>
+        </div>
 
         <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'leave'">
           <input type="hidden" id="aj" formControlName="aj">
@@ -36,34 +36,80 @@
             <option value="" selected>Select</option>
             <option *ngFor="let type of leaveTypes" [value]="type">{{ type }}</option>
           </select>
+          
+          <!-- Show available days for SPECIAL LEAVES ONLY -->
+          <div *ngIf="isSpecialLeave && availableSpecialDays > 0" class="special-leave-info">
+            <small class="text-success">
+              ✓ Available days for {{ getTitleCase(leaveForm.get('leavetype')?.value) }}: {{ availableSpecialDays }}
+            </small>
+          </div>
+          <div *ngIf="isSpecialLeave && availableSpecialDays <= 0" class="special-leave-warning">
+            <small class="text-danger">
+              ⚠️ No available days for {{ getTitleCase(leaveForm.get('leavetype')?.value) }}
+            </small>
+          </div>
         </div>
 
         <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'leave'">
           <label>Leave Dates <span style="color: red;">*</span></label>
           <div class="date-group">
-            <div>
+            <div class="date-input-group">
               <label>Start Date</label>
-              <input type="date" formControlName="startdate" (change)="calculateDuration()" required>
+              <input 
+                type="date" 
+                formControlName="startdate" 
+                (change)="calculateDuration()" 
+                [min]="todayDate"
+                required
+              >
               <select formControlName="startHalf" (click)="$event.stopPropagation()" (change)="calculateDuration()">
                 <option [value]="false">Full Day</option>
                 <option [value]="true">Half Day</option>
               </select>
             </div>
 
-            <div>
+            <div class="date-input-group">
               <label>End Date</label>
-              <input type="date" formControlName="enddate" (change)="calculateDuration()" required>
+              <input 
+                type="date" 
+                formControlName="enddate" 
+                (change)="calculateDuration()" 
+                [min]="minEndDate"
+                [max]="maxEndDate"
+                required
+              >
               <select formControlName="endHalf" (click)="$event.stopPropagation()" (change)="calculateDuration()">
                 <option [value]="false">Full Day</option>
                 <option [value]="true">Half Day</option>
               </select>
             </div>
           </div>
+          
+          <!-- Show SPECIAL LEAVE date range information -->
+          <div *ngIf="isSpecialLeave && maxEndDate && availableSpecialDays > 0" class="special-leave-range-info">
+            <small class="text-info">
+              ⓘ For {{ getTitleCase(leaveForm.get('leavetype')?.value) }}: Dates are limited to {{ availableSpecialDays }} days.
+              You can select from {{ leaveForm.get('startdate')?.value || 'Start Date' }} to {{ maxEndDate | date:'dd MMM yyyy' }}
+            </small>
+          </div>
+          
+          <!-- Warning for no available days for special leave -->
+          <div *ngIf="isSpecialLeave && availableSpecialDays <= 0" class="special-leave-no-days">
+            <small class="text-danger">
+              ⚠️ Cannot apply for {{ getTitleCase(leaveForm.get('leavetype')?.value) }} - No days available
+            </small>
+          </div>
         </div>
 
         <div class="form-group" *ngIf="leaveForm.get('requestType')?.value === 'permission'">
           <label>Permission Date <span style="color: red;">*</span></label>
-          <input type="date" formControlName="permissionDate" (change)="calculateDuration()" required>
+          <input 
+            type="date" 
+            formControlName="permissionDate" 
+            (change)="calculateDuration()" 
+            [min]="todayDate"
+            required
+          >
           <div class="time-group">
             <div>
               <label>Start Time <span style="color: red;">*</span></label>
@@ -92,7 +138,7 @@
         </div>
 
         <div class="modal-footer">
-          <button class="btn-submit" type="submit">Submit</button>
+          <button class="btn-submit" type="submit" [disabled]="isSpecialLeave && availableSpecialDays <= 0">Submit</button>
           <button class="btn-cancel" type="button" (click)="closeModal()">Cancel</button>
         </div>
       </form>

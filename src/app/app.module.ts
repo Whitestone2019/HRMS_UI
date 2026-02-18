@@ -57,6 +57,7 @@ import { PayslipComponent } from './Payroll/components/settings/payslip/payslip.
 import { LoaderComponent } from './shared/loader/loader.component';
 import { TimesheetComponent } from './People/timesheet/timesheet.component';
 
+
 // Services and Interceptors
 import { ApiService } from './api.service';
 import { TimeFormatInterceptor } from './People/interceptors/time-format.interceptor';
@@ -91,6 +92,9 @@ import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-app
 import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
 import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
 import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
+import { HrLeaveRequestModalComponent } from './hr-leave-request-modal/hr-leave-request-modal.component';
+import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approvals.component';
+
 
 @NgModule({
   declarations: [
@@ -157,6 +161,8 @@ import { CelebrationPageComponent } from './celebration-page/celebration-page.co
     PayrollChecksComponent,
     HrOffboardingChecklistComponent,
     CelebrationPageComponent,
+    HrLeaveRequestModalComponent,
+    HrLeaveApprovalsComponent,
 
   ],
   imports: [

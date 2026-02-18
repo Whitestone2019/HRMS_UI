@@ -1,7 +1,7 @@
-<div class="container">
+<div class="container" *ngIf="leaveTypes.length > 0">
   <div class="header">
     <div class="date-range">
-      <i> <h5><p>Current Year</p></h5></i>
+      <h5>Current Year</h5>
       <div class="date-picker-container">
         <input
           type="date"
@@ -29,23 +29,24 @@
     </button>
   </div>
 
+  <!-- Leave Cards Section -->
   <div class="leave-cards">
     <div
-    *ngFor="let leaveType of leaveTypes"
-    class="leave-card"
-    (click)="navigateToApplyLeave(leaveType.name)"
-    [class.disabled]="leaveType.available === 0"
-  >
+      *ngFor="let leaveType of leaveTypes"
+      class="leave-card"
+      (click)="handleCardClick(leaveType.name)"
+    >
       <div class="icon" [style.color]="leaveType.color">
         <i [class]="leaveType.icon"></i>
       </div>
-      <h3>{{ leaveType.name }}</h3>
-      <div>Booked <span class="booked">{{ leaveType.booked }}</span></div>
-      <div>Available <span class="available">{{ leaveType.available }}</span></div>
+      <h3>{{ leaveType.name | titlecase }}</h3>
+      <div>Booked: <span class="booked">{{ leaveType.booked }}</span></div>
+      <div>Available: <span class="available">{{ leaveType.available }}</span></div>
     </div>
   </div>
 
-  <div class="upcoming-leave">
+  <!-- Upcoming Holidays Section -->
+  <div class="upcoming-leave" *ngIf="upcomingHolidays.length > 0">
     <h5>Upcoming Holidays</h5>
     <div class="holiday-list-container">
       <table class="holiday-table">
@@ -65,5 +66,111 @@
         </tbody>
       </table>
     </div>
+  </div>
+</div>
+
+<!-- Loading message -->
+<div *ngIf="leaveTypes.length === 0" class="loading">
+  Loading leave summary...
+</div>
+
+<!-- HR Leave Approval Modal -->
+<div class="hr-leave-modal-overlay" *ngIf="showHrLeaveModal" (click)="closeHrLeaveModal()">
+  <div class="hr-leave-modal-container" (click)="$event.stopPropagation()">
+    <div class="hr-leave-modal">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <h2>{{ formattedLeaveType }} Request</h2>
+        <button class="close-modal" (click)="closeHrLeaveModal()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Employee Information -->
+        <div class="info-card">
+          <div class="card-header">
+            <h3><i class="fas fa-user"></i> Employee Information</h3>
+          </div>
+          <div class="card-body">
+            <div class="info-grid">
+              <div class="info-row">
+                <div class="info-item">
+                  <span class="info-label">Employee ID:</span>
+                  <span class="info-value">{{ employeeId }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Leave Type:</span>
+                  <span class="info-value">{{ formattedLeaveType }}</span>
+                </div>
+              </div>
+              
+              <div class="info-row">
+                <div class="info-item">
+                  <span class="info-label">Request Date:</span>
+                  <span class="info-value">{{ formatDate(todayDate) }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">Status:</span>
+                  <span class="status-badge pending">Pending</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Action Section -->
+        <div class="action-section">
+          <div class="action-content">
+            <p class="action-description">
+              Your {{ formattedLeaveType }} request will be submitted.
+              The request will be reviewed by HR department.
+            </p>
+            
+            <div class="modal-actions">
+              <button type="button" class="btn btn-secondary" (click)="closeHrLeaveModal()" [disabled]="modalIsLoading">
+                <i class="fas fa-times"></i> Cancel
+              </button>
+              
+              <button type="button" class="btn btn-primary" (click)="submitHrLeaveRequest()" [disabled]="modalIsLoading">
+                <span *ngIf="modalIsLoading">
+                  <i class="fas fa-spinner fa-spin"></i> Submitting...
+                </span>
+                <span *ngIf="!modalIsLoading">
+                  <i class="fas fa-paper-plane"></i> Submit {{ formattedLeaveType }} Request
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay for Modal -->
+<div class="loading-overlay" *ngIf="modalIsLoading">
+  <div class="loading-content">
+    <i class="fas fa-spinner fa-spin fa-3x"></i>
+    <p>Submitting your {{ formattedLeaveType }} request...</p>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div class="toast-container" *ngIf="showToast">
+  <div class="toast" [class]="toastType" (click)="closeToast()">
+    <div class="toast-icon">
+      <i *ngIf="toastType === 'success'" class="fas fa-check-circle"></i>
+      <i *ngIf="toastType === 'error'" class="fas fa-exclamation-circle"></i>
+    </div>
+    <div class="toast-content">
+      <div class="toast-message">{{ toastMessage }}</div>
+      <div class="toast-time">Just now</div>
+    </div>
+    <button class="toast-close" (click)="closeToast()">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="toast-progress" [style.animation]="'progress 5s linear forwards'"></div>
   </div>
 </div>

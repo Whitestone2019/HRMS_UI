@@ -20,6 +20,9 @@ interface User {
   role: string;
   reportTo:string;
   managerName:string;
+   email?: string;        // ADD THIS LINE
+  dateOfBirth?: string;  // ADD THIS LINE
+  dateOfJoining?: string; 
 }
 
 export interface PayrollAdjustment {
@@ -334,6 +337,78 @@ export interface AssetClearanceData {
   }>;
   extraAssetName: string;
 }
+
+// Add these interfaces with your other interfaces at the top
+export interface HrLeaveApproval {
+  id?: number;
+  employeeId: string;
+  leaveType: string;
+  requestedDate?: string | Date;
+  status?: string;
+  delFlag?: string;
+  createdOn?: string | Date;
+  createdBy?: string;
+  updatedOn?: string | Date;
+  updatedBy?: string;
+  hrName?: string;
+  managerName?: string;
+  remarks?: string;
+}
+
+export interface HrLeaveApprovalResponse {
+  success: boolean;
+  message?: string;
+  count?: number;
+  data?: HrLeaveApproval | HrLeaveApproval[];
+  error?: string;
+  employeeId?: string;
+}
+
+// In your models/user-role.model.ts or similar
+// In api.service.ts
+export interface Designation {
+  designationid?: string;
+  designationname: string;
+  roleId?: string;        // Add this
+  roleName?: string;      // Add this
+  description?: string;   // Add this
+  department: string;
+  status: string;
+  salaryrange: string;
+  rcreuserid: string;
+}
+
+export interface CelebrationEmailRequest {
+  employeeEmail: string;
+  employeeName: string;
+  employeeId: string;
+  senderEmail: string;
+  senderName: string;
+  type: 'birthday' | 'anniversary';
+  years?: number;
+}
+
+export interface CelebrationEmailResponse {
+  status: string;
+  message: string;
+  timestamp: string;
+  time: string;
+  from?: string;
+  to?: string;
+  type?: string;
+}
+
+export interface Person {
+  id: string;
+  name: string;
+  type: 'Employee' | 'Trainee';
+  employeeId?: string;
+  employeeName?: string;
+  traineeId?: string;
+  traineeName?: string;
+}
+
+
 
 @Injectable({
   providedIn: 'root',
@@ -1823,6 +1898,17 @@ deleteCalendarEvent(id: number): Observable<any> {
       .pipe(finalize(() => this.loaderService.hide()));
   }
 
+  getAllEmployeesAndTrainees(): Observable<Person[]> {
+    this.loaderService.show();
+    return this.http.get<Person[]>(`${this.apiUrl}/payroll/employees-trainees`).pipe(
+      finalize(() => this.loaderService.hide())
+    );
+  }
+  
+  getTraineeDetails(traineeId: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/payroll/trainee/${traineeId}`);
+  }
+
   // ✅ Update employee status
   updateEmployeeStatus(userId: string, status: string): Observable<void> {
     this.loaderService.show();
@@ -2797,4 +2883,716 @@ updateHrOffboarding(exitFormId: string, payload: any): Observable<any> {
       data: { title, message },
     });
   }
+
+  // ==================== HR LEAVE APPROVAL METHODS ====================
+
+// CREATE - Create new HR leave approval
+createHrLeaveApproval(approval: HrLeaveApproval): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/create`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  // Prepare the request body
+  const requestBody = {
+    employeeId: approval.employeeId,
+    leaveType: approval.leaveType,
+    status: approval.status || 'pending',
+    hrName: approval.hrName,
+    managerName: approval.managerName
+  };
+  
+  this.loaderService.show();
+  return this.http.post<HrLeaveApprovalResponse>(url, requestBody, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'createHrLeaveApproval')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get all HR leave approvals
+getAllHrLeaveApprovals(): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/all`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  this.loaderService.show();
+  return this.http.get<HrLeaveApprovalResponse>(url, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'getAllHrLeaveApprovals')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get HR leave approvals by employee ID
+getHrLeaveApprovalsByEmployee(employeeId: string): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/employee/${employeeId}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  this.loaderService.show();
+  return this.http.get<HrLeaveApprovalResponse>(url, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'getHrLeaveApprovalsByEmployee')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// UPDATE - Update HR leave approval
+updateHrLeaveApproval(id: number, approvalData: Partial<HrLeaveApproval>): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/update/${id}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  // Only send fields that can be updated
+  const requestBody: any = {};
+  if (approvalData.leaveType !== undefined) requestBody.leaveType = approvalData.leaveType;
+  if (approvalData.status !== undefined) requestBody.status = approvalData.status;
+  if (approvalData.hrName !== undefined) requestBody.hrName = approvalData.hrName;
+  if (approvalData.managerName !== undefined) requestBody.managerName = approvalData.managerName;
+  
+  this.loaderService.show();
+  return this.http.put<HrLeaveApprovalResponse>(url, requestBody, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'updateHrLeaveApproval')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// DELETE - Delete HR leave approval (soft delete)
+deleteHrLeaveApproval(id: number): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/delete/${id}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  this.loaderService.show();
+  return this.http.delete<HrLeaveApprovalResponse>(url, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'deleteHrLeaveApproval')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get single HR leave approval by ID (optional)
+getHrLeaveApprovalById(id: number): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/${id}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  this.loaderService.show();
+  return this.http.get<HrLeaveApprovalResponse>(url, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'getHrLeaveApprovalById')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// READ - Get HR leave approvals by status (optional)
+getHrLeaveApprovalsByStatus(status: string): Observable<HrLeaveApprovalResponse> {
+  const url = `${this.apiUrl}/api/${status}`;
+  const headers = new HttpHeaders({
+    'Content-Type': 'application/json',
+    'apiKey': this.key
+  });
+  
+  this.loaderService.show();
+  return this.http.get<HrLeaveApprovalResponse>(url, { headers }).pipe(
+    catchError((error) => this.handleHttpError(error, 'getHrLeaveApprovalsByStatus')),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Designation CRUD Operations
+getAllDesignation(): Observable<Designation[]> {
+  const url = `${this.apiUrl}/api/designations`; // This is correct
+  this.loaderService.show();
+  return this.http.get<Designation[]>(url).pipe(
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching designations:', error);
+      this.openDialog('Error', `Failed to fetch designations: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+addDesignations(designation: any): Observable<any> {
+  const url = `${this.apiUrl}/api/designations`; // This is correct
+  this.loaderService.show();
+  
+  // Prepare data for backend
+  const requestData = {
+    roleId: designation.roleId,
+    roleName: designation.roleName,
+    description: designation.description || '',
+    rcreuserid: designation.rcreuserid || 'SYSTEM'
+  };
+  
+  console.log('Sending to backend:', requestData);
+  
+  return this.http.post<any>(url, requestData).pipe(
+    tap((response) => {
+      console.log('API Response:', response);
+      this.openDialog('Success', 'Designation added successfully!');
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error adding designation:', error);
+      const errorMsg = error.error?.error || error.error?.message || 'Unknown error';
+      this.openDialog('Error', `Failed to add designation: ${errorMsg}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+updateDesignations(designationId: string, designation: any): Observable<any> {
+  const url = `${this.apiUrl}/api/designations/${designationId}`;
+  this.loaderService.show();
+  
+  const requestData = {
+    roleName: designation.roleName,
+    description: designation.description || '',
+    rcreuserid: designation.rcreuserid || 'SYSTEM'
+  };
+  
+  return this.http.put<any>(url, requestData).pipe(
+    tap((response) => {
+      console.log('API Response:', response);
+      this.openDialog('Success', 'Designation updated successfully!');
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error updating designation:', error);
+      const errorMsg = error.error?.error || error.error?.message || 'Unknown error';
+      this.openDialog('Error', `Failed to update designation: ${errorMsg}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+deleteDesignations(designationId: string): Observable<any> {
+  const url = `${this.apiUrl}/api/designations/${designationId}`;
+  this.loaderService.show();
+  return this.http.delete(url).pipe(
+    tap((response) => {
+      console.log('API Response:', response);
+      this.openDialog('Success', 'Designation deleted successfully!');
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error deleting designation:', error);
+      const errorMsg = error.error?.error || error.error?.message || 'Unknown error';
+      this.openDialog('Error', `Failed to delete designation: ${errorMsg}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+getDesignationsById(designationId: string): Observable<Designation> {
+  const url = `${this.apiUrl}/api/designations/${designationId}`;
+  this.loaderService.show();
+  return this.http.get<Designation>(url).pipe(
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error fetching designation:', error);
+      this.openDialog('Error', `Failed to fetch designation: ${error.error?.message || 'Unknown error'}`);
+      return throwError(() => new Error(error.message));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+  // Upload file
+  uploadFile(file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    this.loaderService.show();
+    
+    return this.http.post(`${this.apiUrl}/api/file/upload`, formData).pipe(
+      tap((response: any) => {
+        console.log('File uploaded successfully:', response);
+        this.showNotification('Success', 'File uploaded successfully!', 'success');
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error uploading file:', error);
+        const errorMsg = error.error?.error || error.error?.message || 'Upload failed';
+        this.showNotification('Error', errorMsg, 'error');
+        return throwError(() => new Error(errorMsg));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // Get list of files
+  getFiles(): Observable<any[]> {
+    this.loaderService.show();
+    
+    return this.http.get<any[]>(`${this.apiUrl}/api/file/list`).pipe(
+      tap((response) => {
+        console.log('Files retrieved successfully:', response.length);
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching files:', error);
+        const errorMsg = error.error?.error || error.error?.message || 'Failed to fetch files';
+        this.showNotification('Error', errorMsg, 'error');
+        return throwError(() => new Error(errorMsg));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // Delete file
+  deleteFile(filename: string): Observable<any> {
+    this.loaderService.show();
+    
+    return this.http.delete(`${this.apiUrl}/api/file/delete/${filename}`).pipe(
+      tap((response: any) => {
+        console.log('File deleted successfully:', response);
+        this.showNotification('Success', 'File deleted successfully!', 'success');
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error deleting file:', error);
+        const errorMsg = error.error?.error || error.error?.message || 'Delete failed';
+        this.showNotification('Error', errorMsg, 'error');
+        return throwError(() => new Error(errorMsg));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // Edit/update file
+  editFile(oldFilename: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    this.loaderService.show();
+    
+    return this.http.put(`${this.apiUrl}/api/file/edit/${oldFilename}`, formData).pipe(
+      tap((response: any) => {
+        console.log('File updated successfully:', response);
+        this.showNotification('Success', 'File updated successfully!', 'success');
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error updating file:', error);
+        const errorMsg = error.error?.error || error.error?.message || 'Update failed';
+        this.showNotification('Error', errorMsg, 'error');
+        return throwError(() => new Error(errorMsg));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  // View file (inline)
+  // View file (inline - NO NEW TAB)
+viewFile(fileName: string): Observable<Blob> {
+  this.loaderService.show();
+  
+  return this.http.get(`${this.apiUrl}/api/file/view/${fileName}`, { 
+    responseType: 'blob' 
+  }).pipe(
+    tap((blob) => {
+      console.log('File retrieved for viewing:', fileName);
+      // DO NOT open in new tab - just return the blob
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error viewing file:', error);
+      const errorMsg = error.error?.error || error.error?.message || 'Failed to view file';
+      this.showNotification('Error', errorMsg, 'error');
+      return throwError(() => new Error(errorMsg));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+// Download file
+downloadFile(fileName: string): Observable<Blob> {
+  this.loaderService.show();
+  
+  return this.http.get(`${this.apiUrl}/api/file/download/${fileName}`, { 
+    responseType: 'blob' 
+  }).pipe(
+    tap((blob) => {
+      console.log('File downloaded:', fileName);
+      
+      // Trigger browser download
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = fileName;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      console.error('Error downloading file:', error);
+      const errorMsg = error.error?.error || error.error?.message || 'Download failed';
+      this.showNotification('Error', errorMsg, 'error');
+      return throwError(() => new Error(errorMsg));
+    }),
+    finalize(() => this.loaderService.hide())
+  );
+}
+
+  // Get file info
+  getFileInfo(fileName: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/api/file/info/${fileName}`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error getting file info:', error);
+        return throwError(() => new Error('Failed to get file info'));
+      })
+    );
+  }
+
+  private showNotification(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning') {
+    // Implement your notification logic here
+    console.log(`${type.toUpperCase()}: ${title} - ${message}`);
+    // You can use Angular Material Snackbar, Toastr, or custom notification
+  }
+
+  
+  // ==============================
+  // ADD THESE CELEBRATION METHODS
+  // ==============================
+
+  /**
+   * Send celebration email
+   */
+  sendCelebrationEmail(request: CelebrationEmailRequest): Observable<CelebrationEmailResponse> {
+    const url = `${this.apiUrl}/api/celebration/send-email`;
+    const key1 = `${this.key}`;
+    
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json',
+      'apiKey': key1
+    });
+
+    this.loaderService.show();
+    
+    return this.http.post<CelebrationEmailResponse>(url, request, { headers }).pipe(
+      tap((response) => {
+        console.log('Celebration email sent successfully:', response);
+        this.openDialog('Success', 'Celebration wish sent successfully!');
+      }),
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error sending celebration email:', error);
+        this.openDialog('Error', `Failed to send celebration email: ${error.error?.message || 'Unknown error'}`);
+        return throwError(() => new Error(error.message));
+      }),
+      finalize(() => this.loaderService.hide())
+    );
+  }
+
+  /**
+   * Send birthday wish
+   */
+  sendBirthdayWish(
+    celebrantEmail: string,
+    celebrantName: string,
+    celebrantId: string,
+    years?: number
+  ): Observable<CelebrationEmailResponse> {
+    const request = this.prepareBirthdayRequest(celebrantEmail, celebrantName, celebrantId, years);
+    
+    if (!request) {
+      return throwError(() => new Error('Failed to prepare birthday request. Please check if you are logged in.'));
+    }
+
+    return this.sendCelebrationEmail(request);
+  }
+
+  /**
+   * Send anniversary wish
+   */
+  sendAnniversaryWish(
+    celebrantEmail: string,
+    celebrantName: string,
+    celebrantId: string,
+    years: number
+  ): Observable<CelebrationEmailResponse> {
+    if (!years || years <= 0) {
+      return throwError(() => new Error('Years completed must be greater than 0'));
+    }
+
+    const request = this.prepareAnniversaryRequest(celebrantEmail, celebrantName, celebrantId, years);
+    
+    if (!request) {
+      return throwError(() => new Error('Failed to prepare anniversary request. Please check if you are logged in.'));
+    }
+
+    return this.sendCelebrationEmail(request);
+  }
+
+  /**
+   * Prepare birthday email request
+   */
+  private prepareBirthdayRequest(
+    celebrantEmail: string,
+    celebrantName: string,
+    celebrantId: string,
+    years?: number
+  ): CelebrationEmailRequest | null {
+    const userData = this.getUserData();
+    
+    if (!userData) {
+      this.openDialog('Error', 'Please log in to send birthday wishes');
+      return null;
+    }
+
+    if (!celebrantEmail || !celebrantName) {
+      this.openDialog('Error', 'Celebrant information is missing');
+      return null;
+    }
+
+    return {
+      employeeEmail: celebrantEmail,
+      employeeName: celebrantName,
+      employeeId: celebrantId || '',
+      senderEmail: userData.email || '',
+      senderName: userData.username || 'Colleague',
+      type: 'birthday',
+      years: years
+    };
+  }
+
+  /**
+   * Prepare anniversary email request
+   */
+  private prepareAnniversaryRequest(
+    celebrantEmail: string,
+    celebrantName: string,
+    celebrantId: string,
+    years: number
+  ): CelebrationEmailRequest | null {
+    const userData = this.getUserData();
+    
+    if (!userData) {
+      this.openDialog('Error', 'Please log in to send anniversary wishes');
+      return null;
+    }
+
+    if (!celebrantEmail || !celebrantName) {
+      this.openDialog('Error', 'Celebrant information is missing');
+      return null;
+    }
+
+    return {
+      employeeEmail: celebrantEmail,
+      employeeName: celebrantName,
+      employeeId: celebrantId || '',
+      senderEmail: userData.email || '',
+      senderName: userData.username || 'Colleague',
+      type: 'anniversary',
+      years: years
+    };
+  }
+
+  /**
+   * Get user data from localStorage
+   */
+  getUserData(): any {
+    try {
+      const authToken = localStorage.getItem('authToken');
+      
+      if (!authToken) {
+        console.warn('No auth token found');
+        return null;
+      }
+
+      // Try consolidated userData
+      const userDataStr = localStorage.getItem('userData');
+      if (userDataStr) {
+        const userData = JSON.parse(userDataStr);
+        if (this.isValidUserData(userData)) {
+          return userData;
+        }
+      }
+
+      // Fallback to individual keys
+      return this.getUserDataFromIndividualKeys();
+      
+    } catch (error) {
+      console.error('Error getting user data:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Validate user data structure
+   */
+  private isValidUserData(userData: any): boolean {
+    return userData && 
+           (userData.username || userData.name) && 
+           (userData.email || userData.employeeId);
+  }
+
+  /**
+   * Get user data from individual localStorage keys
+   */
+  private getUserDataFromIndividualKeys(): any {
+    const username = localStorage.getItem('username') || '';
+    const employeeId = localStorage.getItem('employeeId') || '';
+    const userEmail = localStorage.getItem('userEmail') || '';
+    const name = localStorage.getItem('name') || username;
+
+    if (!username && !employeeId && !userEmail) {
+      return null;
+    }
+
+    return {
+      username: username,
+      name: name,
+      email: userEmail,
+      employeeId: employeeId,
+      role: localStorage.getItem('userRole') || '',
+      reportTo: localStorage.getItem('reportTo') || '',
+      managerName: localStorage.getItem('managerName') || '',
+      dateOfBirth: localStorage.getItem('dateOfBirth') || null,
+      dateOfJoining: localStorage.getItem('dateOfJoining') || null
+    };
+  }
+
+  /**
+   * Get celebration dates for current user
+   */
+  getCurrentUserCelebrationDates(): { dateOfBirth: string | null; dateOfJoining: string | null } {
+    try {
+      const userData = this.getUserData();
+      if (userData?.dateOfBirth || userData?.dateOfJoining) {
+        return {
+          dateOfBirth: userData.dateOfBirth || null,
+          dateOfJoining: userData.dateOfJoining || null
+        };
+      }
+
+      const datesDataStr = localStorage.getItem('employeeDates');
+      if (datesDataStr) {
+        const datesData = JSON.parse(datesDataStr);
+        return {
+          dateOfBirth: datesData.dateOfBirth || null,
+          dateOfJoining: datesData.dateOfJoining || null
+        };
+      }
+
+      return { dateOfBirth: null, dateOfJoining: null };
+    } catch (error) {
+      console.error('Error getting celebration dates:', error);
+      return { dateOfBirth: null, dateOfJoining: null };
+    }
+  }
+
+  /**
+   * Check if today is a celebration day for current user
+   */
+  checkTodaysCelebration(): { isBirthday: boolean; isAnniversary: boolean; yearsCompleted?: number } {
+    const dates = this.getCurrentUserCelebrationDates();
+    const today = new Date();
+    const todayDay = today.getDate();
+    const todayMonth = today.getMonth() + 1;
+    const todayYear = today.getFullYear();
+
+    let isBirthday = false;
+    let isAnniversary = false;
+    let yearsCompleted = 0;
+
+    // Check birthday
+    if (dates.dateOfBirth) {
+      const birthdayMatch = this.checkDateMatch(dates.dateOfBirth, todayDay, todayMonth);
+      isBirthday = birthdayMatch.match;
+    }
+
+    // Check anniversary
+    if (dates.dateOfJoining) {
+      const anniversaryMatch = this.checkAnniversaryMatch(dates.dateOfJoining, todayDay, todayMonth, todayYear);
+      isAnniversary = anniversaryMatch.match;
+      yearsCompleted = anniversaryMatch.years || 0;
+    }
+
+    return { isBirthday, isAnniversary, yearsCompleted };
+  }
+
+  /**
+   * Check if a date matches today
+   */
+  private checkDateMatch(dateString: string, todayDay: number, todayMonth: number): { match: boolean; years?: number } {
+    try {
+      const datePart = dateString.split(' ')[0];
+      const parts = datePart.split('-');
+      
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        
+        if (month === todayMonth && day === todayDay) {
+          const todayYear = new Date().getFullYear();
+          const years = todayYear - year;
+          return { match: true, years };
+        }
+      }
+    } catch (error) {}
+    return { match: false };
+  }
+
+  /**
+   * Check anniversary match
+   */
+  private checkAnniversaryMatch(dateString: string, todayDay: number, todayMonth: number, todayYear: number): { match: boolean; years?: number } {
+    try {
+      const datePart = dateString.split(' ')[0];
+      const parts = datePart.split('-');
+      
+      if (parts.length === 3) {
+        const day = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const year = parseInt(parts[2], 10);
+        
+        if (month === todayMonth && day === todayDay) {
+          const yearsCompleted = todayYear - year;
+          if (yearsCompleted > 0) {
+            return { match: true, years: yearsCompleted };
+          }
+        }
+      }
+    } catch (error) {}
+    return { match: false };
+  }
+
+
+// HR Leave Approval specific error handler
+private handleHttpError(error: HttpErrorResponse, operation = 'operation'): Observable<never> {
+  let message = 'An unknown error occurred.';
+  
+  if (error.error) {
+    if (typeof error.error === 'string') {
+      try {
+        const parsed = JSON.parse(error.error);
+        message = parsed.error || parsed.message || message;
+      } catch {
+        message = error.error;
+      }
+    } else if (error.error.error) {
+      message = error.error.error;
+    } else if (error.error.message) {
+      message = error.error.message;
+    }
+  }
+  
+  console.error(`${operation} failed:`, error);
+  this.openDialog('Error', message);
+  return throwError(() => new Error(message));
+}
+
+ // Add this method to get leave summary
+  getLeaveSummary(empId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/getLeaveSummary/${empId}`);
+  }
+
+
 }

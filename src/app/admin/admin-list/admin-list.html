@@ -1,0 +1,251 @@
+<div class="admin-wrapper">
+  <div class="header-section">
+    <h2 class="page-title">📁 Policy Documents</h2>
+    
+    <!-- Stats Summary -->
+    <!-- <div class="stats-summary">
+      <div class="stat-card">
+        <span class="stat-number">{{ files.length }}</span>
+        <span class="stat-label">Total Documents</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ pdfCount }}</span>
+        <span class="stat-label">PDF Files</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-number">{{ totalSize }}</span>
+        <span class="stat-label">Total Size</span>
+      </div>
+    </div> -->
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading documents...</p>
+  </div>
+
+  <!-- Empty State -->
+  <div *ngIf="!isLoading && files.length === 0" class="empty-state">
+    <div class="empty-icon">📂</div>
+    <h3>No documents found</h3>
+    <p>Upload your first document using the upload page</p>
+    <button class="btn btn-primary" routerLink="/dashboard/admin/upload">
+      Go to Upload
+    </button>
+  </div>
+
+  <!-- Documents Grid -->
+  <div *ngIf="!isLoading && files.length > 0" class="card-grid">
+    <div class="doc-card" *ngFor="let file of files">
+      <!-- Card Header -->
+      <div class="card-header">
+        <span class="doc-icon">{{ getFileIcon(file.fileName) }}</span>
+        <div class="doc-info">
+          <!-- FIXED: Added word-wrap and ellipsis for long file names -->
+          <h3 class="doc-name" [title]="file.fileName">
+            <span class="filename-text">{{ file.fileName || 'Unknown File' }}</span>
+          </h3>
+          <div class="doc-meta">
+            <span class="file-type">{{ getFileType(file) }}</span>
+            <span class="file-size">{{ formatFileSize(file.fileSize || 0) }}</span>
+            <span class="file-date" *ngIf="file.lastModified">
+              {{ formatDate(file.lastModified) }}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- File Type Badge -->
+        <div class="file-badge" 
+             [class.pdf]="getFileExtension(file.fileName) === 'pdf'"
+             [class.word]="getFileExtension(file.fileName) === 'doc' || getFileExtension(file.fileName) === 'docx'"
+             [class.excel]="getFileExtension(file.fileName) === 'xls' || getFileExtension(file.fileName) === 'xlsx'"
+             [class.image]="isImageFile(file.fileName)"
+             [class.text]="getFileExtension(file.fileName) === 'txt'"
+             [class.presentation]="getFileExtension(file.fileName) === 'ppt' || getFileExtension(file.fileName) === 'pptx'">
+          {{ getFileExtension(file.fileName).toUpperCase() || 'FILE' }}
+        </div>
+
+        <!-- Replace Document Section -->
+        <div class="replace-section">
+          <label class="file-upload">
+            <input type="file" (change)="selectEditFile($event, file)" 
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.txt,.ppt,.pptx" />
+            <span class="upload-icon">🔄</span>
+            <span>Replace Document</span>
+          </label>
+          <p class="selected-file" *ngIf="selectedEditFileName[file.fileName]">
+            Selected: {{ selectedEditFileName[file.fileName] }}
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="btn-group">
+          <button class="btn view" (click)="view(file)" title="View" [disabled]="isRendering">
+            <span class="btn-icon"></span>
+            <span>View</span>
+          </button>
+          
+          <button class="btn edit" (click)="edit(file)" 
+                  [disabled]="!selectedEditFileName[file.fileName]" title="Replace">
+            <span class="btn-icon"></span>
+            <span>Replace</span>
+          </button>
+          
+          <button class="btn delete" (click)="delete(file)" title="Delete">
+            <span class="btn-icon"></span>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <small class="text-muted">
+          Last modified: {{ file.lastModified ? formatDate(file.lastModified) : 'Unknown' }}
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Document Viewer Modal -->
+  <div class="modal-overlay" *ngIf="viewingFile" (click)="closePopup()">
+    <div class="modal-container" (click)="$event.stopPropagation()">
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <div class="modal-title-section">
+          <span class="modal-icon">{{ getFileIcon(viewingFile.fileName) }}</span>
+          <div class="modal-title-info">
+            <!-- FIXED: Added ellipsis for long file names in modal -->
+            <h3 class="modal-title" [title]="viewingFile.fileName">
+              <span class="modal-filename">{{ viewingFile.fileName || 'Document' }}</span>
+            </h3>
+            <div class="modal-subtitle">
+              <span class="file-type-badge">{{ getFileType(viewingFile) }}</span>
+              <span class="file-size-text">{{ formatFileSize(viewingFile.fileSize || 0) }}</span>
+            </div>
+          </div>
+        </div>
+        <button class="modal-close-btn" (click)="closePopup()" title="Close">
+          ✖
+        </button>
+      </div>
+      
+      <!-- Modal Content -->
+      <div class="modal-content" #viewerContainer>
+        <!-- Protection Indicator -->
+        <div class="protection-indicator">
+          <span class="protection-icon">🛡️</span>
+          <span class="protection-text">SCREENSHOT PROTECTION: ACTIVE</span>
+          <span class="protection-dot active"></span>
+        </div>
+        
+        <!-- Loading State -->
+        <div *ngIf="isRendering" class="modal-loading">
+          <div class="loading-spinner"></div>
+          <p>Loading document with protection...</p>
+        </div>
+        
+        <!-- Black Screen Protection -->
+        <div *ngIf="isBlackScreenActive" class="black-screen-overlay">
+          <!-- Pure black screen for protection -->
+        </div>
+        
+        <!-- PDF Viewer -->
+        <div *ngIf="!isRendering && viewingFile.isPDF && !isBlackScreenActive" class="pdf-viewer-container">
+          <!-- PDF Controls -->
+          <div class="pdf-controls">
+            <div class="pdf-nav-controls">
+              <button class="nav-btn" (click)="prevPage()" [disabled]="currentPage <= 1" title="Previous Page">
+                ◀
+              </button>
+              <div class="page-info">
+                <span>Page</span>
+                <input type="number" 
+                       [value]="currentPage" 
+                       min="1" 
+                       [max]="totalPages" 
+                       (change)="goToPage($event)"
+                       class="page-input">
+                <span>of {{ totalPages }}</span>
+              </div>
+              <button class="nav-btn" (click)="nextPage()" [disabled]="currentPage >= totalPages" title="Next Page">
+                ▶
+              </button>
+            </div>
+            
+            <div class="pdf-zoom-controls">
+              <button class="zoom-btn" (click)="zoomOut()" title="Zoom Out">
+                ➖
+              </button>
+              <span class="zoom-level">{{ (zoomLevel * 100).toFixed(0) }}%</span>
+              <button class="zoom-btn" (click)="zoomIn()" title="Zoom In">
+                ➕
+              </button>
+              <button class="zoom-btn reset" (click)="resetZoom()" title="Reset Zoom">
+                🔄
+              </button>
+            </div>
+          </div>
+          
+          <!-- PDF Display Area -->
+          <div *ngIf="viewingFile.loaded" class="pdf-display-area">
+            <div class="pdf-canvas-wrapper">
+              <canvas #pdfCanvas class="pdf-canvas"></canvas>
+            </div>
+          </div>
+          
+          <!-- PDF Fallback -->
+          <div *ngIf="viewingFile.showFallback" class="pdf-fallback">
+            <div class="fallback-icon">📄</div>
+            <h4>PDF Preview Not Available</h4>
+            <p>The PDF cannot be displayed in the browser.</p>
+            <p>Please download the file to view it.</p>
+            <div class="fallback-actions">
+              <button class="fallback-btn download" (click)="downloadFile(viewingFile)">
+                <span class="btn-icon">⬇️</span>
+                Download PDF
+              </button>
+              <button class="fallback-btn close" (click)="closePopup()">
+                <span class="btn-icon">✖</span>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Image Viewer -->
+        <div *ngIf="!isRendering && viewingFile.isImage && !isBlackScreenActive" class="image-viewer-container">
+          <div class="image-canvas-wrapper">
+            <canvas #imageCanvas class="image-canvas"></canvas>
+          </div>
+        </div>
+        
+        <!-- Unsupported File Type -->
+        <div *ngIf="!isRendering && !viewingFile.isPDF && !viewingFile.isImage && !isBlackScreenActive" 
+             class="unsupported-container">
+          <div class="unsupported-icon">{{ getFileIcon(viewingFile.fileName) }}</div>
+          <h4>Preview Not Available</h4>
+          <p>This file type cannot be previewed in the browser.</p>
+          <p>Please download the file to view it.</p>
+          <button class="unsupported-btn" (click)="downloadFile(viewingFile)">
+            <span class="btn-icon">⬇️</span>
+            Download File
+          </button>
+        </div>
+      </div>
+      
+      <!-- Modal Footer -->
+      <div class="modal-footer">
+        <div class="modal-footer-content">
+          <div class="modal-actions">
+            <!-- Actions can be added here if needed -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,4 @@
+<!-- sidebar.component.html -->
 <div class="sidebar">
   <!-- Home link -->
   <a *ngIf="isMenuVisible('home')" routerLink="/dashboard/overview" (click)="onMenuSelect('home')" 
@@ -11,14 +12,10 @@
     <i class="fas fa-user-plus"></i> Onboarding
   </a>
 
-   <!-- <a *ngIf="isMenuVisible('updateleave')" routerLink="/dashboard/updateleave" (click)="onMenuSelect('updateleave')" 
-     [class.active]="selectedMenu === 'updateleave'">
-    <i class="fas fa-user-plus"></i> updateleave
-  </a> -->
-
-   <a *ngIf="isMenuVisible('Project History')" routerLink="/dashboard/project" (click)="onMenuSelect('project')" 
+  <!-- Project History -->
+  <a *ngIf="isMenuVisible('Project History')" routerLink="/dashboard/project" (click)="onMenuSelect('project')" 
      [class.active]="selectedMenu === 'project'">
-    <i class="fas fa-cogs"></i>Project History
+    <i class="fas fa-cogs"></i> Project History
   </a>
   
   <!-- Attendance menu -->
@@ -28,44 +25,48 @@
   </a>
   
   <!-- Leave Tracker menu -->
- <a *ngIf="isMenuVisible('leave-summary')" routerLink="/dashboard/leave-summary" (click)="onMenuSelect('leave-summary')" 
-   [class.active]="selectedMenu === 'leave-summary'">
-  <i class="fas fa-user-minus"></i> Leave Tracker
-</a>
-  
-  <!-- Tasks menu -->
-  <!-- <a *ngIf="isMenuVisible('tasks')" routerLink="/dashboard" (click)="onMenuSelect('tasks')" 
-     [class.active]="selectedMenu === 'tasks'">
-    <i class="fas fa-tasks"></i> Tasks
-  </a> -->
+  <a *ngIf="isMenuVisible('leave-summary')" routerLink="/dashboard/leave-summary" (click)="onMenuSelect('leave-summary')" 
+     [class.active]="selectedMenu === 'leave-summary'">
+    <i class="fas fa-user-minus"></i> Leave Tracker
+  </a>
 
-  <!-- Operations menu -->
-  <!-- <a *ngIf="isMenuVisible('settings')" routerLink="/dashboard/operations" (click)="onMenuSelect('settings')" 
-     [class.active]="selectedMenu === 'settings'">
-    <i class="fas fa-cogs"></i> Operations
-  </a> -->
-
-  <!-- Analytics menu -->
+  <!-- Reports menu -->
   <a *ngIf="isMenuVisible('report')" routerLink="/dashboard/report" (click)="onMenuSelect('report')" 
      [class.active]="selectedMenu === 'report'">
     <i class="fas fa-chart-line"></i> Report's
   </a>
 
-<a 
-  *ngIf="true"
-  (click)="checkExitForm()" 
-  [class.active]="selectedMenu === 'exit-form'">
-  <i class="fas fa-running"></i> Resignation Form
-</a>
+  <!-- Policy menu - UPDATED for role-based routing -->
+  <!-- Option 1: Using click handler (Recommended) -->
+  <a *ngIf="isMenuVisible('Policy')" 
+     (click)="onPolicyClick()"
+     [class.active]="selectedMenu === 'Policy'">
+    <i class="fas fa-file-alt"></i> Policy
+  </a>
 
-  <!-- <a *ngIf="isMenuVisible('travel')" routerLink="/dashboard/travel" (click)="onMenuSelect('travel')" 
-   [class.active]="selectedMenu === 'travel'">
-  <i class="fas fa-plane-departure"></i> Travel
-</a> -->
+  <!-- Option 2: Using different links based on role -->
+  <!-- 
+  <ng-container *ngIf="isMenuVisible('Policy')">
+    <a *ngIf="userService.isAdmin()" 
+       routerLink="/dashboard/admin/upload" 
+       (click)="onMenuSelect('Policy')"
+       [class.active]="selectedMenu === 'Policy'">
+      <i class="fas fa-file-alt"></i> Upload Policy
+    </a>
+    
+    <a *ngIf="!userService.isAdmin()" 
+       routerLink="/dashboard/user/view" 
+       (click)="onMenuSelect('Policy')"
+       [class.active]="selectedMenu === 'Policy'">
+      <i class="fas fa-file-alt"></i> View Policy
+    </a>
+  </ng-container>
+  -->
 
-<!-- <a *ngIf="isMenuVisible('timesheet')" routerLink="/dashboard/timesheet" (click)="onMenuSelect('timesheet')" 
-   [class.active]="selectedMenu === 'timesheet'">
-  <i class="fas fa-clock"></i> Timesheet
-</a> -->
-
+  <!-- Resignation Form -->
+  <a *ngIf="true"
+     (click)="checkExitForm()" 
+     [class.active]="selectedMenu === 'exit-form'">
+    <i class="fas fa-running"></i> Resignation Form
+  </a>
 </div>

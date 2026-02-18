@@ -12,10 +12,11 @@
 <div *ngIf="successMessage" class="alert alert-success">
   {{ successMessage }}
 </div>
+
 <form (ngSubmit)="onSubmit1(candidateForm)" #candidateForm="ngForm" novalidate>
-
-
   <div class="form-section1">
+    
+    <!-- ==================== PROFILE DETAILS ==================== -->
     <div class="form-section">
       <h2>Profile Details</h2>
 
@@ -33,21 +34,18 @@
       <div class="form-row">
         <div class="form-column">
           <label>First Name <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.firstName" name="firstName" [disabled]="!isEditable"
-            required />
+          <input type="text" [(ngModel)]="candidateDetails.firstName" name="firstName" [disabled]="!isEditable" required />
         </div>
         <div class="form-column">
           <label>Last Name <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.lastName" name="lastName" [disabled]="!isEditable"
-            required />
+          <input type="text" [(ngModel)]="candidateDetails.lastName" name="lastName" [disabled]="!isEditable" required />
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-column">
           <label>Date of Birth <span class="mandatory">*</span></label>
-          <input type="date" [(ngModel)]="candidateDetails.dateofbirth" name="dateofbirth" [disabled]="!isEditable"
-            required />
+          <input type="date" [(ngModel)]="candidateDetails.dateofbirth" name="dateofbirth" [disabled]="!isEditable" required />
         </div>
         <div class="form-column">
           <label>Blood Group <span class="mandatory">*</span></label>
@@ -93,8 +91,7 @@
       <div class="form-row">
         <div class="form-column">
           <label>Nationality</label>
-          <input type="text" [(ngModel)]="candidateDetails.nationality" name="nationality" value="Indian"
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.nationality" name="nationality" value="Indian" [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>UAN Number</label>
@@ -115,48 +112,32 @@
         </div>
       </div>
 
-      <!-- Passport, Driving License, ESI – Visible in BOTH modes -->
       <div class="form-row">
         <div class="form-column">
           <label>Passport Number</label>
-
-          <!-- Editable mode → input -->
           <input *ngIf="isEditable" type="text" [(ngModel)]="candidateDetails.passportnumber" name="passportnumber"
             placeholder="e.g. A1234567" style="text-transform: uppercase;" />
-
-          <!-- Read-only mode → display value -->
-          <span *ngIf="!isEditable">
-            {{ candidateDetails.passportnumber || 'Not Provided' }}
-          </span>
+          <span *ngIf="!isEditable">{{ candidateDetails.passportnumber || 'Not Provided' }}</span>
         </div>
-
         <div class="form-column">
           <label>Driving License Number</label>
-
           <input *ngIf="isEditable" type="text" [(ngModel)]="candidateDetails.drivinglicense" name="drivinglicense"
             placeholder="e.g. TN0720230012345" />
-
-          <span *ngIf="!isEditable">
-            {{ candidateDetails.drivinglicense || 'Not Provided' }}
-          </span>
+          <span *ngIf="!isEditable">{{ candidateDetails.drivinglicense || 'Not Provided' }}</span>
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-column">
           <label>ESI Number</label>
-
           <input *ngIf="isEditable" type="text" [(ngModel)]="candidateDetails.esinumber" name="esinumber"
             placeholder="e.g. 1234567890" />
-
-          <span *ngIf="!isEditable">
-            {{ candidateDetails.esinumber || 'Not Provided' }}
-          </span>
+          <span *ngIf="!isEditable">{{ candidateDetails.esinumber || 'Not Provided' }}</span>
         </div>
       </div>
     </div>
 
-    <!-- Contact Details -->
+    <!-- ==================== CONTACT INFORMATION ==================== -->
     <div class="form-section">
       <h2>Contact Information</h2>
       <div class="form-row">
@@ -166,70 +147,61 @@
         </div>
         <div class="form-column">
           <label>Personal Mobile <span class="mandatory">*</span></label>
-          <input type="tel" [(ngModel)]="candidateDetails.mobileNumber" name="mobileNumber" [disabled]="!isEditable"
-            required />
+          <input type="tel" [(ngModel)]="candidateDetails.mobileNumber" name="mobileNumber" [disabled]="!isEditable" required />
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-column">
           <label>Alternate Mobile</label>
-          <input type="tel" [(ngModel)]="candidateDetails.alternatemobilenumber" name="alternatemobnum"
-            [disabled]="!isEditable" />
+          <input type="tel" [(ngModel)]="candidateDetails.alternatemobilenumber" name="alternatemobnum" [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>Official Email</label>
-          <input type="email" [(ngModel)]="candidateDetails.officialemail" name="officialemail"
-            [disabled]="!isEditable" />
+          <input type="email" [(ngModel)]="candidateDetails.officialemail" name="officialemail" [disabled]="!isEditable" />
         </div>
       </div>
     </div>
 
-    <!-- Emergency Contact -->
+    <!-- ==================== EMERGENCY CONTACT ==================== -->
     <div class="form-section">
       <h2>Emergency Contact</h2>
       <div class="form-row">
         <div class="form-column">
           <label>Name <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.emergencycontactname" name="emergencyname" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.emergencycontactname" name="emergencyname" required [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>Number <span class="mandatory">*</span></label>
-          <input type="tel" [(ngModel)]="candidateDetails.emergencycontactnumber" name="emergencynum" required
-            [disabled]="!isEditable" />
+          <input type="tel" [(ngModel)]="candidateDetails.emergencycontactnumber" name="emergencynum" required [disabled]="!isEditable" />
         </div>
       </div>
       <div class="form-row">
         <div class="form-column">
           <label>Relationship <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.emergencycontactrelation" name="emergencyrelation" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.emergencycontactrelation" name="emergencyrelation" required [disabled]="!isEditable" />
         </div>
       </div>
     </div>
 
-    <!-- Employment Details -->
+    <!-- ==================== EMPLOYMENT DETAILS ==================== -->
     <div class="form-section">
       <h2>Employment Details</h2>
       <div class="form-row">
         <div class="form-column">
           <label>Date of Joining <span class="mandatory">*</span></label>
-          <input type="date" [(ngModel)]="candidateDetails.dateofjoining" name="dateofjoining" required
-            [disabled]="!isEditable" />
+          <input type="date" [(ngModel)]="candidateDetails.dateofjoining" name="dateofjoining" required [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>Designation <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.designation" name="designation" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.designation" name="designation" required [disabled]="!isEditable" />
         </div>
       </div>
 
       <div class="form-row">
         <div class="form-column">
           <label>Department / Project <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.department" name="department" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.department" name="department" required [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>Work Location <span class="mandatory">*</span></label>
@@ -256,8 +228,8 @@
         </div>
       </div>
     </div>
-    <!-- Address Details (Present Address) -->
-    <!-- ======================= PRESENT ADDRESS ======================= -->
+
+    <!-- ==================== PRESENT ADDRESS ==================== -->
     <div class="form-section">
       <h3>Present Address</h3>
 
@@ -277,8 +249,7 @@
       <div class="form-row">
         <div class="form-column">
           <label>City / Town <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.presentcity" name="presentcity" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.presentcity" name="presentcity" required [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>State <span class="mandatory">*</span></label>
@@ -298,13 +269,12 @@
         </div>
         <div class="form-column">
           <label>Country</label>
-          <input type="text" [(ngModel)]="candidateDetails.presentcountry" name="presentcountry" value="India"
-            [disabled]="true" />
+          <input type="text" [(ngModel)]="candidateDetails.presentcountry" name="presentcountry" value="India" [disabled]="true" />
         </div>
       </div>
     </div>
 
-    <!-- ======================= SAME AS PRESENT ADDRESS CHECKBOX ======================= -->
+    <!-- ==================== SAME AS PRESENT ADDRESS CHECKBOX ==================== -->
     <div class="form-section" style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 8px;">
       <label style="font-weight: bold; cursor: pointer;">
         <input type="checkbox" [(ngModel)]="sameAsPresentAddress" name="sameAsPresentAddress" (change)="toggleAddress()"
@@ -313,7 +283,7 @@
       </label>
     </div>
 
-    <!-- ======================= PERMANENT ADDRESS ======================= -->
+    <!-- ==================== PERMANENT ADDRESS ==================== -->
     <div class="form-section">
       <h3>Permanent Address</h3>
 
@@ -333,8 +303,7 @@
       <div class="form-row">
         <div class="form-column">
           <label>City / Town <span class="mandatory">*</span></label>
-          <input type="text" [(ngModel)]="candidateDetails.permanentcity" name="permanentcity" required
-            [disabled]="!isEditable" />
+          <input type="text" [(ngModel)]="candidateDetails.permanentcity" name="permanentcity" required [disabled]="!isEditable" />
         </div>
         <div class="form-column">
           <label>State <span class="mandatory">*</span></label>
@@ -354,120 +323,116 @@
         </div>
         <div class="form-column">
           <label>Country</label>
-          <input type="text" [(ngModel)]="candidateDetails.permanentcountry" name="permanentcountry" value="India"
-            [disabled]="true" />
+          <input type="text" [(ngModel)]="candidateDetails.permanentcountry" name="permanentcountry" value="India" [disabled]="true" />
         </div>
       </div>
     </div>
 
-    <!-- Education Section -->
-   <div class="form-section">
-  <h3>Education <span class="mandatory">*</span></h3>
-  <button type="button" (click)="addEducation()">Add Row</button>
-  <table>
-    <tr>
-      <th>Institution Name</th>
-      <th>Qualification</th>
-      <th>Register No</th>
-      <th>Percentage</th>
-      <th>Duration</th>
-      <th>Field(s) of Study</th>
-      <th>Year of Graduation</th>
-      <th>Additional Notes</th>
-      <th>Actions</th>
-    </tr>
-    <tr *ngFor="let edu of educationList; let i = index">
-      <td><input type="text" [(ngModel)]="edu.institution" [name]="'edu_institution_' + i" required [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.qualification" [name]="'edu_qualification_' + i" required [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.regnum" [name]="'edu_regnum_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.percentage" [name]="'edu_percentage_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.duration" [name]="'edu_duration_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.fieldofstudy" [name]="'edu_field_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.yearofgraduation" [name]="'edu_year_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="edu.additionalnotes" [name]="'edu_notes_' + i" [disabled]="!isEditable" /></td>
-      <td><button type="button" (click)="removeEdu(i)" class="icon-button delete-icon">Remove</button></td>
-    </tr>
-  </table>
-</div>
-
-    <!-- Professional Details Section -->
+    <!-- ==================== EDUCATION SECTION ==================== -->
     <div class="form-section">
-  <h3>Professional Details</h3>
-  <button type="button" (click)="addProfessional()">Add Row</button>
-  <table>
-    <tr>
-      <th>Organization</th>
-      <th>Location</th>
-      <th>Org Emp ID</th>
-      <th>Org Dept</th>
-      <th>Org Role</th>
-      <th>Joining Date</th>
-      <th>Relieving Date</th>
-      <th>CTC</th>
-      <th>Additional Information</th>
-      <th>Actions</th>
-    </tr>
-    <tr *ngFor="let prof of professionalList; let i = index">
-      <td><input type="text" [(ngModel)]="prof.organisation" [name]="'prof_org_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="prof.location" [name]="'prof_loc_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="prof.orgempid" [name]="'prof_empid_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="prof.orgdept" [name]="'prof_dept_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="prof.orgrole" [name]="'prof_role_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="date" [(ngModel)]="prof.joiningdate" [name]="'prof_join_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="date" [(ngModel)]="prof.relievingdate" [name]="'prof_relieve_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="prof.ctc" [name]="'prof_ctc_' + i" [disabled]="!isEditable" /></td>
-      <td><textarea [(ngModel)]="prof.additionalinformation" [name]="'prof_info_' + i" [disabled]="!isEditable"></textarea></td>
-      <td><button type="button" (click)="removeProfessional(i)" class="icon-button delete-icon">Remove</button></td>
-    </tr>
-  </table>
-</div>
-   <div class="form-section">
-  <h3>Skill Set <span class="mandatory">*</span></h3>
-  <button type="button" (click)="addSkill()">Add Row</button>
-  <table>
-    <tr>
-      <th>Skill</th>
-      <th>Proficiency</th>
-      <th>Certification</th>
-      <th>Years of Experience</th>
-      <th>Last Update</th>
-      <th>Actions</th>
-    </tr>
-    <tr *ngFor="let skill of skillList; let i = index">
-      <td><input type="text" [(ngModel)]="skill.skill" [name]="'skill_name_' + i" required [disabled]="!isEditable" /></td>
-      <td>
-        <select [(ngModel)]="skill.proficiencylevel" [name]="'skill_prof_' + i" required [disabled]="!isEditable" (click)="$event.stopPropagation()">
-          <option value="">Select</option>
-          <option value="Beginner">Beginner</option>
-          <option value="Intermediate">Intermediate</option>
-          <option value="Advanced">Advanced</option>
-          <option value="Expert">Expert</option>
-        </select>
-      </td>
-      <td><input type="text" [(ngModel)]="skill.certification" [name]="'skill_cert_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="text" [(ngModel)]="skill.yearsExperience" [name]="'skill_years_' + i" [disabled]="!isEditable" /></td>
-      <td><input type="date" [(ngModel)]="skill.lastupdated" [name]="'skill_last_' + i" [disabled]="!isEditable" /></td>
-      <td><button type="button" (click)="removeSkill(i)" class="icon-button delete-icon">Remove</button></td>
-    </tr>
-  </table>
-</div>
-
-    <!-- Submit Button -->
-
-
-
-
-
-    <!-- <div class="form-actions">
-      [disabled]="!candidateForm.form.valid" 
-      <div>      
-        <button *ngIf="isEditable" type="submit">Submit</button>  Show Submit if Editable 
-        <button *ngIf="!isEditable" type="button" (click)="verify()">Verify</button>  Show Verify if Read-only 
-      </div>
-
-      <button type="button" (click)="cancelAction()">Cancel</button>
+      <h3>Education <span class="mandatory">*</span></h3>
+      <button type="button" (click)="addEducation()" [disabled]="!isEditable">Add Row</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Institution Name</th>
+            <th>Qualification</th>
+            <th>Register No</th>
+            <th>Percentage</th>
+            <th>Duration</th>
+            <th>Field(s) of Study</th>
+            <th>Year of Graduation</th>
+            <th>Additional Notes</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let edu of educationList; let i = index">
+            <td><input type="text" [(ngModel)]="edu.institution" [name]="'edu_institution_' + i" required [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.qualification" [name]="'edu_qualification_' + i" required [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.regnum" [name]="'edu_regnum_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.percentage" [name]="'edu_percentage_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.duration" [name]="'edu_duration_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.fieldofstudy" [name]="'edu_field_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.yearofgraduation" [name]="'edu_year_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="edu.additionalnotes" [name]="'edu_notes_' + i" [disabled]="!isEditable" /></td>
+            <td><button type="button" (click)="removeEdu(i)" class="delete-btn" [disabled]="!isEditable">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    </div> -->
+
+    <!-- ==================== PROFESSIONAL DETAILS SECTION ==================== -->
+    <div class="form-section">
+      <h3>Professional Details</h3>
+      <button type="button" (click)="addProfessional()" [disabled]="!isEditable">Add Row</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Organization</th>
+            <th>Location</th>
+            <th>Org Emp ID</th>
+            <th>Org Dept</th>
+            <th>Org Role</th>
+            <th>Joining Date</th>
+            <th>Relieving Date</th>
+            <th>CTC</th>
+            <th>Additional Information</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let prof of professionalList; let i = index">
+            <td><input type="text" [(ngModel)]="prof.organisation" [name]="'prof_org_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="prof.location" [name]="'prof_loc_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="prof.orgempid" [name]="'prof_empid_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="prof.orgdept" [name]="'prof_dept_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="prof.orgrole" [name]="'prof_role_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="date" [(ngModel)]="prof.joiningdate" [name]="'prof_join_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="date" [(ngModel)]="prof.relievingdate" [name]="'prof_relieve_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="prof.ctc" [name]="'prof_ctc_' + i" [disabled]="!isEditable" /></td>
+            <td><textarea [(ngModel)]="prof.additionalinformation" [name]="'prof_info_' + i" rows="2" [disabled]="!isEditable"></textarea></td>
+            <td><button type="button" (click)="removeProfessional(i)" class="delete-btn" [disabled]="!isEditable">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ==================== SKILL SET SECTION ==================== -->
+    <div class="form-section">
+      <h3>Skill Set <span class="mandatory">*</span></h3>
+      <button type="button" (click)="addSkill()" [disabled]="!isEditable">Add Row</button>
+      <table>
+        <thead>
+          <tr>
+            <th>Skill</th>
+            <th>Proficiency</th>
+            <th>Certification</th>
+            <th>Years of Experience</th>
+            <th>Last Update</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let skill of skillList; let i = index">
+            <td><input type="text" [(ngModel)]="skill.skill" [name]="'skill_name_' + i" required [disabled]="!isEditable" /></td>
+            <td>
+              <select [(ngModel)]="skill.proficiencylevel" [name]="'skill_prof_' + i" required [disabled]="!isEditable" (click)="$event.stopPropagation()">
+                <option value="">Select</option>
+                <option value="Beginner">Beginner</option>
+                <option value="Intermediate">Intermediate</option>
+                <option value="Advanced">Advanced</option>
+                <option value="Expert">Expert</option>
+              </select>
+            </td>
+            <td><input type="text" [(ngModel)]="skill.certification" [name]="'skill_cert_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="text" [(ngModel)]="skill.yearsExperience" [name]="'skill_years_' + i" [disabled]="!isEditable" /></td>
+            <td><input type="date" [(ngModel)]="skill.lastupdated" [name]="'skill_last_' + i" [disabled]="!isEditable" /></td>
+            <td><button type="button" (click)="removeSkill(i)" class="delete-btn" [disabled]="!isEditable">Remove</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
     <!-- ==================== DOCUMENT UPLOADS (Editable Mode) ==================== -->
     <div class="form-section" *ngIf="isEditable">
@@ -516,7 +481,6 @@
       <p class="text-muted">You can replace any document by uploading a new one below.</p>
 
       <div class="documents-grid">
-
         <!-- Photo -->
         <div class="doc-card" *ngIf="candidateDetails.documents.photo?.url">
           <div class="doc-header">
@@ -526,8 +490,15 @@
             <img [src]="candidateDetails.documents.photo.url" class="photo-preview" alt="Current Photo">
           </div>
           <div class="doc-footer">
-            <button  type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">View</button>
-            <small>Current: {{ existingFiles.photo || 'photo.jpg' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.photo)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.photo?.name }}">{{ existingFiles.photo?.name || 'photo.jpg' }}</small>
           </div>
         </div>
 
@@ -538,10 +509,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.aadhar?.name }}">
+              {{ existingFiles.aadhar?.name || 'aadhar.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button  type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">View</button>
-            <small>Current: {{ existingFiles.aadhar || 'aadhar.pdf' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.aadhar)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.aadhar?.name }}">{{ existingFiles.aadhar?.name || 'aadhar.pdf' }}</small>
           </div>
         </div>
 
@@ -552,10 +533,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.pan?.name }}">
+              {{ existingFiles.pan?.name || 'pan.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button  type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">View</button>
-            <small>Current: {{ existingFiles.pan || 'pan.pdf' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.pan)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.pan?.name }}">{{ existingFiles.pan?.name || 'pan.pdf' }}</small>
           </div>
         </div>
 
@@ -566,24 +557,44 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.tenth?.name }}">
+              {{ existingFiles.tenth?.name || '10th.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button  type="button"class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">View</button>
-            <small>Current: {{ existingFiles.tenth || '10th.pdf' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.tenth)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.tenth?.name }}">{{ existingFiles.tenth?.name || '10th.pdf' }}</small>
           </div>
         </div>
 
         <!-- 12th -->
         <div class="doc-card" *ngIf="candidateDetails.documents.twelfth?.url">
           <div class="doc-header">
-            <i class="fas fa-graduation-cap"></i> 12th / Diploma
+            <i class="fas fa-graduation-cap"></i> 12th / Diploma Marksheet
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.twelfth?.name }}">
+              {{ existingFiles.twelfth?.name || '12th.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button  type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">View</button>
-            <small>Current: {{ existingFiles.twelfth || '12th.pdf' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.twelfth)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.twelfth?.name }}">{{ existingFiles.twelfth?.name || '12th.pdf' }}</small>
           </div>
         </div>
 
@@ -594,17 +605,26 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.degree?.name }}">
+              {{ existingFiles.degree?.name || 'degree.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button  type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">View</button>
-            <small>Current: {{ existingFiles.degree || 'degree.pdf' }}</small>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.degree)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.degree?.name }}">{{ existingFiles.degree?.name || 'degree.pdf' }}</small>
           </div>
         </div>
-
       </div>
     </div>
 
-    <!-- ==================== DOCUMENT VIEWER (Approval Mode Only) ==================== -->
+    <!-- ==================== DOCUMENT VIEWER (Approval Mode) ==================== -->
     <div class="form-section" *ngIf="!isEditable && candidateDetails?.documents">
       <h2>Uploaded Documents</h2>
       <div class="documents-grid">
@@ -618,9 +638,15 @@
             <img [src]="candidateDetails.documents.photo.url" class="photo-preview" alt="Passport Photo">
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">View</button>
-            <a [href]="candidateDetails.documents.photo.url" download="passport_photo.jpg"
-              class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.photo)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.photo)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.photo?.name }}">{{ existingFiles.photo?.name || 'photo.jpg' }}</small>
           </div>
         </div>
 
@@ -631,10 +657,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.aadhar?.name }}">
+              {{ existingFiles.aadhar?.name || 'aadhar.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">View</button>
-            <a [href]="candidateDetails.documents.aadhar.url" download="aadhar.pdf" class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.aadhar)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.aadhar)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.aadhar?.name }}">{{ existingFiles.aadhar?.name || 'aadhar.pdf' }}</small>
           </div>
         </div>
 
@@ -645,10 +681,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.pan?.name }}">
+              {{ existingFiles.pan?.name || 'pan.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">View</button>
-            <a [href]="candidateDetails.documents.pan.url" download="pan.pdf" class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.pan)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.pan)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.pan?.name }}">{{ existingFiles.pan?.name || 'pan.pdf' }}</small>
           </div>
         </div>
 
@@ -659,11 +705,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.tenth?.name }}">
+              {{ existingFiles.tenth?.name || '10th.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">View</button>
-            <a [href]="candidateDetails.documents.tenth.url" download="10th_marksheet.pdf"
-              class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.tenth)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.tenth)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.tenth?.name }}">{{ existingFiles.tenth?.name || '10th.pdf' }}</small>
           </div>
         </div>
 
@@ -674,11 +729,20 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.twelfth?.name }}">
+              {{ existingFiles.twelfth?.name || '12th.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">View</button>
-            <a [href]="candidateDetails.documents.twelfth.url" download="12th_marksheet.pdf"
-              class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.twelfth)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.twelfth)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.twelfth?.name }}">{{ existingFiles.twelfth?.name || '12th.pdf' }}</small>
           </div>
         </div>
 
@@ -689,20 +753,28 @@
           </div>
           <div class="doc-body pdf-preview">
             <i class="fas fa-file-pdf"></i>
+            <span class="file-name" title="{{ existingFiles.degree?.name }}">
+              {{ existingFiles.degree?.name || 'degree.pdf' }}
+            </span>
           </div>
           <div class="doc-footer">
-            <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">View</button>
-            <a [href]="candidateDetails.documents.degree.url" download="degree_certificate.pdf"
-              class="btn-download">Download</a>
+            <div class="button-group-left">
+              <button type="button" class="btn-view" (click)="openDocument(candidateDetails.documents.degree)">
+                <i class="fas fa-eye"></i> View
+              </button>
+              <button type="button" class="btn-download" (click)="downloadDocument(candidateDetails.documents.degree)">
+                <i class="fas fa-download"></i> Download
+              </button>
+            </div>
+            <small title="{{ existingFiles.degree?.name }}">{{ existingFiles.degree?.name || 'degree.pdf' }}</small>
           </div>
         </div>
-
       </div>
     </div>
 
     <!-- ==================== DOCUMENT PREVIEW MODAL ==================== -->
     <div class="modal-overlay" *ngIf="showDocModal" (click)="closeDocumentModal()">
-      <div class="document-modal" *ngIf="showDocModal">
+      <div class="document-modal" *ngIf="showDocModal" (click)="$event.stopPropagation()">
         <div class="modal-header">
           <h3>{{ currentDocTitle }}</h3>
           <button class="close-modal" (click)="closeDocumentModal()">×</button>
@@ -713,18 +785,24 @@
       </div>
     </div>
   
-  <div class="form-actions">
-    <div class="button-group">
-      <!-- Submit / Update Button - only shown when form is editable -->
-      <button *ngIf="isEditable" type="submit" class="btn-primary">
-        {{ mode === 'add' ? 'Submit New Employee' : 'Update Employee' }}
-      </button>
+    <!-- ==================== FORM ACTIONS ==================== -->
+    <div class="form-actions">
+      <div class="button-group">
+        <!-- Submit / Update Button -->
+        <button *ngIf="isEditable" type="submit" class="btn-primary">
+          {{ mode === 'add' ? 'Submit New Employee' : 'Update Employee' }}
+        </button>
 
-      <button type="button" (click)="cancelAction()" class="btn-cancel">
-        CANCEL / CLOSE
-      </button>
+        <!-- Verify Button for Approval Mode -->
+        <button *ngIf="!isEditable" type="button" (click)="verify()" class="btn-verify">
+          Verify & Approve
+        </button>
+
+        <button type="button" (click)="cancelAction()" class="btn-cancel">
+          CANCEL / CLOSE
+        </button>
+      </div>
     </div>
-  </div>
 
-</div>
+  </div>
 </form>

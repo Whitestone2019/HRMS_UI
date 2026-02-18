@@ -75,6 +75,15 @@ import { FinalExitApprovalComponent } from './final-exit-approval/final-exit-app
 import { PayrollChecksComponent } from './payroll-checks/payroll-checks.component';
 import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-offboarding-checklist.component';
 import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
+import { HrLeaveRequestModalComponent } from './hr-leave-request-modal/hr-leave-request-modal.component';
+import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approvals.component';
+// import { TraineeComponent } from './Payroll/components/employees/trainee.component';
+
+import { AdminUpload } from './admin/admin-upload/admin-upload';
+import { AdminList } from './admin/admin-list/admin-list';
+import { UserView } from './user/user-view/user-view';
+// import { AuthGuard } from './auth.guard';
+// import { RoleGuard } from './guards/role.guard';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -170,6 +179,25 @@ export const routes: Routes = [
           { path: 'payroll-check', component: PayrollChecksComponent},
           { path: 'hr-offboard', component: HrOffboardingChecklistComponent},//hr round 2
           { path: 'celebration', component: CelebrationPageComponent},
+          { path: 'hrleaverequest/:leaveType', component: HrLeaveRequestModalComponent},
+          { path: 'hrleaveapproval', component: HrLeaveApprovalsComponent},
+          { 
+    path: 'admin/upload', 
+    component: AdminUpload,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['admin', 'HR', 'ACC'] }
+  },
+  { 
+    path: 'admin/list', 
+    component: AdminList,
+    canActivate: [AuthGuard, RoleGuard],
+    data: { roles: ['admin', 'HR', 'ACC'] }
+  },
+  { 
+    path: 'user/view', 
+    component: UserView,
+    canActivate: [AuthGuard]
+  },
     ]
   },
   {
@@ -185,6 +213,7 @@ export const routes: Routes = [
       { path: 'benefits', component: BenefitsComponent },
       { path: 'payroll-summary', component: PayrollSummaryComponent },
       { path: 'tax-reports', component: TaxReportsComponent },
+      //  { path: 'Trainee', component: TraineeComponent},
       {
         path: 'settings',
         children: [

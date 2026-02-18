@@ -1,0 +1,102 @@
+<div class="upload-container">
+  <div class="card">
+    <div class="card-header">
+      <h2>📄 Upload PDF Document</h2>
+      <p class="card-subtitle">Secure PDF upload with validation</p>
+    </div>
+
+    <div class="card-body">
+      <!-- File Upload Section -->
+      <div class="upload-section">
+        <!-- File Input -->
+        <label class="file-upload-area" [class.has-file]="selectedFileName">
+          <input type="file" 
+                 (change)="onFileChange($event)" 
+                 accept=".pdf,application/pdf" 
+                 [disabled]="isUploading" />
+          
+          <div class="upload-placeholder" *ngIf="!selectedFileName">
+            <div class="upload-icon">📄</div>
+            <div class="upload-text">
+              <h3>Select PDF File</h3>
+              <p>Click to browse or drag and drop</p>
+              <p class="upload-requirements">Only PDF files allowed • Max size: 50MB</p>
+            </div>
+          </div>
+          
+          <div class="file-selected" *ngIf="selectedFileName">
+            <div class="file-info">
+              <div class="file-icon">📄</div>
+              <div class="file-details">
+                <h4 class="file-name">{{ selectedFileName }}</h4>
+                <p class="file-size">{{ getFileSize() }}</p>
+              </div>
+              <button type="button" class="clear-btn" (click)="clearFile()" [disabled]="isUploading">
+                ✖
+              </button>
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- Upload Button -->
+      <div class="upload-action">
+        <button class="upload-btn" 
+                (click)="upload()" 
+                [disabled]="!selectedFileName || isUploading"
+                [class.uploading]="isUploading">
+          <span *ngIf="!isUploading">📤 Upload PDF</span>
+          <span *ngIf="isUploading" class="uploading-text">
+            <span class="spinner"></span>
+            Uploading...
+          </span>
+        </button>
+        
+        <p class="upload-hint" *ngIf="!selectedFileName">
+          Select a PDF file to enable upload
+        </p>
+      </div>
+
+      <!-- Success Message -->
+      <div class="success-message" *ngIf="uploadSuccess">
+        <div class="success-icon">✅</div>
+        <div class="success-content">
+          <h4>PDF Upload Successful!</h4>
+          <p>Your PDF document has been uploaded securely.</p>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="error-message" *ngIf="uploadError">
+        <div class="error-icon">❌</div>
+        <div class="error-content">
+          <h4>Upload Error</h4>
+          <p>{{ uploadError }}</p>
+        </div>
+      </div>
+
+      <!-- Information Section -->
+      <div class="info-section">
+        <!-- <h4>📋 Upload Guidelines</h4>
+        <ul class="guidelines-list">
+          <li>✅ Only PDF files are accepted</li>
+          <li>✅ Maximum file size: 50MB</li>
+          <li>✅ All uploaded PDFs are protected</li>
+          <li>✅ Screenshot protection enabled</li>
+          <li>✅ Secure storage guaranteed</li>
+        </ul> -->
+        
+        <!-- <div class="supported-formats">
+          <h5>Supported PDF Types:</h5>
+          <div class="formats-grid">
+            <span class="format-badge">Standard PDF</span>
+            <span class="format-badge">PDF/A</span>
+            <span class="format-badge">PDF/X</span>
+            <span class="format-badge">Encrypted PDF</span>
+            <span class="format-badge">Scanned PDF</span>
+          </div>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
