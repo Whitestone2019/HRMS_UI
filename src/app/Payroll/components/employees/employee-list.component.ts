@@ -45,6 +45,9 @@ import { Router } from '@angular/router';
               <button class="btn edit" (click)="editEmployee(employee); $event.stopPropagation();">
                 Edit
               </button>
+              <button class="btn delete" (click)="deleteSalary(employee.empid); $event.stopPropagation();">
+    Delete
+  </button>
             </td>
           </tr>
         </tbody>
@@ -136,6 +139,19 @@ import { Router } from '@angular/router';
     .employee-table th, .employee-table td, .salary-table th, .salary-table td {
       padding: 12px; border: 1px solid #ddd; text-align: left;
     }
+    .btn.delete {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  margin-left: 5px;
+}
+.btn.delete:hover {
+  background-color: #c82333;
+}
     .employee-table th, .salary-table th { background-color: #f1f3f6; font-weight: 600; }
     .salary-details { margin-top: 20px; padding: 15px; border: 1px solid #ccc; background: #fafafa; border-radius: 5px; }
     .salary-details h4 { margin-top: 20px; margin-bottom: 10px; font-size: 15px; font-weight: 600; }
@@ -210,5 +226,32 @@ export class EmployeeListComponent implements OnInit {
       return [];
     }
   }
+  deleteSalary(empid: string) {
+  if (!confirm(`Are you sure you want to delete salary record for employee ${empid}?`)) {
+    return;
+  }
+
+  this.apiService.deleteEmployeeSalary(empid).subscribe({
+    next: () => {
+      // Remove from local list (optimistic update)
+      this.employees = this.employees.filter(e => e.empid !== empid);
+      
+      // Clear selection if it was the deleted one
+      if (this.selectedEmployee?.empid === empid) {
+        this.selectedEmployee = null;
+        this.parsedEarnings = [];
+        this.parsedDeductions = [];
+        this.parsedPayrollDeductions = [];
+      }
+
+      alert('Salary record deleted successfully and moved to history.');
+      this.fetchEmployees();
+    },
+    error: (err) => {
+      console.error('Delete failed', err);
+      alert('Failed to delete salary record. Please try again.');
+    }
+  });
+}
 }
  

@@ -1387,6 +1387,12 @@ rejectLeaveRequest1(empid: string, startdate: string): Observable<any> {
       finalize(() => this.loaderService.hide()) // ✅ ensure loader hides no matter what
     );
   }
+
+  deleteEmployeeSalary(empid: string): Observable<void> {
+     this.loaderService.show();
+  return this.http.delete<void>(`/api/employeesalarydetail/${empid}`, {})
+      .pipe(finalize(() => this.loaderService.hide()));
+}
   runPayroll() {
     this.loaderService.show();
     return this.http.post<any>(`${this.apiUrl}/Payroll`, {})
