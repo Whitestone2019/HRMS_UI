@@ -288,7 +288,7 @@ export class LeaveSummaryComponent implements OnInit {
       this.leaveTypes[casualLeaveIndex].totalAllocation = casualBalance;
       
       // IMPORTANT: Set available to show remaining days, NOT total balance
-      this.leaveTypes[casualLeaveIndex].available = casualRemaining;
+      this.leaveTypes[casualLeaveIndex].available = casualBalance;
       this.leaveTypes[casualLeaveIndex].booked = calculatedCasualLeaves;
       this.leaveTypes[casualLeaveIndex].remaining = casualRemaining;
       this.leaveTypes[casualLeaveIndex].maxDays = casualBalance;
