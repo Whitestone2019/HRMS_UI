@@ -14,6 +14,7 @@ interface AttendanceEvent {
   extendedProps?: {
     dayOfWeek?: string;
     status?: string;
+    [key: string]: any;
   };
   title?: string;
 }
@@ -28,10 +29,12 @@ export class TimesheetCalendarDialogComponent implements OnInit {
   employeeName: string = '';
   isLoading: boolean = true;
   
-  // Store ALL events for the entire year
-  private allYearEvents: AttendanceEvent[] = [];
+  // Store ALL events for multiple years
+  private allEvents: AttendanceEvent[] = [];
   private currentYear!: number;
   private currentMonth!: number;
+  private eventsMap: Map<string, AttendanceEvent[]> = new Map(); // Map of year -> events
+  private yearsToLoad: number[] = []; // Years to load (2024, 2025, 2026)
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, interactionPlugin],
@@ -65,7 +68,11 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     this.currentYear = today.getFullYear();
     this.currentMonth = today.getMonth() + 1; // Current month (1-12)
     
+    // Set years to load (2024, 2025, 2026)
+    this.yearsToLoad = [2024, 2025, 2026];
+    
     console.log(`[ngOnInit] Initializing with current date: Year=${this.currentYear}, Month=${this.currentMonth}`);
+    console.log(`[ngOnInit] Will load years: ${this.yearsToLoad.join(', ')}`);
 
     const navigation = this.router.getCurrentNavigation();
     if (navigation?.extras?.state) {
@@ -75,11 +82,13 @@ export class TimesheetCalendarDialogComponent implements OnInit {
       
       // If events are passed in state, use them
       if (navigation.extras.state['events']) {
-        this.allYearEvents = navigation.extras.state['events'];
-        this.initializeCalendarWithYearData(this.currentMonth);
+        this.allEvents = navigation.extras.state['events'];
+        this.organizeEventsByYear();
+        this.updateCalendarForMonth(this.currentMonth);
+        this.isLoading = false;
       } else {
-        // Fetch data for current year
-        this.fetchYearData(this.currentYear);
+        // Fetch data for multiple years
+        this.fetchMultipleYearsData();
       }
     } else {
       this.route.paramMap.subscribe((params) => {
@@ -89,10 +98,10 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         
         if (empId) {
           this.employeeId = empId;
-          console.log(`[ngOnInit] Fetching year data for employeeId: ${this.employeeId}, Year: ${this.currentYear}`);
+          console.log(`[ngOnInit] Fetching multiple years data for employeeId: ${this.employeeId}`);
           
-          // Fetch data for the current year
-          this.fetchYearData(this.currentYear);
+          // Fetch data for multiple years
+          this.fetchMultipleYearsData();
         } else {
           console.warn('[ngOnInit] No employeeId found');
           this.isLoading = false;
@@ -100,6 +109,72 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         }
       });
     }
+  }
+
+  // Organize events by year for quick access
+  private organizeEventsByYear(): void {
+    this.eventsMap.clear();
+    
+    this.allEvents.forEach(event => {
+      if (event.date) {
+        const year = new Date(event.date).getFullYear();
+        if (!this.eventsMap.has(year.toString())) {
+          this.eventsMap.set(year.toString(), []);
+        }
+        this.eventsMap.get(year.toString())?.push(event);
+      }
+    });
+    
+    console.log('[organizeEventsByYear] Events organized by year:', 
+      Array.from(this.eventsMap.keys()).map(year => `${year}: ${this.eventsMap.get(year)?.length} events`));
+  }
+
+  // Fetch multiple years of data at once
+  private fetchMultipleYearsData(): void {
+    this.isLoading = true;
+    this.allEvents = [];
+    let completedRequests = 0;
+    
+    // Load each year sequentially
+    this.yearsToLoad.forEach(year => {
+      console.log(`[fetchMultipleYearsData] Fetching year ${year} data...`);
+      
+      // Use the existing API with year parameter (month parameter is not needed as backend ignores it)
+      this.apiService.getAttendanceEvents(this.employeeId, year, 1).subscribe({
+        next: (attendanceEvents: AttendanceEvent[]) => {
+          console.log(`[fetchMultipleYearsData] Received ${attendanceEvents?.length || 0} events for year ${year}`);
+          
+          if (attendanceEvents && attendanceEvents.length > 0) {
+            this.allEvents = [...this.allEvents, ...attendanceEvents];
+          }
+          
+          completedRequests++;
+          
+          // When all years are loaded
+          if (completedRequests === this.yearsToLoad.length) {
+            // Sort all events by date
+            this.allEvents.sort((a, b) => a.date.localeCompare(b.date));
+            
+            console.log(`[fetchMultipleYearsData] Total events loaded: ${this.allEvents.length}`);
+            
+            this.organizeEventsByYear();
+            this.updateCalendarForMonth(this.currentMonth);
+            this.isLoading = false;
+          }
+        },
+        error: (err) => {
+          console.error(`[fetchMultipleYearsData] Error fetching year ${year}:`, err);
+          completedRequests++;
+          
+          // Still proceed even if one year fails
+          if (completedRequests === this.yearsToLoad.length) {
+            this.organizeEventsByYear();
+            this.updateCalendarForMonth(this.currentMonth);
+            this.isLoading = false;
+          }
+        }
+      });
+    });
   }
 
   // Handler for when calendar changes view (month navigation)
@@ -115,150 +190,60 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     
     console.log(`[handleDatesSet] Calendar changed to: Year=${year}, Month=${month}`);
     
-    // Store current month
+    // Store current month and year
+    this.currentYear = year;
     this.currentMonth = month;
     
-    // If we've navigated to a different year, fetch data for that year
-    if (year !== this.currentYear) {
-      this.currentYear = year;
-      this.fetchYearData(year);
-    } else {
-      // Same year, just update the calendar display
-      this.updateCalendarForMonth(month);
-    }
+    // Update calendar with events for this month (data is already loaded)
+    this.updateCalendarForMonth(month);
   }
 
-  // Fetch entire year's data
-  private fetchYearData(year: number): void {
-    this.isLoading = true;
-    
-    // Always fetch data for January of the target year
-    // Your API returns entire year's data regardless of the month parameter
-    console.log(`[fetchYearData] Fetching year ${year} data for employee: ${this.employeeId}`);
-    
-    this.apiService.getAttendanceEvents(this.employeeId, year, 1).subscribe({
-      next: (attendanceEvents: AttendanceEvent[]) => {
-        console.log(`[fetchYearData] Received ${attendanceEvents?.length || 0} events for year ${year}`);
-        
-        if (attendanceEvents && attendanceEvents.length > 0) {
-          // Store all events for the year
-          this.allYearEvents = attendanceEvents;
-          
-          // Initialize calendar with current month's data
-          this.initializeCalendarWithYearData(this.currentMonth);
-        } else {
-          console.warn('[fetchYearData] No events received from API');
-          this.allYearEvents = [];
-          this.isLoading = false;
-          // Still initialize calendar with empty data
-          this.initializeCalendarWithYearData(this.currentMonth);
-        }
-      },
-      error: (err) => {
-        console.error('[fetchYearData] API error:', err);
-        this.isLoading = false;
-        this.employeeName = 'Error Loading Data';
-        // Initialize calendar with empty data
-        this.initializeCalendarWithYearData(this.currentMonth);
-      }
-    });
-  }
-
-  // Initialize calendar with year data
-  private initializeCalendarWithYearData(currentMonth: number): void {
-    // Filter events for the current month and previous months up to today
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
-    const eventsForDisplay = this.allYearEvents.filter(event => {
-      if (!event.date) return false;
-      
-      const eventDate = new Date(event.date);
-      const eventYear = eventDate.getFullYear();
-      const eventMonth = eventDate.getMonth() + 1;
-      
-      // If viewing past years, show entire year's data
-      if (this.currentYear < today.getFullYear()) {
-        return eventYear === this.currentYear;
-      }
-      // If viewing current year
-      else if (this.currentYear === today.getFullYear()) {
-        // If viewing past months, show entire month
-        if (currentMonth < today.getMonth() + 1) {
-          return eventYear === this.currentYear && eventMonth === currentMonth;
-        }
-        // If viewing current month, show up to today
-        else if (currentMonth === today.getMonth() + 1) {
-          return eventYear === this.currentYear && 
-                 eventMonth === currentMonth &&
-                 event.date <= todayStr;
-        }
-        // If viewing future months, show nothing (no data yet)
-        else {
-          return false;
-        }
-      }
-      // If viewing future years, show nothing
-      else {
-        return false;
-      }
-    });
-    
-    // Format events for FullCalendar
-    const formattedEvents = this.formatEventsForCalendar(eventsForDisplay);
-    
-    console.log(`[initializeCalendarWithYearData] Setting ${formattedEvents.length} events for ${this.currentYear}-${currentMonth}`);
-    
-    this.calendarOptions = {
-      ...this.calendarOptions,
-      initialDate: new Date(Date.UTC(this.currentYear, currentMonth - 1, 1)),
-      events: formattedEvents,
-      dateClick: this.handleDateClick.bind(this),
-    };
-
-    this.isLoading = false;
-  }
-
-  // Update calendar for specific month (when navigating between months)
+  // Update calendar for specific month (using pre-loaded data)
   private updateCalendarForMonth(month: number): void {
-    if (this.allYearEvents.length === 0) return;
+    if (this.allEvents.length === 0) {
+      console.log('[updateCalendarForMonth] No events available');
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        events: []
+      };
+      return;
+    }
     
-    // Filter events for the selected month based on year
+    // Get events for the current year
+    const yearEvents = this.eventsMap.get(this.currentYear.toString()) || [];
+    
+    if (yearEvents.length === 0) {
+      console.log(`[updateCalendarForMonth] No events for year ${this.currentYear}`);
+      this.calendarOptions = {
+        ...this.calendarOptions,
+        events: []
+      };
+      return;
+    }
+    
+    // Filter events for the selected month
     const today = new Date();
     const todayStr = today.toISOString().split('T')[0];
     
-    const eventsForMonth = this.allYearEvents.filter(event => {
+    const eventsForMonth = yearEvents.filter(event => {
       if (!event.date) return false;
       
       const eventDate = new Date(event.date);
-      const eventYear = eventDate.getFullYear();
       const eventMonth = eventDate.getMonth() + 1;
+      const eventYear = eventDate.getFullYear();
       
-      // If viewing past years, show entire year's data
-      if (this.currentYear < today.getFullYear()) {
-        return eventYear === this.currentYear;
-      }
-      // If viewing current year
-      else if (this.currentYear === today.getFullYear()) {
-        // If viewing past months, show entire month
-        if (month < today.getMonth() + 1) {
-          return eventYear === this.currentYear && eventMonth === month;
-        }
-        // If viewing current month, show up to today
-        else if (month === today.getMonth() + 1) {
-          return eventYear === this.currentYear && 
-                 eventMonth === month &&
-                 event.date <= todayStr;
-        }
-        // If viewing future months, show nothing (no data yet)
-        else {
-          return false;
-        }
-      }
-      // If viewing future years, show nothing
-      else {
+      // Only show events for the current year and month
+      if (eventYear !== this.currentYear || eventMonth !== month) {
         return false;
       }
+      
+      // For current year and month, only show up to today
+      if (this.currentYear === today.getFullYear() && month === today.getMonth() + 1) {
+        return event.date <= todayStr;
+      }
+      
+      // For past months/years, show all events
+      return true;
     });
     
     // Format events for FullCalendar
@@ -267,13 +252,11 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     console.log(`[updateCalendarForMonth] Showing ${formattedEvents.length} events for ${this.currentYear}-${month}`);
     
     // Update calendar events
-    this.calendarOptions.events = formattedEvents;
-    
-    // Force calendar to re-render
-    setTimeout(() => {
-      // This will trigger the calendar to update
-      this.calendarOptions = { ...this.calendarOptions };
-    }, 0);
+    this.calendarOptions = {
+      ...this.calendarOptions,
+      events: formattedEvents,
+      initialDate: new Date(Date.UTC(this.currentYear, month - 1, 1))
+    };
   }
 
   // Format API events for FullCalendar
@@ -324,8 +307,7 @@ export class TimesheetCalendarDialogComponent implements OnInit {
   }
 
   handleDayCellDidMount(args: any): void {
-    // Use the allYearEvents array instead of calendar events
-    if (this.allYearEvents.length === 0) return;
+    if (this.allEvents.length === 0) return;
     
     // Normalize cell date to UTC YYYY-MM-DD
     const cellDate = new Date(args.date);
@@ -342,8 +324,8 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     const dayCell = args.el.closest('.fc-daygrid-day') as HTMLElement;
     if (!dayCell) return;
 
-    // Find event from allYearEvents
-    const event = this.allYearEvents.find((ev: AttendanceEvent) => {
+    // Find event from allEvents
+    const event = this.allEvents.find((ev: AttendanceEvent) => {
       if (!ev.date) return false;
       
       const eventDate = new Date(ev.date);
@@ -434,8 +416,8 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     if (clickedDate >= firstEditableDate && clickedDate <= yesterday) {
       const clickedDateStr = clickedDate.toISOString().split('T')[0];
 
-      // Find event from allYearEvents
-      const event = this.allYearEvents.find((ev: AttendanceEvent) => {
+      // Find event from allEvents
+      const event = this.allEvents.find((ev: AttendanceEvent) => {
         if (!ev.date) return false;
         const evDate = new Date(ev.date);
         evDate.setUTCHours(0, 0, 0, 0);
@@ -460,7 +442,7 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         if (result?.value) {
           console.log('[Dialog Result]', result.value);
           // Refresh data after editing
-          this.fetchYearData(this.currentYear);
+          this.fetchMultipleYearsData();
         }
       });
 

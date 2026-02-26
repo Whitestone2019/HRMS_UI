@@ -18,7 +18,7 @@ export class LeaveSummaryComponent implements OnInit {
   endDate: string = `${this.currentYear}-12-31`;
 
   // List of leave types that should show HR approval modal
-  hrApprovalLeaveTypes = ['paternity leave', 'maternity leave', 'wedding leave', 'brebment leave'];
+  hrApprovalLeaveTypes = ['paternity leave', 'maternity leave', 'wedding leave', 'Bereavement leave'];
 
   // Store leave types with dynamic values
   leaveTypes: any[] = [];
@@ -70,7 +70,7 @@ export class LeaveSummaryComponent implements OnInit {
       totalAllocation: 5
     },
     { 
-      name: 'brebment leave', 
+      name: 'Bereavement leave', 
       icon: 'fas fa-hands-helping', 
       color: '#f5a623', 
       available: 5, 
@@ -148,7 +148,7 @@ export class LeaveSummaryComponent implements OnInit {
       console.error('Employee ID not found in localStorage');
       this.router.navigate(['/login']);
     } else {
-      // Initialize leave types based on employee type
+      // Initialize leave types
       this.initializeLeaveTypes();
       this.getLeaveCounts(this.employeeId);
     }
@@ -193,22 +193,10 @@ export class LeaveSummaryComponent implements OnInit {
     return empId.toLowerCase().startsWith('ws');
   }
 
-  // Initialize leave types based on employee type
+  // Initialize leave types
   initializeLeaveTypes(): void {
     // Start with default leave types
     this.leaveTypes = JSON.parse(JSON.stringify(this.defaultLeaveTypes));
-    
-    // If WS employee, adjust casual leave to 6 days
-    if (this.isWSEmployee) {
-      const casualLeaveIndex = this.leaveTypes.findIndex(lt => lt.name.toLowerCase() === 'casual leave');
-      if (casualLeaveIndex !== -1) {
-        this.leaveTypes[casualLeaveIndex].available = 6;
-        this.leaveTypes[casualLeaveIndex].remaining = 6;
-        this.leaveTypes[casualLeaveIndex].maxDays = 6;
-        this.leaveTypes[casualLeaveIndex].totalAllocation = 6;
-        console.log('WS Employee: Casual leave set to 6 days');
-      }
-    }
     
     // Initialize special leave limits map
     this.initializeSpecialLeaveLimits();
@@ -232,6 +220,9 @@ export class LeaveSummaryComponent implements OnInit {
     this.apiService.getLeaveCounts(empId).subscribe({
       next: (res: any) => {
         console.log('Leave Counts API Response:', res);
+        console.log('Employee Type:', this.isWSEmployee ? 'WS Employee' : 'Regular Employee');
+        console.log('Casual Balance from API:', res.casualBalance);
+        
         this.isLoading = false;
         
         // Store the complete response
@@ -243,7 +234,22 @@ export class LeaveSummaryComponent implements OnInit {
       error: (err: any) => {
         console.error('Error fetching leave counts:', err);
         this.isLoading = false;
-        // Keep current values if API fails
+        
+        // Fallback only if API fails completely
+        this.showErrorMessage('Failed to load leave data. Using default values.');
+        
+        // Set fallback values
+        const casualLeaveIndex = this.leaveTypes.findIndex(lt => lt.name.toLowerCase() === 'casual leave');
+        if (casualLeaveIndex !== -1) {
+          const fallbackBalance = this.isWSEmployee ? 6 : 18;
+          this.leaveTypes[casualLeaveIndex].available = fallbackBalance;
+          this.leaveTypes[casualLeaveIndex].remaining = fallbackBalance;
+          this.leaveTypes[casualLeaveIndex].maxDays = fallbackBalance;
+          this.leaveTypes[casualLeaveIndex].totalAllocation = fallbackBalance;
+          this.leaveTypes[casualLeaveIndex].disabled = false;
+          
+          console.log(`Using fallback values for ${this.isWSEmployee ? 'WS' : 'Regular'} employee:`, fallbackBalance);
+        }
       }
     });
   }
@@ -251,56 +257,60 @@ export class LeaveSummaryComponent implements OnInit {
   updateLeaveTypesFromResponse(response: any): void {
     if (!response) return;
 
-    // Update Casual Leave from API response
-    let casualBalance = Number(response.casualBalance) || (this.isWSEmployee ? 6 : 18);
+    // Get casual balance from API - this is the KEY field we want to show as available
+    let casualBalance = Number(response.casualBalance) || 0;
     const calculatedCasualLeaves = Number(response.calculatedCasualLeaves) || 0;
-    const casualUsed = Number(response.casualUsed) || 0;
     const totalLop = Number(response.totalLop) || 0;
     
     console.log('Casual leave data from API:', {
-      casualBalance,
+      casualBalance,           // THIS is what we show as available
       calculatedCasualLeaves,
-      casualUsed,
       totalLop,
       isWSEmployee: this.isWSEmployee
     });
     
-    // For WS employees, set casual balance to max 6
-    if (this.isWSEmployee) {
-      casualBalance = 6;
-      console.log('Setting casual balance for WS employee to 6 days');
+    // If casualBalance is 0 or invalid, set based on employee type
+    if (casualBalance <= 0) {
+      casualBalance = this.isWSEmployee ? 6 : 18;
+      console.log('Casual balance was 0, using default:', casualBalance);
     }
     
-    // FIX: Calculate remaining days and set available to show remaining, not total balance
-    // This ensures it shows 0 when all leaves are taken
+    // Calculate remaining days based on casualBalance - booked
     let casualRemaining = Math.max(0, casualBalance - calculatedCasualLeaves);
     
-    // CRITICAL FIX: If booked >= available, set remaining to 0
-    if (calculatedCasualLeaves >= casualBalance) {
+    // CRITICAL: If booked >= balance, set remaining to 0
+    if (calculatedCasualLeaves >= casualBalance && casualBalance > 0) {
       casualRemaining = 0;
-      console.log('All casual leaves taken - setting available to 0');
+      console.log('All casual leaves taken - setting remaining to 0');
     }
     
     // Update casual leave card
     const casualLeaveIndex = this.leaveTypes.findIndex(lt => lt.name.toLowerCase() === 'casual leave');
     if (casualLeaveIndex !== -1) {
-      // Store the original total allocation
+      // Store the original total allocation (casualBalance from API)
       this.leaveTypes[casualLeaveIndex].totalAllocation = casualBalance;
       
-      // IMPORTANT: Set available to show remaining days, NOT total balance
+      // IMPORTANT: Set available to SHOW casualBalance (the actual available days)
+      // This is what will be displayed in the UI
       this.leaveTypes[casualLeaveIndex].available = casualBalance;
+      
+      // Booked days from API
       this.leaveTypes[casualLeaveIndex].booked = calculatedCasualLeaves;
+      
+      // Remaining days (for internal use and progress bar)
       this.leaveTypes[casualLeaveIndex].remaining = casualRemaining;
+      
+      // Max days for validation when applying
       this.leaveTypes[casualLeaveIndex].maxDays = casualBalance;
       
-      // Disable casual leave card if remaining is 0 or less
+      // Disable card if no leaves remaining
       this.leaveTypes[casualLeaveIndex].disabled = casualRemaining <= 0;
       
       console.log('Updated casual leave:', {
-        totalAllocation: casualBalance,
+        employeeType: this.isWSEmployee ? 'WS' : 'Regular',
+        available: casualBalance,        // THIS is what user sees
         booked: calculatedCasualLeaves,
         remaining: casualRemaining,
-        displayedAvailable: this.leaveTypes[casualLeaveIndex].available,
         disabled: this.leaveTypes[casualLeaveIndex].disabled
       });
     }
@@ -312,7 +322,7 @@ export class LeaveSummaryComponent implements OnInit {
       });
     }
 
-    console.log('Updated leave types:', this.leaveTypes);
+    console.log('Final leave types:', this.leaveTypes);
   }
 
   updateSpecialLeave(specialLeave: any): void {
@@ -320,8 +330,8 @@ export class LeaveSummaryComponent implements OnInit {
     
     const leaveName = specialLeave.name.toLowerCase();
     
-    // Map "bereavement" to "brebment" if needed
-    const mappedLeaveName = leaveName.includes('bereavement') ? 'brebment leave' : leaveName;
+    // Map "bereavement" to "Bereavement" if needed
+    const mappedLeaveName = leaveName.includes('bereavement') ? 'Bereavement leave' : leaveName;
     
     const leaveIndex = this.leaveTypes.findIndex(lt => lt.name.toLowerCase() === mappedLeaveName);
     
@@ -391,19 +401,21 @@ export class LeaveSummaryComponent implements OnInit {
   navigateToApplyLeave(leaveType: string) {
     const leaveCard = this.leaveTypes.find(lt => lt.name.toLowerCase() === leaveType.toLowerCase());
     const remainingDays = leaveCard ? leaveCard.remaining : 0;
+    const availableDays = leaveCard ? leaveCard.available : 0;
     
     // Get the maximum days allowed for this leave type
     const maxDays = this.specialLeaveLimits.get(leaveType.toLowerCase()) || 
                    (leaveCard ? leaveCard.maxDays : remainingDays) || 
                    remainingDays;
     
-    console.log(`Navigating to apply ${leaveType}: remaining=${remainingDays}, maxDays=${maxDays}`);
+    console.log(`Navigating to apply ${leaveType}: remaining=${remainingDays}, available=${availableDays}, maxDays=${maxDays}`);
     
     this.router.navigate(['/dashboard/apply-leave'], { 
       queryParams: { 
         type: leaveType, 
         ej: "/dashboard/leave-summary",
         remaining: remainingDays,
+        available: availableDays,
         maxDays: maxDays,
         isWSEmployee: this.isWSEmployee
       } 
@@ -414,7 +426,7 @@ export class LeaveSummaryComponent implements OnInit {
   handleCardClick(leaveTypeName: string): void {
     const leaveTypeLower = leaveTypeName.toLowerCase();
     
-    // Keep as "brebment leave" (no conversion to bereavement)
+    // Keep as "Bereavement leave" (no conversion to bereavement)
     const correctedLeaveType = leaveTypeLower;
     
     // Find the leave card
