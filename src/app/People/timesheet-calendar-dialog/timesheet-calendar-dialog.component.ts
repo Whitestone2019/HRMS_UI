@@ -33,8 +33,12 @@ export class TimesheetCalendarDialogComponent implements OnInit {
   private allEvents: AttendanceEvent[] = [];
   private currentYear!: number;
   private currentMonth!: number;
+  private today: Date = new Date();
+  private todayStr: string;
+  private yesterdayStr: string;
   private eventsMap: Map<string, AttendanceEvent[]> = new Map(); // Map of year -> events
-  private yearsToLoad: number[] = []; // Years to load (2024, 2025, 2026)
+  private yearsLoaded: Set<number> = new Set(); // Track which years are loaded
+  private yearsToLoad: number[] = [2024, 2025, 2026]; // Years to load
 
   calendarOptions: CalendarOptions = {
     plugins: [dayGridPlugin, interactionPlugin],
@@ -54,6 +58,8 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     initialDate: new Date(),
     firstDay: 1,
     timeZone: 'UTC',
+    height: 'auto',
+    contentHeight: 'auto',
   };
 
   constructor(
@@ -61,17 +67,24 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     private router: Router,
     private apiService: ApiService,
     private dialog: MatDialog
-  ) {}
+  ) {
+    this.today.setUTCHours(0, 0, 0, 0);
+    this.todayStr = this.today.toISOString().split('T')[0];
+    
+    // Calculate yesterday
+    const yesterday = new Date(this.today);
+    yesterday.setDate(this.today.getDate() - 1);
+    this.yesterdayStr = yesterday.toISOString().split('T')[0];
+  }
 
   ngOnInit(): void {
     const today = new Date();
     this.currentYear = today.getFullYear();
     this.currentMonth = today.getMonth() + 1; // Current month (1-12)
     
-    // Set years to load (2024, 2025, 2026)
-    this.yearsToLoad = [2024, 2025, 2026];
-    
     console.log(`[ngOnInit] Initializing with current date: Year=${this.currentYear}, Month=${this.currentMonth}`);
+    console.log(`[ngOnInit] Today's date: ${this.todayStr}`);
+    console.log(`[ngOnInit] Yesterday's date: ${this.yesterdayStr}`);
     console.log(`[ngOnInit] Will load years: ${this.yearsToLoad.join(', ')}`);
 
     const navigation = this.router.getCurrentNavigation();
@@ -135,11 +148,10 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     this.allEvents = [];
     let completedRequests = 0;
     
-    // Load each year sequentially
+    // Load each year
     this.yearsToLoad.forEach(year => {
       console.log(`[fetchMultipleYearsData] Fetching year ${year} data...`);
       
-      // Use the existing API with year parameter (month parameter is not needed as backend ignores it)
       this.apiService.getAttendanceEvents(this.employeeId, year, 1).subscribe({
         next: (attendanceEvents: AttendanceEvent[]) => {
           console.log(`[fetchMultipleYearsData] Received ${attendanceEvents?.length || 0} events for year ${year}`);
@@ -147,6 +159,9 @@ export class TimesheetCalendarDialogComponent implements OnInit {
           if (attendanceEvents && attendanceEvents.length > 0) {
             this.allEvents = [...this.allEvents, ...attendanceEvents];
           }
+          
+          // Mark this year as loaded
+          this.yearsLoaded.add(year);
           
           completedRequests++;
           
@@ -164,6 +179,10 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         },
         error: (err) => {
           console.error(`[fetchMultipleYearsData] Error fetching year ${year}:`, err);
+          
+          // Mark year as loaded even on error
+          this.yearsLoaded.add(year);
+          
           completedRequests++;
           
           // Still proceed even if one year fails
@@ -191,40 +210,74 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     console.log(`[handleDatesSet] Calendar changed to: Year=${year}, Month=${month}`);
     
     // Store current month and year
+    const previousYear = this.currentYear;
     this.currentYear = year;
     this.currentMonth = month;
     
-    // Update calendar with events for this month (data is already loaded)
-    this.updateCalendarForMonth(month);
+    // If we've navigated to a different year and it's not in our initial load, fetch it
+    if (year !== previousYear && !this.yearsLoaded.has(year) && !this.yearsToLoad.includes(year)) {
+      console.log(`[handleDatesSet] Year ${year} not loaded yet, fetching data...`);
+      this.fetchYearData(year);
+    } else {
+      // Same year or year already loaded, just update the calendar display
+      this.updateCalendarForMonth(month);
+    }
   }
 
-  // Update calendar for specific month (using pre-loaded data)
-  private updateCalendarForMonth(month: number): void {
-    if (this.allEvents.length === 0) {
-      console.log('[updateCalendarForMonth] No events available');
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: []
-      };
-      return;
-    }
+  // Fetch single year data (for years not in initial load)
+  private fetchYearData(year: number): void {
+    this.isLoading = true;
     
-    // Get events for the current year
+    console.log(`[fetchYearData] Fetching year ${year} data for employee: ${this.employeeId}`);
+    
+    this.apiService.getAttendanceEvents(this.employeeId, year, 1).subscribe({
+      next: (attendanceEvents: AttendanceEvent[]) => {
+        console.log(`[fetchYearData] Received ${attendanceEvents?.length || 0} events for year ${year}`);
+        
+        // Filter out any existing events from this year to avoid duplicates
+        this.allEvents = this.allEvents.filter(event => {
+          const eventYear = new Date(event.date).getFullYear();
+          return eventYear !== year;
+        });
+        
+        if (attendanceEvents && attendanceEvents.length > 0) {
+          // Add new events for this year
+          this.allEvents = [...this.allEvents, ...attendanceEvents];
+          
+          // Sort all events by date
+          this.allEvents.sort((a, b) => a.date.localeCompare(b.date));
+        }
+        
+        // Mark this year as loaded
+        this.yearsLoaded.add(year);
+        
+        // Reorganize events by year
+        this.organizeEventsByYear();
+        
+        // Update calendar with current month's data
+        this.updateCalendarForMonth(this.currentMonth);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error(`[fetchYearData] API error for year ${year}:`, err);
+        this.isLoading = false;
+        this.employeeName = 'Error Loading Data';
+        
+        // Mark year as loaded even on error
+        this.yearsLoaded.add(year);
+        
+        // Still try to update calendar with existing data
+        this.updateCalendarForMonth(this.currentMonth);
+      }
+    });
+  }
+
+  // Update calendar for specific month (when navigating between months)
+  private updateCalendarForMonth(month: number): void {
+    // Get events for the current year from the map
     const yearEvents = this.eventsMap.get(this.currentYear.toString()) || [];
     
-    if (yearEvents.length === 0) {
-      console.log(`[updateCalendarForMonth] No events for year ${this.currentYear}`);
-      this.calendarOptions = {
-        ...this.calendarOptions,
-        events: []
-      };
-      return;
-    }
-    
-    // Filter events for the selected month
-    const today = new Date();
-    const todayStr = today.toISOString().split('T')[0];
-    
+    // Filter events for the selected month - SHOW ALL DATES with data
     const eventsForMonth = yearEvents.filter(event => {
       if (!event.date) return false;
       
@@ -233,17 +286,7 @@ export class TimesheetCalendarDialogComponent implements OnInit {
       const eventYear = eventDate.getFullYear();
       
       // Only show events for the current year and month
-      if (eventYear !== this.currentYear || eventMonth !== month) {
-        return false;
-      }
-      
-      // For current year and month, only show up to today
-      if (this.currentYear === today.getFullYear() && month === today.getMonth() + 1) {
-        return event.date <= todayStr;
-      }
-      
-      // For past months/years, show all events
-      return true;
+      return (eventYear === this.currentYear && eventMonth === month);
     });
     
     // Format events for FullCalendar
@@ -255,7 +298,8 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     this.calendarOptions = {
       ...this.calendarOptions,
       events: formattedEvents,
-      initialDate: new Date(Date.UTC(this.currentYear, month - 1, 1))
+      initialDate: new Date(Date.UTC(this.currentYear, month - 1, 1)),
+      dateClick: this.handleDateClick.bind(this),
     };
   }
 
@@ -402,21 +446,27 @@ export class TimesheetCalendarDialogComponent implements OnInit {
   handleDateClick(arg: any): void {
     const clickedDate = new Date(arg.dateStr);
     clickedDate.setUTCHours(0, 0, 0, 0);
+    const clickedDateStr = clickedDate.toISOString().split('T')[0];
 
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
+    const todayStr = today.toISOString().split('T')[0];
 
-    // 📅 Payroll editable range: 27th of previous month → Yesterday of current month
-    const firstEditableDate = new Date(today.getFullYear(), today.getMonth() - 1, 27);
+    // Calculate yesterday
     const yesterday = new Date(today);
     yesterday.setDate(today.getDate() - 1);
-    yesterday.setUTCHours(0, 0, 0, 0);
+    const yesterdayStr = yesterday.toISOString().split('T')[0];
 
-    // ✅ Allow edit only if clicked date is within this range
-    if (clickedDate >= firstEditableDate && clickedDate <= yesterday) {
-      const clickedDateStr = clickedDate.toISOString().split('T')[0];
+    console.log('[handleDateClick] Date check:', {
+      clickedDate: clickedDateStr,
+      yesterday: yesterdayStr,
+      today: todayStr,
+      isYesterday: clickedDateStr === yesterdayStr
+    });
 
-      // Find event from allEvents
+    // ✅ Allow edit ONLY if clicked date is exactly yesterday
+   // if (clickedDateStr === yesterdayStr) {
+
       const event = this.allEvents.find((ev: AttendanceEvent) => {
         if (!ev.date) return false;
         const evDate = new Date(ev.date);
@@ -441,15 +491,20 @@ export class TimesheetCalendarDialogComponent implements OnInit {
       dialogRef.afterClosed().subscribe(result => {
         if (result?.value) {
           console.log('[Dialog Result]', result.value);
-          // Refresh data after editing
+          // Refresh data after editing - reload all years to ensure consistency
           this.fetchMultipleYearsData();
         }
       });
 
-    } else {
-      alert('You can only edit attendance from the 27th of the previous month up to yesterday\'s date.');
-    }
-  }
+    } 
+    // else if (clickedDateStr === todayStr) {
+    //   alert('You cannot edit today\'s attendance. Please try again tomorrow.');
+    // } else if (clickedDateStr > todayStr) {
+    //   alert('You cannot edit future dates.');
+    // } else {
+    //   alert('You can only edit yesterday\'s attendance (one day before today).');
+    // }
+ // }
 
   goBack(): void {
     this.router.navigate(['/dashboard/timesheet']);
