@@ -443,7 +443,7 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     }
   }
 
-  handleDateClick(arg: any): void {
+ handleDateClick(arg: any): void {
     const clickedDate = new Date(arg.dateStr);
     clickedDate.setUTCHours(0, 0, 0, 0);
     const clickedDateStr = clickedDate.toISOString().split('T')[0];
@@ -452,20 +452,20 @@ export class TimesheetCalendarDialogComponent implements OnInit {
     today.setUTCHours(0, 0, 0, 0);
     const todayStr = today.toISOString().split('T')[0];
 
-    // Calculate yesterday
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayStr = yesterday.toISOString().split('T')[0];
+    // Calculate the date 7 days ago from today
+    const sevenDaysAgo = new Date(today);
+    sevenDaysAgo.setDate(today.getDate() - 7);
+    const sevenDaysAgoStr = sevenDaysAgo.toISOString().split('T')[0];
 
     console.log('[handleDateClick] Date check:', {
       clickedDate: clickedDateStr,
-      yesterday: yesterdayStr,
+      sevenDaysAgo: sevenDaysAgoStr,
       today: todayStr,
-      isYesterday: clickedDateStr === yesterdayStr
+      isWithinEditableRange: clickedDateStr >= sevenDaysAgoStr && clickedDateStr <= todayStr
     });
 
-    // ✅ Allow edit ONLY if clicked date is exactly yesterday
-   // if (clickedDateStr === yesterdayStr) {
+    // ✅ Allow edit if clicked date is within the last 7 days (including today)
+    if (clickedDateStr >= sevenDaysAgoStr && clickedDateStr <= todayStr) {
 
       const event = this.allEvents.find((ev: AttendanceEvent) => {
         if (!ev.date) return false;
@@ -496,15 +496,12 @@ export class TimesheetCalendarDialogComponent implements OnInit {
         }
       });
 
-    } 
-    // else if (clickedDateStr === todayStr) {
-    //   alert('You cannot edit today\'s attendance. Please try again tomorrow.');
-    // } else if (clickedDateStr > todayStr) {
-    //   alert('You cannot edit future dates.');
-    // } else {
-    //   alert('You can only edit yesterday\'s attendance (one day before today).');
-    // }
- // }
+    } else if (clickedDateStr < sevenDaysAgoStr) {
+      alert('You cannot edit dates older than 7 days.');
+    } else if (clickedDateStr > todayStr) {
+      alert('You cannot edit future dates.');
+    }
+}
 
   goBack(): void {
     this.router.navigate(['/dashboard/timesheet']);
