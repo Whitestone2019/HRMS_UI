@@ -181,6 +181,7 @@ export const routes: Routes = [
           { path: 'celebration', component: CelebrationPageComponent},
           { path: 'hrleaverequest/:leaveType', component: HrLeaveRequestModalComponent},
           { path: 'hrleaveapproval', component: HrLeaveApprovalsComponent},
+          { path: 'payslip', component: PayslipComponent },
           { 
     path: 'admin/upload', 
     component: AdminUpload,
@@ -225,7 +226,7 @@ export const routes: Routes = [
           { path: 'statutory-components', component: StatutoryComponentsComponent },
           { path: 'salary-components', component: SalaryComponentsListComponent },
           { path: 'salary-templates', component: SalaryTemplateComponent },
-          { path: 'payslip', component: PayslipComponent },
+          // { path: 'payslip', component: PayslipComponent },
           { path: 'pay-schedule', component: PayScheduleComponent },
           { path: 'location-allowance', component: LocationAllowanceComponent }
         ]

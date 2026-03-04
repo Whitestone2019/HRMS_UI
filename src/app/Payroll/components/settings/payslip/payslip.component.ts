@@ -9,104 +9,129 @@ import { UserService } from '../../../../user.service';
 })
 export class PayslipComponent implements OnInit {
   employeeId: string = '';
-  selectedMonth: string = ''; 
+  // employeeName: string = '';
+  username: string = '';
+  employeeDisplay: string = '';
+  selectedMonth: string = '';
   userRole: string = '';
-  employeeList: any[] = [];
-  months: string[] = []; 
-  isAdmin: boolean = false; 
+  isAdmin: boolean = false;
+  months: { name: string, value: string, month: number, year: number }[] = [];
+  
+  // Loading state
+  isDownloading: boolean = false;
 
-
-
-  constructor(private apiService: ApiService, private userService: UserService) {}
-
+  constructor(
+    private apiService: ApiService, 
+    private userService: UserService
+  ) {}
 
   ngOnInit(): void {
-    console.log("test");
-    
-    this.userRole = this.userService.role || '';
+    // Get user details from localStorage
     this.employeeId = localStorage.getItem('employeeId') || '';
-    this.isAdmin = this.userService.isAdmin();
-    if (this.userService.isAdmin()) {
-      alert(this.isAdmin);
-      this.loadAllEmployees();
+    // this.employeeName = localStorage.getItem('employeeName') || '';
+    this.userRole = localStorage.getItem('userRole') || '';
+    this.username = localStorage.getItem('username')|| '';
+    
+    console.log('Logged in user details from localStorage:', {
+      employeeId: this.employeeId,
+      // employeeName: this.employeeName,
+      username: this.username,
+      role: this.userRole
+    });
+    
+    // Set the display string in the format "EmployeeID - EmployeeName"
+    if (this.employeeId) {
+      if (this.username) {
+        this.employeeDisplay = `${this.employeeId} - ${this.username}`;
+      } else {
+        this.employeeDisplay = `${this.employeeId} - No Name`;
+      }
+    } else {
+      this.employeeDisplay = 'No employee details found';
     }
 
-    this.populateMonths();
+    this.populatePreviousMonthOnly();
   }
 
-  loadAllEmployees() {
-    this.apiService.getAllEmployeeIds().subscribe(
-      (data: any[]) => {
-        this.employeeList = data;
-      },
-      (error) => {
-        console.error('Error fetching employee IDs:', error);
-      }
-    );
-  }
-
-  populateMonths() {
+  populatePreviousMonthOnly(): void {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth();
+    
     const monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
       'July', 'August', 'September', 'October', 'November', 'December'
     ];
 
-    this.months = monthNames.map((month, index) => `${month} ${currentYear}`);
-    this.selectedMonth = this.months[currentDate.getMonth()];
+    this.months = [];
+    
+    // Calculate previous month
+    let previousMonth = currentMonth - 1;
+    let previousYear = currentYear;
+    
+    if (previousMonth < 0) {
+      previousMonth = 11; // December
+      previousYear = currentYear - 1;
+    }
+    
+    const previousMonthName = monthNames[previousMonth];
+    const previousMonthValue = `${previousMonthName} ${previousYear}`;
+    
+    // Add only the previous month
+    this.months.push({
+      name: previousMonthName,
+      value: previousMonthValue,
+      month: previousMonth + 1,
+      year: previousYear
+    });
+    
+    // Set default selected month
+    if (this.months.length > 0) {
+      this.selectedMonth = this.months[0].value;
+    }
   }
 
-  sendPayslipToAll() {
-    this.apiService.sendPayslipsToAll(this.selectedMonth).subscribe(
-      (response) => {
-        alert('Payslips sent to all employees successfully!');
-      },
-      (error) => {
-        console.error('Error sending payslips:', error);
-        alert('Failed to send payslips.');
-      }
-    );
-  }
-
-  sendPayslipByEmpId() {
+  downloadPayslip(): void {
     if (!this.employeeId || !this.selectedMonth) {
-      alert('Please select an Employee ID and Month!');
+      alert('Please select a Month!');
       return;
     }
 
-    this.apiService.sendPayslip(this.employeeId, this.selectedMonth).subscribe(
-      (response) => {
-        alert(`Payslip sent to Employee ID: ${this.employeeId} for ${this.selectedMonth}`);
-      },
-      (error) => {
-        console.error('Error sending payslip:', error);
-        alert('Failed to send payslip.');
-      }
-    );
-  }
+    console.log('Downloading payslip for:', {
+      employeeId: this.employeeId,
+      username: this.username,
+      month: this.selectedMonth
+    });
 
-  downloadPayslip() {
-    if (!this.employeeId || !this.selectedMonth) {
-      alert('Please select an Employee ID and Month!');
-      return;
-    }
+    this.isDownloading = true;
 
     this.apiService.downloadPayslip(this.employeeId, this.selectedMonth).subscribe(
       (response: Blob) => {
-        const blob = new Blob([response], { type: 'application/pdf' });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `Payslip_${this.employeeId}_${this.selectedMonth}.pdf`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
+        this.isDownloading = false;
+        
+        if (response && response.type === 'application/pdf' && response.size > 0) {
+          const blob = new Blob([response], { type: 'application/pdf' });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Payslip_${this.employeeId}_${this.selectedMonth.replace(' ', '_')}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        } else {
+          this.showNoDataPopup();
+        }
       },
       (error) => {
+        this.isDownloading = false;
         console.error('Error downloading payslip:', error);
-        alert('Failed to download payslip.');
+        this.showNoDataPopup();
       }
     );
+  }
+
+  showNoDataPopup(): void {
+    alert(`No salary data found for Employee ${this.employeeId} for the month of ${this.selectedMonth}.`);
   }
 }

@@ -69,4 +69,12 @@
      [class.active]="selectedMenu === 'exit-form'">
     <i class="fas fa-running"></i> Resignation Form
   </a>
+
+  <a *ngIf="isMenuVisible('Pay Slip')" 
+     (click)="onPayslipClick()"
+     [class.active]="selectedMenu === 'Pay Slip'">
+    <i class="fas fa-receipt"></i> Pay Slip
+
+    
+  </a>
 </div>

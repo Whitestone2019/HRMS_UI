@@ -1,9 +1,8 @@
-// sidebar.component.ts
 import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { MenuSelectionService } from '../../menu-selection.service';
 import { UserService } from '../../user.service';
 import { ApiService } from '../../api.service';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sidebar',
@@ -11,13 +10,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./sidebar.component.css']
 })
 export class SidebarComponent implements OnInit {
-
   selectedMenu: string = '';
   selectedSubMenu: string = '';
-  userRole: string = "";
-
-  employeeId: string = localStorage.getItem('employeeId') || '';
-  employeeName: string = localStorage.getItem('username') || '';
+  userRole: string = '';
+  currentEmployeeId: string = '';
 
   constructor(
     private menuSelectionService: MenuSelectionService,
@@ -27,108 +23,121 @@ export class SidebarComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    // Get user role
     this.userRole = this.userService.role || '';
+    
+    // Get employee ID from localStorage only (most reliable)
+    this.currentEmployeeId = localStorage.getItem('employeeId') || '';
+    
+    console.log('Current Employee ID:', this.currentEmployeeId);
+
+    // Subscribe to menu selection
     this.menuSelectionService.selectedMenu$.subscribe(menu => {
       this.selectedMenu = menu.mainMenu;
       this.selectedSubMenu = menu.subMenu;
     });
   }
 
-  onMenuSelect(main: string, sub: string = '') {
+  onMenuSelect(main: string, sub: string = ''): void {
     this.menuSelectionService.setSelectedMenu(main, sub);
   }
 
-  // ⭐ UPDATED → Role-based menu visibility
+  // Menu visibility logic
   isMenuVisible(menu: string): boolean {
-    // EXIT FORM MUST ALWAYS BE VISIBLE
+    // PAY SLIP - ONLY for employee ID 10018
+    if (menu === 'Pay Slip') {
+      return this.currentEmployeeId === '10018';
+    }
+
+    // EXIT FORM - Always visible
     if (menu === 'exit-form') {
       return true;
     }
 
-    // HOME → Visible to everyone
+    // HOME - Always visible
     if (menu === 'home') {
       return true;
     }
 
-    // ONBOARDING → Only for admin roles (HR, CEO, CTO, ACC)
+    // ONBOARDING - Admin only
     if (menu === 'onboarding') {
-      return this.userService.isAdmin();
+      return this.userService.isAdmin ? this.userService.isAdmin() : false;
     }
 
-    // UPDATELEAVE → Only for admin roles (HR, CEO, CTO, ACC)
+    // UPDATELEAVE - Admin only
     if (menu === 'updateleave') {
-      return this.userService.isAdmin();
+      return this.userService.isAdmin ? this.userService.isAdmin() : false;
     }
 
-    // PROJECT HISTORY → Add your condition here
+    // PROJECT HISTORY - Always visible
     if (menu === 'project') {
       return true;
     }
 
-    // ATTENDANCE → Add your condition here
+    // ATTENDANCE - Always visible
     if (menu === 'attendance') {
       return true;
     }
 
-    // LEAVE SUMMARY → Add your condition here
+    // LEAVE SUMMARY - Always visible
     if (menu === 'leave-summary') {
       return true;
     }
 
-    // REPORTS → Only for admin
+    // REPORTS - Admin only
     if (menu === 'report') {
-      return this.userService.isAdmin();
+      return this.userService.isAdmin ? this.userService.isAdmin() : false;
     }
 
-    // POLICY → Visible to everyone, but routing differs
+    // POLICY - Always visible
     if (menu === 'Policy') {
       return true;
     }
 
-    // TRAVEL → Add your condition here
+    // TRAVEL - Always visible
     if (menu === 'travel') {
       return true;
     }
 
-    // TIMESHEET → Add your condition here
+    // TIMESHEET - Always visible
     if (menu === 'timesheet') {
       return true;
     }
 
-    // Default return
     return true;
   }
 
-  // New method for Policy menu click
+  // Policy click handler
   onPolicyClick(): void {
     this.onMenuSelect('Policy');
     
-    // Navigate based on user role
-    if (this.userService.isExecutive()) {
+    // Check if isExecutive method exists
+    const isExec = this.userService.isExecutive ? this.userService.isExecutive() : false;
+    
+    if (isExec) {
       this.router.navigate(['/dashboard/admin/upload']);
     } else {
       this.router.navigate(['/dashboard/user/view']);
     }
   }
 
-  // ⭐ FINAL WORKING EXIT FORM CHECK
-  checkExitForm() {
+  // Pay Slip click handler
+  onPayslipClick(): void {
+    // Double-check access
+    if (this.currentEmployeeId !== '10018') {
+      console.warn('Access denied: You do not have permission to view Pay Slip');
+      return;
+    }
+    
+    this.onMenuSelect('Pay Slip');
+    this.router.navigate(['/dashboard/payslip']);
+  }
+
+  // Exit Form check
+  checkExitForm(): void {
     this.onMenuSelect('exit-form');
-
-    this.api.getExitFormByEmployee(this.employeeId).subscribe({
-      next: (data) => {
-        console.log("Exit form data:", data);
-
-        if (Array.isArray(data) && data.length > 0) {
-          this.router.navigate(['/dashboard/exit-form']);
-        } else {
-          this.router.navigate(['/dashboard/exit-form']);
-        }
-      },
-      error: (err) => {
-        console.error("API Error:", err);
-        this.router.navigate(['/dashboard/exit-form']);
-      }
-    });
+    
+    // Navigate directly to exit form without API check
+    this.router.navigate(['/dashboard/exit-form']);
   }
 }

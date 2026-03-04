@@ -1,110 +1,244 @@
 .payslip-container {
   max-width: 500px;
-  margin: 20px auto;
-  padding: 20px;
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  background-color: #f9f9f9;
-  text-align: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  font-family: Arial, sans-serif;
-}
-
-/* Headings */
-h1 {
-  font-size: 22px;
-  margin-bottom: 10px;
-  color: #333;
-  font-weight: bold;
+  margin: 40px auto;
+  padding: 30px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 h2 {
-  font-size: 18px;
-  margin-bottom: 15px;
-  color: #444;
+  text-align: center;
+  color: #333;
+  margin-bottom: 30px;
+  font-size: 24px;
+  font-weight: 600;
 }
 
-/* Employee Details */
-.employee-details {
-  margin-bottom: 15px;
+.form-group {
+  margin-bottom: 25px;
 }
 
-/* Labels */
 label {
-  font-weight: bold;
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
+  font-weight: 600;
   color: #555;
-}
-
-/* Input Fields & Dropdowns */
-select,
-input {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
   font-size: 14px;
-  background-color: #fff;
-  transition: border 0.3s ease-in-out;
 }
 
-select:focus,
-input:focus {
-  border-color: #007bff;
+/* Employee Input Wrapper */
+.employee-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.employee-input {
+  width: 100%;
+  padding: 14px 15px 14px 45px;
+  border: 2px solid #4CAF50;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: #f9fff9;
+  color: #333;
+  font-weight: 500;
+  box-sizing: border-box;
+  cursor: default;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 10px rgba(76, 175, 80, 0.1);
+}
+
+.employee-input:focus {
   outline: none;
+  border-color: #45a049;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
 }
 
-/* Readonly Input */
-.readonly-input {
+.employee-input:disabled {
   background-color: #f5f5f5;
-  cursor: not-allowed;
+  color: #333;
+  border-color: #ccc;
+  opacity: 1;
+  -webkit-text-fill-color: #333;
 }
 
-/* Action Buttons */
-.actions {
-  margin-top: 15px;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+.input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 18px;
+  color: #4CAF50;
+  pointer-events: none;
 }
 
-button {
-  background-color: #007bff;
+/* Month Select Wrapper */
+.month-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.month-select {
+  width: 100%;
+  padding: 14px 15px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 15px;
+  background-color: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding-right: 40px;
+}
+
+.month-select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.select-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #666;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+/* Text Muted */
+.text-muted {
+  display: block;
+  margin-top: 5px;
+  color: #999;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* Button Group */
+.button-group {
+  margin-top: 30px;
+}
+
+.download-btn {
+  width: 100%;
+  padding: 14px;
+  background-color: #4CAF50;
   color: white;
   border: none;
-  padding: 10px 15px;
-  margin: 5px;
-  border-radius: 5px;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-button:hover {
-  background-color: #0056b3;
+.download-btn:hover:not(:disabled) {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
 }
 
-button:active {
-  transform: scale(0.96);
+.download-btn:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
 
-/* Error Message */
-p {
-  color: #ff0000;
-  font-size: 14px;
-  margin-top: 10px;
+.download-btn.loading {
+  background-color: #45a049;
+  cursor: wait;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.9);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  animation: fadeIn 0.3s ease;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid #4CAF50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 15px;
+}
+
+.loading-overlay p {
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* Responsive Design */
 @media (max-width: 600px) {
   .payslip-container {
-    max-width: 90%;
-    padding: 15px;
+    margin: 20px;
+    padding: 20px;
   }
+  
+  h2 {
+    font-size: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .employee-input {
+    font-size: 14px;
+    padding-left: 40px;
+  }
+  
+  .input-icon {
+    left: 12px;
+    font-size: 16px;
+  }
+  
+  .month-select {
+    font-size: 14px;
+  }
+}
 
-  button {
-    width: 100%;
-    padding: 12px;
+/* Optional: Add a subtle animation for the employee input */
+.employee-input {
+  animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
