@@ -9,7 +9,6 @@ import { UserService } from '../../../../user.service';
 })
 export class PayslipComponent implements OnInit {
   employeeId: string = '';
-  // employeeName: string = '';
   username: string = '';
   employeeDisplay: string = '';
   selectedMonth: string = '';
@@ -20,6 +19,12 @@ export class PayslipComponent implements OnInit {
   // Loading state
   isDownloading: boolean = false;
 
+  // Month names array
+  private monthNames: string[] = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+
   constructor(
     private apiService: ApiService, 
     private userService: UserService
@@ -28,18 +33,16 @@ export class PayslipComponent implements OnInit {
   ngOnInit(): void {
     // Get user details from localStorage
     this.employeeId = localStorage.getItem('employeeId') || '';
-    // this.employeeName = localStorage.getItem('employeeName') || '';
     this.userRole = localStorage.getItem('userRole') || '';
-    this.username = localStorage.getItem('username')|| '';
+    this.username = localStorage.getItem('username') || '';
     
-    console.log('Logged in user details from localStorage:', {
+    console.log('Logged in user details:', {
       employeeId: this.employeeId,
-      // employeeName: this.employeeName,
       username: this.username,
       role: this.userRole
     });
     
-    // Set the display string in the format "EmployeeID - EmployeeName"
+    // Set the display string
     if (this.employeeId) {
       if (this.username) {
         this.employeeDisplay = `${this.employeeId} - ${this.username}`;
@@ -50,45 +53,83 @@ export class PayslipComponent implements OnInit {
       this.employeeDisplay = 'No employee details found';
     }
 
-    this.populatePreviousMonthOnly();
+    this.populateMonths();
   }
 
-  populatePreviousMonthOnly(): void {
+  /**
+   * Populates months based on current date:
+   * - PREVIOUS month is ALWAYS shown
+   * - CURRENT month is shown ONLY AFTER 28th
+   * - On the 1st of new month, previous month automatically updates
+   */
+  populateMonths(): void {
     const currentDate = new Date();
     const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth();
+    const currentMonth = currentDate.getMonth(); // 0-11 (0=January)
+    const currentDay = currentDate.getDate();
     
-    const monthNames = [
-      'January', 'February', 'March', 'April', 'May', 'June',
-      'July', 'August', 'September', 'October', 'November', 'December'
-    ];
-
+    console.log('\n========== MONTH SELECTION LOGIC ==========');
+    console.log(`Current Date: ${this.monthNames[currentMonth]} ${currentDay}, ${currentYear}`);
+    
     this.months = [];
     
-    // Calculate previous month
+    // ===========================================
+    // STEP 1: Calculate PREVIOUS MONTH
+    // This changes automatically when month changes
+    // ===========================================
     let previousMonth = currentMonth - 1;
     let previousYear = currentYear;
     
+    // Handle January (month 0) - previous month is December of previous year
     if (previousMonth < 0) {
       previousMonth = 11; // December
       previousYear = currentYear - 1;
     }
     
-    const previousMonthName = monthNames[previousMonth];
+    const previousMonthName = this.monthNames[previousMonth];
     const previousMonthValue = `${previousMonthName} ${previousYear}`;
     
-    // Add only the previous month
+    // ALWAYS add previous month
     this.months.push({
       name: previousMonthName,
       value: previousMonthValue,
-      month: previousMonth + 1,
+      month: previousMonth + 1, // Convert to 1-12 format for backend
       year: previousYear
     });
     
-    // Set default selected month
+    console.log(`✅ PREVIOUS MONTH: ${previousMonthValue} (ALWAYS available)`);
+    
+    // ===========================================
+    // STEP 2: Check if CURRENT MONTH should be added
+    // Only add if on or after 28th of current month
+    // ===========================================
+    if (currentDay >= 28) {
+      const currentMonthName = this.monthNames[currentMonth];
+      const currentMonthValue = `${currentMonthName} ${currentYear}`;
+      
+      this.months.push({
+        name: currentMonthName,
+        value: currentMonthValue,
+        month: currentMonth + 1, // Convert to 1-12 format for backend
+        year: currentYear
+      });
+      
+      console.log(`✅ CURRENT MONTH: ${currentMonthValue} (available after 28th)`);
+    } else {
+      console.log(`⏸️ CURRENT MONTH: Not available yet (need day >= 28, current day = ${currentDay})`);
+    }
+    
+    // ===========================================
+    // STEP 3: Set default selected month
+    // Always default to the first month (previous month)
+    // ===========================================
     if (this.months.length > 0) {
       this.selectedMonth = this.months[0].value;
+      console.log(`🎯 Default selected: ${this.selectedMonth}`);
     }
+    
+    console.log(`📊 Total months available: ${this.months.length}`);
+    console.log('============================================\n');
   }
 
   downloadPayslip(): void {
@@ -119,13 +160,15 @@ export class PayslipComponent implements OnInit {
           a.click();
           document.body.removeChild(a);
           window.URL.revokeObjectURL(url);
+          
+          console.log('✅ Payslip downloaded successfully');
         } else {
           this.showNoDataPopup();
         }
       },
       (error) => {
         this.isDownloading = false;
-        console.error('Error downloading payslip:', error);
+        console.error('❌ Error downloading payslip:', error);
         this.showNoDataPopup();
       }
     );
