@@ -3,12 +3,12 @@
 
   <!-- Radio buttons -->
   <div class="radio-buttons">
-     <label *ngIf="!disableUserRadio">
-    <input type="radio" name="formSelect" value="user" [(ngModel)]="selectedForm" /> User Maintenance
-  </label>
-  <label *ngIf="!disableTraineeRadio">
-    <input type="radio" name="formSelect" value="trainee" [(ngModel)]="selectedForm" /> Trainee Master
-  </label>
+    <label *ngIf="!disableUserRadio">
+      <input type="radio" name="formSelect" value="user" [(ngModel)]="selectedForm" /> User Maintenance
+    </label>
+    <label *ngIf="!disableTraineeRadio">
+      <input type="radio" name="formSelect" value="trainee" [(ngModel)]="selectedForm" /> Trainee Master
+    </label>
   </div>
 
   <!-- ==================== USER FORM ==================== -->
@@ -89,20 +89,11 @@
       <div class="form-columns">
         <div class="column">
           <label>Trainee ID: <span class="required">*</span></label>
-          <input 
-            formControlName="trngid" 
-            type="text" 
-            [readonly]="!isEdit" 
-            placeholder="{{ isEdit ? 'Can be updated' : 'Auto-generated (WSxxx)' }}"
-            class="trainee-id-input"
-          />
-          <small *ngIf="!isEdit" class="info-text">
-            Trainee ID will be auto-generated (e.g., WS048)
+          <input formControlName="trngid" type="text" placeholder="Enter Trainee ID (e.g., WS048)"
+            class="trainee-id-input" />
+          <small class="info-text">
+            Trainee ID format: WS followed by (e.g., WS***)
           </small>
-          <small *ngIf="isEdit" class="info-text">
-            You can update the Trainee ID if needed
-          </small>
-
           <!-- Hide password field in edit mode -->
           <div *ngIf="!isEdit">
             <label>Password:</label>
