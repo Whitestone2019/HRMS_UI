@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, of, throwError, Timestamp } from 'rxjs';
 import { catchError, finalize, tap } from 'rxjs/operators';
 import { environment } from '../environments/environment';
@@ -408,7 +408,43 @@ export interface Person {
   traineeName?: string;
 }
 
+export interface ChatMessage {
+  id?: string;
+  userId?: string;
+  employeeId?: string;
+  userMessage: string;
+  assistantResponse?: string;
+  timestamp?: any;
+  messageType?: string;
+  sessionId?: string;
+  requiresHuman?: boolean;
+  intentType?: string;
+  feedbackRating?: number;
+}
 
+export interface ChatResponse {
+  success: boolean;
+  message: string;
+  messageId: string;
+  timestamp: any;
+  requiresHuman: boolean;
+  intent: string;
+  suggestions: string[];
+  sessionId: string;
+  actionType?: string;
+  actionData?: string;
+  userInfo?: UserInfo;
+}
+
+export interface UserInfo {
+  name: string;
+  employeeId: string;
+  designation: string;
+  department: string;
+  email: string;
+  mobile: string;
+  profileInitials: string;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -2321,16 +2357,26 @@ getExitFormByEmployee(employeeId: string) {
 
 withdrawExitForm(formId: string, withdrawPurpose?: string): Observable<any> {
   const url = `${this.apiUrl}/api/exit-form/${formId}/withdraw`;
-  console.log('🔄 Calling withdraw API:', url);
   
-  const body = withdrawPurpose ? { withdrawPurpose } : {};
-  setTimeout(() => window.location.reload(), 1000);
+  console.log('🔴🔴🔴 WITHDRAW API SERVICE CALLED 🔴🔴🔴');
+  console.log('📍 URL:', url);
+  console.log('📋 Form ID:', formId);
+  console.log('📝 Withdraw Purpose RECEIVED in service:', withdrawPurpose);
+  
+  // Create the body with the purpose
+  const body = {
+    withdrawPurpose: withdrawPurpose || null  // Send null if empty, not empty string
+  };
+  
+  console.log('📤 Sending to backend:', body);
   
   return this.http.put(url, body).pipe(
-    tap(response => console.log('✅ Withdraw API response:', response)),
+    tap(response => {
+      console.log('✅ Backend response:', response);
+    }),
     catchError(error => {
-      console.error('❌ Withdraw API error:', error);
-      return throwError(error);
+      console.error('❌ Backend error:', error);
+      return throwError(() => error);
     })
   );
 }
@@ -3601,5 +3647,181 @@ private handleHttpError(error: HttpErrorResponse, operation = 'operation'): Obse
     return this.http.get(`${this.apiUrl}/getLeaveSummary/${empId}`);
   }
 
+   private getUserCredentials() {
+  return {
+    userId: localStorage.getItem('userId') || 'anonymous',
+    employeeId: localStorage.getItem('employeeId') || 'unknown'
+  };
+}
+
+  private getHeaders(userId?: string, employeeId?: string): HttpHeaders {
+    const user = userId ? { userId, employeeId } : this.getUserCredentials();
+    
+    return new HttpHeaders()
+      .set('X-User-Id', user.userId)
+      .set('X-Employee-Id', user.employeeId || 'unknown')
+      .set('Content-Type', 'application/json');
+  }
+
+  /* =====================================================
+     1. SEND MESSAGE - Updated to accept 3 parameters
+     POST /message
+  ===================================================== */
+
+  sendMessage(message: string, userId?: string, employeeId?: string): Observable<ChatResponse> {
+    
+    const body = {
+      message: message
+      // userId and employeeId go in headers, not body
+    };
+
+    return this.http.post<ChatResponse>(
+      `${this.apiUrl}/api/message`,
+      body,
+      { headers: this.getHeaders(userId, employeeId) }
+    );
+  }
+
+  /* =====================================================
+     2. GET CHAT HISTORY - Updated to accept userId parameter
+     GET /history
+  ===================================================== */
+
+  getHistory(limit: number = 20, userId?: string): Observable<any> {
+
+    const params = new HttpParams()
+      .set('limit', limit.toString());
+
+    return this.http.get(`${this.apiUrl}/api/history`, { 
+      params,
+      headers: this.getHeaders(userId)
+    });
+  }
+
+  /* =====================================================
+     3. GET SESSION HISTORY
+     GET /session/{sessionId}
+  ===================================================== */
+
+  getSessionHistory(sessionId: string): Observable<any> {
+
+    return this.http.get(
+      `${this.apiUrl}/session/${sessionId}`
+    );
+  }
+
+  /* =====================================================
+     4. ADD FEEDBACK
+     POST /feedback/{messageId}
+  ===================================================== */
+
+  addFeedback(
+    messageId: string,
+    rating: number,
+    comment: string = ''
+  ): Observable<any> {
+
+    return this.http.post(
+      `${this.apiUrl}/feedback/${messageId}`,
+      {
+        rating: rating,
+        comment: comment
+      }
+    );
+  }
+
+  /* =====================================================
+     5. GET SUGGESTIONS
+     GET /suggestions
+  ===================================================== */
+
+  getSuggestions(): Observable<any> {
+
+    return this.http.get(
+      `${this.apiUrl}/suggestions`
+    );
+  }
+
+  /* =====================================================
+     6. CLEAR CHAT HISTORY - Updated to accept userId parameter
+     DELETE /history
+  ===================================================== */
+
+  clearHistory(userId?: string): Observable<any> {
+
+    return this.http.delete(
+      `${this.apiUrl}/history`,
+      { headers: this.getHeaders(userId) }
+    );
+  }
+
+  /* =====================================================
+     7. ADMIN - UNRESOLVED QUERIES
+     GET /admin/unresolved
+  ===================================================== */
+
+  getUnresolvedQueries(): Observable<any> {
+
+    return this.http.get(
+      `${this.apiUrl}/admin/unresolved`
+    );
+  }
+
+  /* =====================================================
+     8. ADMIN - CHAT STATISTICS
+     GET /admin/statistics
+  ===================================================== */
+
+  getStatistics(): Observable<any> {
+
+    return this.http.get(
+      `${this.apiUrl}/admin/statistics`
+    );
+  }
+  
+  /* =====================================================
+     GET USER INFO - Get logged-in user information
+     GET /api/user/info
+  ===================================================== */
+
+  getUserInfo(employeeId: string): Observable<any> {
+    const headers = new HttpHeaders().set('X-Employee-Id', employeeId);
+    return this.http.get(`${this.apiUrl}/api/user/info`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error fetching user info:', error);
+        return throwError(() => new Error(error.message));
+      })
+    );
+  }
+
+  /* =====================================================
+     INITIALIZE CHAT - Initialize chat with welcome message
+     GET /api/chat/initialize
+  ===================================================== */
+
+  initializeChat(userId: string, employeeId: string): Observable<any> {
+    const headers = new HttpHeaders()
+      .set('X-User-Id', userId)
+      .set('X-Employee-Id', employeeId);
+    
+    return this.http.get(`${this.apiUrl}/api/chat/initialize`, { headers }).pipe(
+      catchError((error: HttpErrorResponse) => {
+        console.error('Error initializing chat:', error);
+        return throwError(() => new Error(error.message));
+      })
+    );
+  }
+
+  /* =====================================================
+     9. HEALTH CHECK
+     GET /health
+  ===================================================== */
+
+  healthCheck(): Observable<any> {
+
+    return this.http.get(
+      `${this.apiUrl}/health`
+    );
+  }
 
 }

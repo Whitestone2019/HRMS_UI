@@ -1,4 +1,8 @@
 <div>
   <app-loader *ngIf="loaderService.loading$ | async"></app-loader>
-  <router-outlet></router-outlet>
+ <!-- Your page content -->
+<router-outlet></router-outlet>
+
+<!-- Chatbot - appears on every page -->
+<app-chatbot></app-chatbot>
 </div>

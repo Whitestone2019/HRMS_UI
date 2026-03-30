@@ -1,0 +1,115 @@
+<!-- Chatbot Container -->
+<div class="chatbot-container">
+  <!-- Draggable Circle Button - Only this is draggable -->
+  <button 
+    #chatToggle
+    class="chat-toggle" 
+    [class.open]="isOpen"
+    [class.dragging]="isDragging"
+    [ngStyle]="getToggleStyles()"
+    (mousedown)="onDragStart($event)"
+    (click)="toggleChat()">
+    <span *ngIf="!isOpen" class="toggle-text">HRMS Assistant</span>
+    <span *ngIf="isOpen" class="bot-icon">🤖</span>
+  </button>
+  
+  <!-- Chat Window - Follows the circle but NOT draggable -->
+  <div 
+    class="chat-window" 
+    *ngIf="isOpen"
+    [ngStyle]="getWindowPosition()">
+    
+    <!-- Header - NOT draggable -->
+    <div class="chat-header">
+      <div class="header-title">
+        <span class="bot-icon">🤖</span>
+        <h3>HRMS Assistant</h3>
+        <span class="status-badge online">Online</span>
+      </div>
+      <div class="header-actions">
+        <button class="clear-btn" (click)="clearChat()" title="Clear chat">🗑️</button>
+        <button class="reset-btn" (click)="resetPosition()" title="Reset position">↺</button>
+        <button class="close-btn" (click)="toggleChat()">✕</button>
+      </div>
+    </div>
+    
+    <!-- Messages -->
+    <div class="chat-messages" #chatMessages>
+      <div *ngFor="let msg of messages; let i = index" 
+           class="message" 
+           [ngClass]="{
+             'user-message': msg.messageType === 'USER', 
+             'assistant-message': msg.messageType === 'ASSISTANT',
+             'system-message': msg.messageType === 'SYSTEM',
+             'requires-human': msg.requiresHuman
+           }">
+        
+        <!-- Message Avatar -->
+        <div class="message-avatar">
+          <span *ngIf="msg.messageType === 'USER'">👤</span>
+          <span *ngIf="msg.messageType === 'ASSISTANT'">🤖</span>
+          <span *ngIf="msg.messageType === 'SYSTEM'">⚠️</span>
+        </div>
+        
+        <!-- Message Content -->
+        <div class="message-content">
+          <div class="message-text">{{ msg.userMessage }}</div>
+          <div class="message-time">{{ msg.timestamp | date:'shortTime' }}</div>
+          
+          <!-- Rating Stars (for assistant messages) -->
+          <div class="message-rating" *ngIf="msg.messageType === 'ASSISTANT' && msg.id && !msg.feedbackRating">
+            <span class="rating-label">Was this helpful?</span>
+            <div class="stars">
+              <span *ngFor="let star of [1,2,3,4,5]" 
+                    class="star" 
+                    (click)="rateMessage(msg, star)">★</span>
+            </div>
+          </div>
+          
+          <!-- Human Intervention Badge -->
+          <div class="human-badge" *ngIf="msg.requiresHuman">
+            ⚠️ Needs HR attention
+          </div>
+        </div>
+      </div>
+      
+      <!-- Loading Indicator -->
+      <div class="message assistant-message" *ngIf="isLoading">
+        <div class="message-avatar">🤖</div>
+        <div class="message-content">
+          <div class="typing-indicator">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Suggestions -->
+    <div class="suggestions" *ngIf="showSuggestions && suggestions.length > 0">
+      <div class="suggestion-title">Quick questions:</div>
+      <div class="suggestion-chips">
+        <button *ngFor="let suggestion of suggestions" 
+                class="suggestion-chip"
+                (click)="useSuggestion(suggestion)">
+          {{ suggestion }}
+        </button>
+      </div>
+    </div>
+    
+    <!-- Input Area -->
+    <div class="chat-input">
+      <form [formGroup]="chatForm" (ngSubmit)="sendMessage()">
+        <input type="text" 
+               formControlName="message" 
+               placeholder="Type your message..."
+               [disabled]="isLoading">
+        <button type="submit" 
+                [disabled]="chatForm.invalid || isLoading">
+          Send
+        </button>
+      </form>
+    </div>
+  </div>
+</div> 

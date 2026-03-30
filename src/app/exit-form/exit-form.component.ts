@@ -477,45 +477,59 @@ export class ExitFormComponent implements OnInit {
   }
 
   // Confirm withdraw
-  confirmWithdraw() {
-    if (!this.hasExistingForm || !this.currentFormId) {
-      console.error('Cannot withdraw: No form ID found');
-      return;
-    }
-    
-    this.withdrawing = true;
-    this.closeWithdrawModal();
-    
-    console.log('🔄 Starting withdraw process for form:', this.currentFormId);
-    
-    this.apiService.withdrawExitForm(this.currentFormId, this.withdrawPurpose).subscribe({
-      next: (response: any) => {
-        console.log('✅ Withdraw response:', response);
-        
-        if (response.success) {
-          const message = this.withdrawPurpose 
-            ? 'Exit form withdrawn with reason recorded!' 
-            : 'Exit form withdrawn successfully!';
-          
-          console.log('📝', message);
-          this.withdrawing = false;
-          this.hasExistingForm = false;
-          this.isViewMode = false;
-          this.isEditMode = false;
-          this.currentFormId = '';
-          this.initializeNewForm();
-          this.router.navigate(['/dashboard/exit-page']);
-        } else {
-          throw new Error(response.message || 'Withdraw failed');
-        }
-      },
-      error: (error) => {
-        console.error('❌ Error withdrawing exit form:', error);
-        console.warn('Failed to withdraw exit form: ' + (error.error?.message || error.message || 'Please try again.'));
-        this.withdrawing = false;
-      }
-    });
+  confirmWithdraw(): void {
+  console.log('🔴🔴🔴 CONFIRM WITHDRAW METHOD CALLED! 🔴🔴🔴');
+  console.log('📋 Form ID:', this.currentFormId);
+  console.log('📝 Withdraw Purpose from textarea:', this.withdrawPurpose);
+  
+  if (!this.currentFormId) {
+    console.error('❌ No form ID found!');
+    alert('Error: No form ID found. Please refresh and try again.');
+    return;
   }
+
+  // Store the purpose in a local variable to ensure it's not cleared
+  const purposeToSend = this.withdrawPurpose;
+  console.log('📤 Purpose being sent to API (local variable):', purposeToSend);
+
+  this.withdrawing = true;
+  this.closeWithdrawModal();
+
+  // Call API with the local variable, NOT this.withdrawPurpose
+  this.apiService.withdrawExitForm(this.currentFormId, purposeToSend).subscribe({
+    next: (response: any) => {
+      console.log('✅ API Response received:', response);
+      
+      if (response && response.success) {
+        // Show what was saved
+        const savedPurpose = response.withdrawPurpose;
+        const message = savedPurpose 
+          ? `✅ Exit form withdrawn successfully!\nReason: "${savedPurpose}"`
+          : '✅ Exit form withdrawn successfully!';
+        
+        alert(message);
+        
+        // Reset state
+        this.withdrawing = false;
+        this.hasExistingForm = false;
+        this.isViewMode = false;
+        this.isEditMode = false;
+        this.currentFormId = '';
+        this.withdrawPurpose = '';
+        
+        // Navigate to dashboard
+        this.router.navigate(['/dashboard/exit-page']);
+      } else {
+        throw new Error(response?.message || 'Withdraw failed');
+      }
+    },
+    error: (error) => {
+      console.error('❌ Withdraw error:', error);
+      alert('❌ Failed to withdraw: ' + (error.error?.message || error.message || 'Unknown error'));
+      this.withdrawing = false;
+    }
+  });
+}
 
   keepOpen(event: MouseEvent, type: string) {
     if (this.isViewMode || !this.isReasonAndCommentsEditable()) return;

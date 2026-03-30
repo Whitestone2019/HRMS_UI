@@ -78,6 +78,7 @@ import { CelebrationPageComponent } from './celebration-page/celebration-page.co
 import { HrLeaveRequestModalComponent } from './hr-leave-request-modal/hr-leave-request-modal.component';
 import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approvals.component';
 // import { TraineeComponent } from './Payroll/components/employees/trainee.component';
+import { ChatbotComponent } from './chatbot/chatbot.component';
 
 import { AdminUpload } from './admin/admin-upload/admin-upload';
 import { AdminList } from './admin/admin-list/admin-list';
@@ -182,6 +183,9 @@ export const routes: Routes = [
           { path: 'hrleaverequest/:leaveType', component: HrLeaveRequestModalComponent},
           { path: 'hrleaveapproval', component: HrLeaveApprovalsComponent},
           { path: 'payslip', component: PayslipComponent },
+          { path: 'chatbot', component: ChatbotComponent},
+
+
           { 
     path: 'admin/upload', 
     component: AdminUpload,

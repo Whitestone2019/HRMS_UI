@@ -94,6 +94,7 @@ import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-o
 import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
 import { HrLeaveRequestModalComponent } from './hr-leave-request-modal/hr-leave-request-modal.component';
 import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approvals.component';
+import { ChatbotComponent } from './chatbot/chatbot.component';
 
 
 @NgModule({
@@ -163,6 +164,7 @@ import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approva
     CelebrationPageComponent,
     HrLeaveRequestModalComponent,
     HrLeaveApprovalsComponent,
+    ChatbotComponent,
 
   ],
   imports: [
