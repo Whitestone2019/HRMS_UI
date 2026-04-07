@@ -534,6 +534,11 @@ export class ApiService {
 }
 
 
+// Add this method to your ApiService class
+getDirectReports(managerEmpId: string): Observable<any> {
+  return this.http.get(`${this.apiUrl}/get-direct-reports/${managerEmpId}`);
+}
+
   // Check-Out API call
   checkoutAttendance(attendanceData: AttendancePayload): Observable<AttendanceResponse> {
     this.loaderService.show();

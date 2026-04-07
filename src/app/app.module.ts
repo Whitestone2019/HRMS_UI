@@ -16,6 +16,8 @@ import { MatCardModule } from '@angular/material/card'; // Added for calendar ca
 import { MatIconButton } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 
+import { CommonModule } from '@angular/common'; 
+
 import Swal from 'sweetalert2';
 
 // Components
@@ -94,7 +96,7 @@ import { HrOffboardingChecklistComponent } from './hr-offboarding-checklist/hr-o
 import { CelebrationPageComponent } from './celebration-page/celebration-page.component';
 import { HrLeaveRequestModalComponent } from './hr-leave-request-modal/hr-leave-request-modal.component';
 import { HrLeaveApprovalsComponent } from './hr-leave-approvals/hr-leave-approvals.component';
-import { ChatbotComponent } from './chatbot/chatbot.component';
+// import { ChatbotComponent } from './chatbot/chatbot.component';
 
 
 @NgModule({
@@ -164,7 +166,7 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
     CelebrationPageComponent,
     HrLeaveRequestModalComponent,
     HrLeaveApprovalsComponent,
-    ChatbotComponent,
+    // ChatbotComponent,
 
   ],
   imports: [
@@ -182,7 +184,8 @@ import { ChatbotComponent } from './chatbot/chatbot.component';
     MatCardModule,
     MatOption,
     MatIconButton,
-    MatIconModule
+    MatIconModule,
+    CommonModule,
 ],
   exports: [
     AdminMenuComponent // For external use in other modules

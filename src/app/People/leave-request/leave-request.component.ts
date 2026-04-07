@@ -19,6 +19,7 @@ export class LeaveRequestComponent implements OnInit {
   userCategory: string = 'Employee'; // Employee / Trainee
   currentEmpId: string = '';
   userRole: string = ''; // HR / EMPLOYEE / TRAINEE
+  currentUserReportees: string[] = []; // Store reportees of current user
 
   hasData: boolean = false;
   allRequests: any[] = [];
@@ -43,12 +44,66 @@ export class LeaveRequestComponent implements OnInit {
     if (empId) {
       this.currentEmpId = empId;
       this.userRole = role ? role.toUpperCase() : '';
+      
+      // Fetch direct reports for current user (people who report to them)
+      this.fetchDirectReports(empId);
       this.fetchRequests(empId);
     } else {
       console.error('Employee ID not found');
     }
 
     this.filterSubject.pipe(debounceTime(300)).subscribe(() => this.applyFilters());
+  }
+
+  /** Fetch users who directly report to current user (where repoteTo = currentEmpId) */
+  fetchDirectReports(empId: string): void {
+    console.log('Fetching direct reports for user:', empId);
+    
+    this.apiService.getDirectReports(empId).subscribe({
+      next: (response: any) => {
+        console.log('Direct reports response:', response);
+        
+        // Extract reportees from response
+        if (response && response.status === 'success' && response.data) {
+          this.currentUserReportees = response.data.map((user: any) => user.empid);
+          console.log('Direct reportees fetched:', this.currentUserReportees);
+          console.log('Total reportees count:', this.currentUserReportees.length);
+        } else if (response && response.data && Array.isArray(response.data)) {
+          this.currentUserReportees = response.data.map((user: any) => user.empid);
+        } else if (Array.isArray(response)) {
+          this.currentUserReportees = response.map((user: any) => user.empid);
+        } else {
+          console.warn('Unexpected response format:', response);
+          this.currentUserReportees = [];
+        }
+        
+        // Refresh the displayed requests to update approve button visibility
+        this.updatePagination();
+      },
+      error: (err: HttpErrorResponse) => {
+        console.error('Error fetching direct reports:', err);
+        this.currentUserReportees = [];
+      }
+    });
+  }
+
+  /** Check if user can approve/reject a request */
+  canApproveRequest(request: any): boolean {
+    // Don't show approve/reject for user's own requests
+    if (request.empid === this.currentEmpId) {
+      return false;
+    }
+    
+    // Check if request status is Pending
+    if (request.status !== 'Pending') {
+      return false;
+    }
+    
+    // Check if this request's employee is in the reportees list
+    const isReportee = this.currentUserReportees.includes(request.empid);
+    console.log(`Checking ${request.empid}: isReportee = ${isReportee}`);
+    
+    return isReportee;
   }
 
   /** Switch Leave / Permission */
@@ -79,16 +134,10 @@ export class LeaveRequestComponent implements OnInit {
             type: this.requestType,
             startdate: req.startdate ? parse(req.startdate, 'dd-MM-yyyy HH:mm:ss', new Date()) : null,
             enddate: req.enddate ? parse(req.enddate, 'dd-MM-yyyy HH:mm:ss', new Date()) : null,
-            canAction: this.userRole === 'HR' && isEmployee
           };
         });
 
-        // HR sees all requests, others see only their own + reportees
-        if (this.userRole !== 'HR') {
-          // No filter needed; backend already returns reportees
-          console.log('Non-HR user, showing own + reportees requests');
-        }
-
+        console.log('Total requests fetched:', this.allRequests.length);
         this.applyFilters();
       },
       error: (err: HttpErrorResponse) => {
@@ -106,32 +155,31 @@ export class LeaveRequestComponent implements OnInit {
   }
 
   /** Apply filters and sorting */
-  /** Apply category + search + pending-first sort */
-applyFilters(): void {
-  this.filteredRequests = this.allRequests.filter(request => {
-    let categoryMatch = true;
+  applyFilters(): void {
+    this.filteredRequests = this.allRequests.filter(request => {
+      let categoryMatch = true;
 
-    if (this.userRole === 'HR') {
-      if (this.userCategory === 'Employee') categoryMatch = request.isEmployee;
-      if (this.userCategory === 'Trainee') categoryMatch = request.isTrainee;
-    }
+      if (this.userRole === 'HR') {
+        if (this.userCategory === 'Employee') categoryMatch = request.isEmployee;
+        if (this.userCategory === 'Trainee') categoryMatch = request.isTrainee;
+      }
 
-    const searchMatch =
-      (!this.filterEmpId || request.empid?.toLowerCase().includes(this.filterEmpId.toLowerCase())) &&
-      (!this.filterName || request.name?.toLowerCase().includes(this.filterName.toLowerCase())) &&
-      (!this.searchTerm ||
-        request.empid?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        request.name?.toLowerCase().includes(this.searchTerm.toLowerCase()));
+      const searchMatch =
+        (!this.filterEmpId || request.empid?.toLowerCase().includes(this.filterEmpId.toLowerCase())) &&
+        (!this.filterName || request.name?.toLowerCase().includes(this.filterName.toLowerCase())) &&
+        (!this.searchTerm ||
+          request.empid?.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+          request.name?.toLowerCase().includes(this.searchTerm.toLowerCase()));
 
-    return categoryMatch && searchMatch;
-  });
+      return categoryMatch && searchMatch;
+    });
 
-  // Sort Pending first for all users
-  const order: Record<string, number> = { Pending: 1, Approved: 2, Rejected: 3 };
-  this.filteredRequests.sort((a: any, b: any) => (order[a.status] || 4) - (order[b.status] || 4));
+    // Sort Pending first for all users
+    const order: Record<string, number> = { Pending: 1, Approved: 2, Rejected: 3, Withdrawn: 4 };
+    this.filteredRequests.sort((a: any, b: any) => (order[a.status] || 5) - (order[b.status] || 5));
 
-  this.updatePagination();
-}
+    this.updatePagination();
+  }
 
   updatePagination(): void {
     this.totalItems = this.filteredRequests.length;
@@ -141,6 +189,11 @@ applyFilters(): void {
     const endIndex = startIndex + this.pageSize;
     this.displayedRequests = this.filteredRequests.slice(startIndex, endIndex);
     this.hasData = this.displayedRequests.length > 0;
+    
+    console.log('Displayed requests count:', this.displayedRequests.length);
+    this.displayedRequests.forEach(req => {
+      console.log(`Request - Emp: ${req.empid}, Status: ${req.status}, CanApprove: ${this.canApproveRequest(req)}`);
+    });
   }
 
   onSearchChange(): void {
@@ -159,105 +212,96 @@ applyFilters(): void {
     this.router.navigate([`/dashboard/apply-${this.requestType.toLowerCase()}`]);
   }
 
-  // In leave-request.component.ts - Update deleteRequest method
-deleteRequest(index: number): void {
-  const request = this.displayedRequests[index];
-  
-  // Debug log to see what data we have
-  console.log('DEBUG - Request object:', request);
-  console.log('DEBUG - empid:', request.empid);
-  console.log('DEBUG - startdate:', request.startdate);
-  console.log('DEBUG - startdate type:', typeof request.startdate);
-  
-  if (confirm(`Reject this ${request.type.toLowerCase()} request?`)) {
-    if (request.type === 'Leave') {
-      // Format the date for backend
-      const formattedDate = this.formatDateForBackend(request.startdate);
-      console.log('Formatted date for backend:', formattedDate);
-      
-      if (!formattedDate) {
-        alert('Error: Could not format start date. Please check the date format.');
-        return;
+  deleteRequest(request: any, index: number): void {
+    // Check if user has permission to reject this request
+    if (!this.canApproveRequest(request)) {
+      alert('You do not have permission to reject this request.');
+      return;
+    }
+
+    if (confirm(`Reject this ${request.type.toLowerCase()} request?`)) {
+      if (request.type === 'Leave') {
+        const formattedDate = this.formatDateForBackend(request.startdate);
+        
+        if (!formattedDate) {
+          alert('Error: Could not format start date. Please check the date format.');
+          return;
+        }
+        
+        this.apiService.rejectLeaveRequest1(request.empid, formattedDate)
+          .subscribe({
+            next: (response: any) => {
+              if (response.status === 'success') {
+                alert(`${request.type} request rejected successfully!`);
+                this.fetchRequests(this.currentEmpId);
+              } else {
+                alert(`Failed: ${response.message || 'Unknown error'}`);
+              }
+            },
+            error: (err: HttpErrorResponse) => {
+              console.error('Full error details:', err);
+              const errorMessage = err.error?.message || err.message || 'Unknown error occurred';
+              alert(`Error: ${errorMessage}`);
+            }
+          });
+      } else {
+        this.apiService.rejectPermissionRequest(request.empid, request.srlnum)
+          .subscribe({
+            next: (response: any) => {
+              if (response.status === 'success') {
+                alert(`${request.type} request rejected successfully!`);
+                this.fetchRequests(this.currentEmpId);
+              } else {
+                alert(`Failed: ${response.message || 'Unknown error'}`);
+              }
+            },
+            error: (err: HttpErrorResponse) => alert(`Error: ${err.message}`)
+          });
       }
-      
-      // Call API with formatted date
-      this.apiService.rejectLeaveRequest1(request.empid, formattedDate)
-        .subscribe({
-          next: (response: any) => {
-            if (response.status === 'success') {
-              alert(`${request.type} request rejected successfully!`);
-              this.fetchRequests(this.currentEmpId);
-            } else {
-              alert(`Failed: ${response.message || 'Unknown error'}`);
-            }
-          },
-          error: (err: HttpErrorResponse) => {
-            console.error('Full error details:', err);
-            // Show better error message
-            const errorMessage = err.error?.message || err.message || 'Unknown error occurred';
-            alert(`Error: ${errorMessage}`);
-          }
-        });
-    } else {
-      // Permission request handling (unchanged)
-      this.apiService.rejectPermissionRequest(request.empid, request.srlnum)
-        .subscribe({
-          next: (response: any) => {
-            if (response.status === 'success') {
-              alert(`${request.type} request rejected successfully!`);
-              this.fetchRequests(this.currentEmpId);
-            } else {
-              alert(`Failed: ${response.message || 'Unknown error'}`);
-            }
-          },
-          error: (err: HttpErrorResponse) => alert(`Error: ${err.message}`)
-        });
     }
   }
-}
 
-// Add this method AFTER line 186 (after the existing formatDate method)
-private formatDateForBackend(date: any): string {
-  if (!date) {
-    console.error('No date provided');
-    return '';
-  }
-  
-  console.log('Original date:', date);
-  console.log('Date type:', typeof date);
-  
-  try {
-    let dateObj: Date;
-    
-    if (date instanceof Date) {
-      dateObj = date;
-    } else if (typeof date === 'string') {
-      dateObj = new Date(date);
-      if (isNaN(dateObj.getTime())) {
-        console.error('Invalid date string:', date);
-        return '';
-      }
-    } else {
-      console.error('Unknown date type:', date);
+  private formatDateForBackend(date: any): string {
+    if (!date) {
+      console.error('No date provided');
       return '';
     }
     
-    // Format as YYYY-MM-DD
-    const year = dateObj.getFullYear();
-    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getDate()).padStart(2, '0');
-    
-    const formatted = `${year}-${month}-${day}`;
-    console.log('Formatted date:', formatted);
-    return formatted;
-    
-  } catch (error) {
-    console.error('Error formatting date:', error);
-    return '';
+    try {
+      let dateObj: Date;
+      
+      if (date instanceof Date) {
+        dateObj = date;
+      } else if (typeof date === 'string') {
+        dateObj = new Date(date);
+        if (isNaN(dateObj.getTime())) {
+          console.error('Invalid date string:', date);
+          return '';
+        }
+      } else {
+        console.error('Unknown date type:', date);
+        return '';
+      }
+      
+      const year = dateObj.getFullYear();
+      const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+      const day = String(dateObj.getDate()).padStart(2, '0');
+      
+      return `${year}-${month}-${day}`;
+      
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return '';
+    }
   }
-}
 
   approve(request: any, index: number): void {
+    // Check if user has permission to approve this request
+    if (!this.canApproveRequest(request)) {
+      alert('You do not have permission to approve this request.');
+      return;
+    }
+
     if (confirm(`Approve this ${request.type.toLowerCase()} request?`)) {
       const action =
         request.type === 'Leave'
@@ -278,9 +322,7 @@ private formatDateForBackend(date: any): string {
     }
   }
 
-
   exportToExcel(): void {
-    // Use the filtered list (what the user currently sees)
     const dataToExport = this.filteredRequests.map(req => ({
       'Employee ID': req.empid || 'N/A',
       'Employee Name': req.name || 'N/A',
@@ -294,7 +336,6 @@ private formatDateForBackend(date: any): string {
 
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(dataToExport);
 
-    // Optional: set column widths (makes it look nicer)
     const colWidths = [
       { wch: 15 }, // Employee ID
       { wch: 25 }, // Name
@@ -324,7 +365,6 @@ private formatDateForBackend(date: any): string {
     FileSaver.saveAs(blob, fileName);
   }
 
-  // Helper to format JS Date → dd-MM-yyyy
   private formatDate(date: Date): string {
     const d = new Date(date);
     const day = String(d.getDate()).padStart(2, '0');
@@ -333,44 +373,41 @@ private formatDateForBackend(date: any): string {
     return `${day}-${month}-${year}`;
   }
 
-  // In leave-request.component.ts
-isFutureOrPresentDate(request: any): boolean {
-  if (!request || !request.startdate) {
-    return false;
+  isFutureOrPresentDate(request: any): boolean {
+    if (!request || !request.startdate) {
+      return false;
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    
+    const startDate = new Date(request.startdate);
+    startDate.setHours(0, 0, 0, 0);
+    
+    return startDate >= today;
   }
-  
-  const today = new Date();
-  today.setHours(0, 0, 0, 0); // Set to start of day
-  
-  const startDate = new Date(request.startdate);
-  startDate.setHours(0, 0, 0, 0); // Set to start of day
-  
-  // Allow withdrawal if start date is today or in the future
-  return startDate >= today;
-}
-// Add withdraw method
-withdrawRequest(request: any, index: number): void {
 
-  if (!this.isFutureOrPresentDate(request)) {
-    alert('Cannot withdraw past leave requests. Please contact HR.');
-    return;
-  }
-  if (confirm(`Are you sure you want to withdraw this ${request.type.toLowerCase()} request?`)) {
-    // Only handle Leave requests
-    this.apiService.withdrawLeaveRequest(request.empid, request.srlnum, request.status)
-      .subscribe({
-        next: (response: any) => {
-          if (response.status === 'success') {
-            alert(`${request.type} request withdrawn successfully!`);
-            this.fetchRequests(this.currentEmpId);
-          } else {
-            alert(`Failed: ${response.message || 'Unknown error'}`);
+  withdrawRequest(request: any, index: number): void {
+    if (!this.isFutureOrPresentDate(request)) {
+      alert('Cannot withdraw past leave requests. Please contact HR.');
+      return;
+    }
+    
+    if (confirm(`Are you sure you want to withdraw this ${request.type.toLowerCase()} request?`)) {
+      this.apiService.withdrawLeaveRequest(request.empid, request.srlnum, request.status)
+        .subscribe({
+          next: (response: any) => {
+            if (response.status === 'success') {
+              alert(`${request.type} request withdrawn successfully!`);
+              this.fetchRequests(this.currentEmpId);
+            } else {
+              alert(`Failed: ${response.message || 'Unknown error'}`);
+            }
+          },
+          error: (err: HttpErrorResponse) => {
+            alert(`Error: ${err.message}`);
           }
-        },
-        error: (err: HttpErrorResponse) => {
-          alert(`Error: ${err.message}`);
-        }
-      });
+        });
+    }
   }
-}
 }

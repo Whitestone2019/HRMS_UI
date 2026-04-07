@@ -11,7 +11,8 @@ import { interval, Subscription } from 'rxjs';
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   isMenuVisible = false;
-  showTooltip = false; // ← NEW: Controls tooltip visibility on hover
+  isDropdownOpen = false;
+  private closeTimeout: any;
 
   userRole: string = '';
   isAdmin: boolean = false;
@@ -82,9 +83,86 @@ export class HeaderComponent implements OnInit, OnDestroy {
     });
   }
 
+  // Dropdown control methods
+  openDropdown(): void {
+    if (this.totalPending > 0) {
+      if (this.closeTimeout) {
+        clearTimeout(this.closeTimeout);
+        this.closeTimeout = null;
+      }
+      this.isDropdownOpen = true;
+    }
+  }
+
+  closeDropdownWithDelay(): void {
+    this.closeTimeout = setTimeout(() => {
+      this.isDropdownOpen = false;
+    }, 300); // 300ms delay to allow moving to dropdown
+  }
+
+  cancelCloseDropdown(): void {
+    if (this.closeTimeout) {
+      clearTimeout(this.closeTimeout);
+      this.closeTimeout = null;
+    }
+  }
+
+  closeDropdown(): void {
+    this.isDropdownOpen = false;
+    if (this.closeTimeout) {
+      clearTimeout(this.closeTimeout);
+      this.closeTimeout = null;
+    }
+  }
+
+  // Navigation method for notification clicks
+  navigateTo(type: string): void {
+    this.closeDropdown(); // Close dropdown after click
+    
+    switch(type) {
+      case 'leave':
+        // Navigate to leave approvals page
+        if (this.userRole.toLowerCase().includes('hr')) {
+          this.router.navigate(['/dashboard/hrleaveapproval']);
+        } else if (this.userRole.toLowerCase().includes('manager')) {
+          this.router.navigate(['/dashboard/leave-request']);
+        } else {
+          this.router.navigate(['/dashboard/leave-request']);
+        }
+        break;
+        
+      case 'attendance':
+        // Navigate to attendance approval page
+        this.router.navigate(['/dashboard/attendanceApproval']);
+        break;
+        
+      case 'permission':
+        // Navigate to permission/attendance approval page
+        this.router.navigate(['/dashboard/attendanceApproval']);
+        break;
+        
+      case 'payroll':
+        // Navigate to payroll adjustments page
+        this.router.navigate(['/dashboard/payrollAdjustment']);
+        break;
+        
+      default:
+        console.warn('Unknown notification type:', type);
+    }
+  }
+
+  viewAllApprovals(): void {
+    this.closeDropdown();
+    // Navigate to a page that shows all pending approvals
+    this.router.navigate(['/dashboard/operations']);
+  }
+
   ngOnDestroy(): void {
     if (this.pollSubscription) {
       this.pollSubscription.unsubscribe();
+    }
+    if (this.closeTimeout) {
+      clearTimeout(this.closeTimeout);
     }
   }
 

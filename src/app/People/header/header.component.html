@@ -19,33 +19,50 @@
   </div>
 
   <div class="right">
-    <!-- Notification Bell with Hover Tooltip -->
-    <div class="notification-bell"
-         (mouseenter)="showTooltip = true"
-         (mouseleave)="showTooltip = false">
-      <i class="fas fa-bell bell-icon"></i>
-      <span class="notification-badge" *ngIf="totalPending > 0">
-        {{ totalPending > 99 ? '99+' : totalPending }}
-      </span>
+    <!-- Notification Bell with Dropdown -->
+    <div class="notification-container"
+         (mouseenter)="openDropdown()"
+         (mouseleave)="closeDropdownWithDelay()">
+      
+      <div class="notification-bell">
+        <i class="fas fa-bell bell-icon"></i>
+        <span class="notification-badge" *ngIf="totalPending > 0">
+          {{ totalPending > 99 ? '99+' : totalPending }}
+        </span>
+      </div>
 
-      <!-- Hover Tooltip -->
-      <div class="notification-tooltip" *ngIf="showTooltip && totalPending > 0">
-        <div class="tooltip-header">Pending Approvals</div>
-        <div class="tooltip-item" *ngIf="leaveCount > 0">
-          <span class="label">Leave Requests</span>
-          <span class="count">{{ leaveCount }}</span>
+      <!-- Notification Dropdown -->
+      <div class="notification-dropdown" 
+           *ngIf="isDropdownOpen"
+           (mouseenter)="cancelCloseDropdown()"
+           (mouseleave)="closeDropdown()">
+        
+        <div class="dropdown-header">Pending Approvals</div>
+        
+        <div class="dropdown-body">
+          <div class="dropdown-item" *ngIf="leaveCount > 0" (click)="navigateTo('leave')">
+            <span class="label">Leave Requests</span>
+            <span class="count">{{ leaveCount }}</span>
+          </div>
+          
+          <div class="dropdown-item" *ngIf="attendanceCount > 0" (click)="navigateTo('attendance')">
+            <span class="label">Attendance</span>
+            <span class="count">{{ attendanceCount }}</span>
+          </div>
+          
+          <div class="dropdown-item" *ngIf="permissionCount > 0" (click)="navigateTo('permission')">
+            <span class="label">Permission</span>
+            <span class="count">{{ permissionCount }}</span>
+          </div>
+          
+          <div class="dropdown-item" *ngIf="payrollCount > 0" (click)="navigateTo('payroll')">
+            <span class="label">Payroll</span>
+            <span class="count">{{ payrollCount }}</span>
+          </div>
         </div>
-        <div class="tooltip-item" *ngIf="attendanceCount > 0">
-          <span class="label">Attendance</span>
-          <span class="count">{{ attendanceCount }}</span>
-        </div>
-        <div class="tooltip-item" *ngIf="permissionCount > 0">
-          <span class="label">Permission</span>
-          <span class="count">{{ permissionCount }}</span>
-        </div>
-        <div class="tooltip-item" *ngIf="payrollCount > 0">
-          <span class="label">Payroll</span>
-          <span class="count">{{ payrollCount }}</span>
+        
+        <div class="dropdown-footer" *ngIf="totalPending > 0" (click)="viewAllApprovals()">
+          View All Approvals
         </div>
       </div>
     </div>
