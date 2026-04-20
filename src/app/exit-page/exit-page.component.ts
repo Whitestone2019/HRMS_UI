@@ -2,7 +2,6 @@ import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { ApiService, ExitForm, ManagerReview, HRReview } from '../api.service';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
-import { HrOffboardingChecklistComponent } from '../hr-offboarding-checklist/hr-offboarding-checklist.component';
 
 interface ChecklistItem {
   checked: boolean;
@@ -18,25 +17,6 @@ interface Checklist {
 
 type ChecklistKey = keyof Checklist;
 
-interface HRReviewPayload {
-  formId?: string;
-  hrNoticePeriod: boolean;
-  hrLeaveBalances: boolean;
-  hrPolicyCompliance: boolean;
-  hrExitEligibility: boolean;
-  hrNoticePeriodComments: string;
-  hrLeaveBalancesComments: string;
-  hrPolicyComplianceComments: string;
-  hrExitEligibilityComments: string;
-  hrGeneralComments: string;
-  hrAction: string;
-  hrName?: string;
-  hrReviewDate?: string;
-  employeeId?: string;
-  employeeName?: string;
-  verificationRound?: number;
-}
-
 interface AssetClearanceItem {
   label: string;
   status: string;
@@ -45,7 +25,7 @@ interface AssetClearanceItem {
 
 @Component({
   selector: 'app-exit-page',
-  templateUrl:'./exit-page.component.html',
+  templateUrl: './exit-page.component.html',
   styleUrls: ['./exit-page.component.css']
 })
 export class ExitPageComponent implements OnInit, OnDestroy {
@@ -60,7 +40,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   viewingEmployee: string = '';
   currentUserRole: string = '';
   isHRUser: boolean = false;
-  isCEOUser: boolean = false; // 🟢 NEW: CEO flag
+  isCEOUser: boolean = false;
   
   reviewData: any = {
     performance: '',
@@ -69,7 +49,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     noticePeriod: '',
     remarks: ''
   };
-
 
   showUserForm: boolean = false;
   showManagerReviewForm: boolean = false;
@@ -141,11 +120,15 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   
   currentStepCard: number | null = null;
 
-  // 🟢 NEW: HR View flags for CEO access
   showManagerReviewFormForHR: boolean = false;
   showAssetClearanceFormForHR: boolean = false;
   showPayrollCheckFormForHR: boolean = false;
   showFinalHRFormForHR: boolean = false;
+  
+  // Store direct reports for quick lookup
+  directReportsList: any[] = [];
+  isManagerCheckComplete: boolean = false;
+  isUserReportingManager: boolean = false;
 
   private destroy$ = new Subject<void>();
 
@@ -166,11 +149,10 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.employeeId = localStorage.getItem('employeeId') || '';
     this.currentUserRole = localStorage.getItem('role') || '';
     
-    // 🟢 UPDATED: Check for CEO role
     const roleUpper = this.currentUserRole.toUpperCase();
     this.isHRUser = roleUpper === 'R003' || roleUpper.includes('HR');
-    this.isCEOUser = roleUpper === 'CEO' || roleUpper === 'R001'; // Assuming R001 is CEO role code
-    
+    this.isCEOUser = roleUpper === 'CEO' || roleUpper === 'R001';
+
     if (navState && navState.employeeId) {
       this.viewingEmployee = navState.employeeId;
       if (navState.formId) {
@@ -188,6 +170,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.fetchExitForms();
       this.fetchManagerReview();
+      this.fetchDirectReportsForManager();
       this.fetchEmployeeData();
       if (this.isSystemAdmin()) {
         setTimeout(() => {
@@ -202,21 +185,376 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // 🟢 UPDATED: Check if user is HR or CEO
+  // ==================== ROLE CHECK METHODS ====================
+
   isHR(): boolean {
     const role = (this.currentUserRole || '').toUpperCase();
     return this.isHRUser || this.isCEOUser || role.includes('HR') || role === 'R003' || role === 'CEO' || role === 'R001';
   }
 
-  // 🟢 UPDATED: Check if user can act as HR (includes CEO)
   canActAsHR(): boolean {
     return this.isHR() || this.isCEOUser;
   }
 
-  // 🟢 UPDATED: Should show HR verification form (for HR and CEO)
-  shouldShowHRVerificationForm(): boolean {
-    return this.showHRVerificationForm && this.canActAsHR();
+  isPayrollUser(): boolean {
+    const role = (this.currentUserRole || '').toUpperCase();
+    const username = (localStorage.getItem('username') || '').toUpperCase();
+    
+    const isPayroll = role.includes('ACC') || 
+                     role === 'R008' || 
+                     role.includes('PAYROLL') ||
+                     username.includes('PAYROLL') ||
+                     username.includes('ACC');
+    
+    return isPayroll;
   }
+
+  isSystemAdmin(): boolean {
+    const role = this.currentUserRole || localStorage.getItem('role') || '';
+    return role === 'R010' || role === 'SA' || role.toLowerCase().includes('system admin') || role.toLowerCase().includes('sa');
+  }
+
+  isManager(): boolean {
+    const role = (this.currentUserRole || '').toUpperCase();
+    const isManagerRole = role.includes('PM') || role.includes('R004') || role.includes('MANAGER');
+    const hasDirectReports = this.directReports.length > 0;
+    
+    return isManagerRole || this.showManagerView || hasDirectReports;
+  }
+
+  // ==================== DIRECT REPORTS API METHODS (FIXED) ====================
+
+  /**
+   * Fetch all direct reports for the current user
+   * This API returns all employees who report to this manager
+   */
+  fetchDirectReportsForManager(): void {
+    console.log('Fetching direct reports for manager:', this.employeeId);
+    
+    this.apiService.getDirectReports(this.employeeId).subscribe({
+      next: (response: any) => {
+        console.log('Direct reports API raw response:', response);
+        
+        // Handle the exact response format from your API
+        // Your API returns: { data: [...], count: 5, managerId: "10038", status: "success" }
+        let reports = [];
+        
+        if (response?.data && Array.isArray(response.data)) {
+          reports = response.data;
+          console.log('Found data array in response.data, length:', reports.length);
+        } else if (Array.isArray(response)) {
+          reports = response;
+          console.log('Response is directly an array, length:', reports.length);
+        } else if (response?.success && response?.data && Array.isArray(response.data)) {
+          reports = response.data;
+          console.log('Found data in response.success.data, length:', reports.length);
+        } else if (response?.list && Array.isArray(response.list)) {
+          reports = response.list;
+          console.log('Found data in response.list, length:', reports.length);
+        } else if (response?.records && Array.isArray(response.records)) {
+          reports = response.records;
+          console.log('Found data in response.records, length:', reports.length);
+        }
+        
+        this.directReportsList = reports;
+        console.log('Direct reports list after processing:', this.directReportsList);
+        console.log('Number of direct reports:', this.directReportsList.length);
+        
+        // Log each direct report's ID for debugging
+        this.directReportsList.forEach((report, index) => {
+          console.log(`Direct report ${index + 1}:`, {
+            id: report.empid || report.employeeId || report.empId || report.id,
+            name: report.name || report.employeeName || report.firstname
+          });
+        });
+        
+        // Check if the viewed employee is a direct report
+        this.checkIfUserIsReportingManager();
+        this.cdRef.detectChanges();
+      },
+      error: (err: any) => {
+        console.error('Error fetching direct reports:', err);
+        this.directReportsList = [];
+        this.checkIfUserIsReportingManager();
+        this.cdRef.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Check if the viewed employee is a direct report of the current user
+   * This is the primary method to determine if current user is the reporting manager
+   */
+  checkIfUserIsReportingManager(): void {
+    this.isManagerCheckComplete = true;
+    
+    // If viewing own form, not a reporting manager relationship
+    if (this.viewingEmployee === this.employeeId) {
+      console.log('Viewing own form - not a reporting manager relationship');
+      this.isUserReportingManager = false;
+      return;
+    }
+    
+    // Check if viewed employee is in the direct reports list
+    // IMPORTANT: Check all possible field names that might contain the employee ID
+    const isDirectReport = this.directReportsList.some(report => {
+      // Try different possible ID field names - 'empid' matches your API response
+      const reportId = report.empid ||      // <-- This matches your API
+                        report.employeeId || 
+                        report.empId || 
+                        report.id || 
+                        report.EID || 
+                        report.employee_id;
+      
+      if (!reportId) {
+        console.log('Report has no ID field:', report);
+        return false;
+      }
+      
+      const reportIdStr = reportId.toString().trim();
+      const viewingEmpStr = this.viewingEmployee.toString().trim();
+      
+      console.log(`Comparing: ${reportIdStr} === ${viewingEmpStr}`);
+      return reportIdStr === viewingEmpStr;
+    });
+    
+    this.isUserReportingManager = isDirectReport;
+    
+    console.log('========== REPORTING MANAGER CHECK ==========');
+    console.log('Current User ID:', this.employeeId);
+    console.log('Viewing Employee ID:', this.viewingEmployee);
+    console.log('Direct Reports Count:', this.directReportsList.length);
+    console.log('Direct Reports List (IDs):', this.directReportsList.map(r => r.empid || r.employeeId || r.empId || r.id));
+    console.log('Is Direct Report:', this.isUserReportingManager);
+    console.log('=============================================');
+  }
+
+  /**
+   * Get the actual reporting manager ID for the viewed employee
+   */
+  getActualReportingManagerId(): string | null {
+    // If current user is the reporting manager for this employee, return their ID
+    if (this.isUserReportingManager) {
+      console.log('Current user IS the reporting manager for this employee');
+      return this.employeeId;
+    }
+    
+    // Try to get from employee data if available
+    if (this.employeeData && this.employeeData.REPOTE_TO) {
+      return this.employeeData.REPOTE_TO.toString().trim();
+    }
+    
+    // Try from exit form
+    const form = this.getFirstForm();
+    if (form && (form as any).REPOTE_TO) {
+      return (form as any).REPOTE_TO.toString().trim();
+    }
+    
+    console.log('No reporting manager found for employee:', this.viewingEmployee);
+    return null;
+  }
+
+  /**
+   * Check if current user is the reporting manager for the viewed employee
+   * Uses the direct reports API result
+   */
+  isReportingManager(): boolean {
+    // If we haven't completed the check yet, return false
+    if (!this.isManagerCheckComplete) {
+      console.log('Manager check not complete yet');
+      return false;
+    }
+    
+    // If viewing own form, not a reporting manager
+    if (this.viewingEmployee === this.employeeId) {
+      return false;
+    }
+    
+    const result = this.isUserReportingManager;
+    console.log(`isReportingManager returning: ${result}`);
+    return result;
+  }
+
+  /**
+   * Check if user can access manager review
+   * This is the PRIMARY access control method
+   */
+  canAccessManagerReview(): boolean {
+    // First, refresh the direct reports check if needed
+    if (!this.isManagerCheckComplete && this.directReportsList.length === 0) {
+      console.log('Direct reports not loaded yet, fetching...');
+      this.fetchDirectReportsForManager();
+      return false;
+    }
+    
+    const canAccess = this.isReportingManager();
+    console.log(`canAccessManagerReview: ${canAccess} for user ${this.employeeId} viewing ${this.viewingEmployee}`);
+    return canAccess;
+  }
+
+  /**
+   * Check if user can view manager review
+   */
+  canViewManagerReview(): boolean {
+    return this.canAccessManagerReview() || this.isCurrentUserFormOwner();
+  }
+
+  /**
+   * Check if user can edit/submit manager review
+   */
+  canEditManagerReview(): boolean {
+    return this.canAccessManagerReview();
+  }
+
+  /**
+   * Check if manager review should be shown
+   */
+  shouldShowManagerReview(): boolean {
+    return this.canAccessManagerReview() || this.isCurrentUserFormOwner();
+  }
+
+  /**
+   * Get manager review access message
+   */
+  getManagerReviewAccessMessage(): string {
+    if (this.canAccessManagerReview()) {
+      return "✏️ Manager Access: You are the reporting manager for this employee. Please complete the review below.";
+    }
+    if (this.isCurrentUserFormOwner()) {
+      const form = this.getFirstForm();
+      const status = form ? this.getFormStatus(form) : 0;
+      if (status >= 1) {
+        return "👁️ View Only: Your manager has completed the review. You can view it below.";
+      }
+      return "⏳ Pending: Your manager has not yet completed the review.";
+    }
+    return "🔒 Access Restricted: Only the reporting manager can access this section.";
+  }
+
+  /**
+   * Check if manager review is view-only mode
+   */
+  isManagerReviewViewOnly(): boolean {
+    if (this.isCurrentUserFormOwner()) {
+      return true;
+    }
+    return !this.canAccessManagerReview();
+  }
+
+  /**
+   * Check if manager form is editable
+   */
+  isManagerFormEditable(): boolean {
+    if (!this.canAccessManagerReview()) {
+      this.isManagerFormDisabled = true;
+      return false;
+    }
+    
+    const form = this.getFirstForm();
+    if (!form) {
+      this.isManagerFormDisabled = true;
+      return false;
+    }
+
+    const status = this.getFormStatus(form);
+    const isEditable = status === 0;
+
+    this.isManagerFormDisabled = !isEditable;
+    return isEditable;
+  }
+
+  // ==================== CIRCLE CLICKABLE METHODS ====================
+
+  isCircleClickable(step: number): boolean {
+    const form = this.getFirstForm();
+    if (!form) return false;
+    
+    const status = this.getFormStatus(form); 
+    const currentStep = this.getProgressStep(status);
+    
+    if (step === currentStep) {
+      switch(step) {
+        case 2: // Manager Step
+          return this.canAccessManagerReview();
+          
+        case 3: // HR Round 1
+          return this.canActAsHR() && !this.isHRFormDisabled;
+          
+        case 4: // System Admin
+          return this.isSystemAdmin() && !this.isAssetFormDisabled;
+          
+        case 5: // HR Round 2
+          return this.canActAsHR() && !this.isHRFormDisabled;
+          
+        case 6: // Payroll
+          return this.isPayrollUser() && !this.isHRFormDisabled;
+          
+        case 7: // Final HR
+          return this.canActAsHR() && !this.isHRFormDisabled;
+          
+        default:
+          return false;
+      }
+    }
+    
+    if (step < currentStep) {
+      if (step === 2) {
+        return this.canAccessManagerReview() || this.isCurrentUserFormOwner();
+      }
+      
+      const hasViewPermission = 
+        this.canActAsHR() ||
+        this.isSystemAdmin() || 
+        this.isPayrollUser() || 
+        this.canAccessManagerReview();
+      
+      return hasViewPermission;
+    }
+    
+    return false;
+  }
+
+  getCircleTooltip(step: number): string {
+    const form = this.getFirstForm();
+    if (!form) return 'No form available';
+    
+    const status = this.getFormStatus(form);
+    
+    switch(step) {
+      case 2:
+        if (this.canAccessManagerReview()) {
+          if (status === 0) {
+            return 'Manager Action Required - Click to submit your review.';
+          } else if (status >= 1) {
+            return 'Manager Review Completed - Click to view your submitted review.';
+          }
+        } else if (this.isCurrentUserFormOwner()) {
+          if (status >= 1) {
+            return 'Manager Review - Click to view your manager\'s review';
+          } else {
+            return 'Manager Review - Waiting for your manager to complete the review';
+          }
+        } else {
+          return 'Access Restricted: Only the reporting manager can access this step.';
+        }
+        return 'Click to view manager review';
+        
+      case 3:
+        if (this.canActAsHR()) {
+          if (status === 1) {
+            return 'HR Action Required - Click to process Round 1 verification.';
+          } else if (status > 1) {
+            return 'HR Round 1 Completed - Click to view details.';
+          }
+        }
+        return 'Click to view HR Round 1';
+        
+      default:
+        return 'Click to view this step';
+    }
+  }
+
+  // ==================== FORM DISABLE CHECKS ====================
 
   shouldDisableForm(formType: string): boolean {
     const form = this.getFirstForm();
@@ -268,26 +606,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     return isEditable;
   }
 
-  isManagerFormEditable(): boolean {
-    if (!this.canEditManagerReview()) {
-      this.isManagerFormDisabled = true;
-      return false;
-    }
-
-    const form = this.getFirstForm();
-    if (!form) {
-      this.isManagerFormDisabled = true;
-      return false;
-    }
-
-    const status = this.getFormStatus(form);
-    const isEditable = status === 0 || (status === 1 && this.isEditMode);
-
-    this.isManagerFormDisabled = !isEditable;
-    
-    return isEditable;
-  }
-
   isHRFormEditable(): boolean {
     if (!this.canActAsHR()) return false;
     
@@ -317,6 +635,8 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.isUserFormDisabled = !isEditable;
     return isEditable;
   }
+
+  // ==================== DATA FETCHING METHODS ====================
 
   private deduplicateForms(forms: any[]): any[] {
     if (!forms || !Array.isArray(forms)) return [];
@@ -393,9 +713,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.exitForms = [];
     this.allExitForms = [];
 
-    // 🟢 UPDATED: CEO should see all forms like HR
     if (this.isPayrollUser() || this.isCEOUser) {
-      console.log('🟢 CEO/ACC/Payroll user detected, loading all forms');
       this.apiService.getAllActiveExitForms().subscribe({
         next: (response: any) => {
           this.loading = false;
@@ -407,7 +725,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
           if (this.viewingEmployee) {
             this.exitForms = this.filterFormsByEmployeeId(uniqueForms, this.viewingEmployee);
           } else {
-            // 🟢 UPDATED: CEO sees pending forms like HR
             if (this.isCEOUser) {
               this.exitForms = uniqueForms.filter((f: any) => 
                 this.getFormStatus(f) === 1 || this.getFormStatus(f) === 3 || this.getFormStatus(f) === 5
@@ -468,7 +785,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Regular users and HR
     this.apiService.getExitFormsByEmployee(requesterId).subscribe({
       next: (response: any) => {
         this.loading = false;
@@ -488,6 +804,12 @@ export class ExitPageComponent implements OnInit, OnDestroy {
           if (this.viewingEmployee) {
             const filtered = uniqueForms.filter(f => (f.employeeId || '').toString() === this.viewingEmployee.toString());
             this.exitForms = filtered;
+            
+            if (filtered.length > 0 && filtered[0].REPOTE_TO) {
+              this.employeeReportingManager = filtered[0].REPOTE_TO.toString().trim();
+              console.log('Reporting manager from form REPOTE_TO:', this.employeeReportingManager);
+            }
+            
             this.handleFormSelectionFromNavigation();
           } else {
             this.exitForms = uniqueForms;
@@ -523,7 +845,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
             this.currentHRStep = 4;
             this.fetchAssetClearanceData(specificForm.id);
           }
-        } else if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+        } else if (this.canActAsHR()) {
           if (formStatus === 1 || formStatus === 3) {
             this.showHRVerificationForm = true;
             this.currentHRStep = formStatus === 1 ? 3 : 5;
@@ -613,171 +935,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     return result;
   }
 
-  private parseAssetClearanceData(data: any): AssetClearanceItem[] {
-    if (!data || !data.assetData) {
-      return this.initializeDefaultAssetClearanceItems();
-    }
-    try {
-      const assetData = data.assetData;
-      const items = assetData.split('#').filter((item: string) => item.trim() !== '');
-      const parsedItems: AssetClearanceItem[] = [];
-      items.forEach((item: string) => {
-        const parts = item.split(':');
-        if (parts.length >= 2) {
-          const label = parts[0].trim();
-          const rest = parts.slice(1).join(':').trim();
-          const statusRemarks = rest.split('||');
-          const status = statusRemarks[0]?.trim() || '';
-          const remarks = statusRemarks[1]?.trim() || '';
-          parsedItems.push({
-            label,
-            status,
-            remarks
-          });
-        }
-      });
-      return parsedItems.length > 0 ? parsedItems : this.initializeDefaultAssetClearanceItems();
-    } catch (error) {
-      console.error('Error parsing asset clearance data:', error);
-      return this.initializeDefaultAssetClearanceItems();
-    }
-  }
-
-  private initializeDefaultAssetClearanceItems(): AssetClearanceItem[] {
-    return [
-      { label: 'Laptop', status: '', remarks: '' },
-      { label: 'Laptop Charger', status: '', remarks: '' },
-      { label: 'ID Card', status: '', remarks: '' },
-      { label: 'Access Card', status: '', remarks: '' },
-      { label: 'Company Mobile', status: '', remarks: '' },
-      { label: 'Other Assets', status: '', remarks: '' }
-    ];
-  }
-
-  saveAssetClearance() {
-    if (!this.isSystemAdmin()) {
-      alert('You are not authorized to save asset clearance.');
-      return;
-    }
-    if (!this.selectedFormForAssetClearance || !this.selectedFormForAssetClearance.id) {
-      alert('No form selected for asset clearance');
-      return;
-    }
-    
-    const incompleteItems = this.assetClearanceData.filter(item => !item.status);
-    if (incompleteItems.length > 0) {
-      alert('Please select status for all asset items');
-      return;
-    }
-    
-    const assetsPayload = this.assetClearanceData.map(item => ({
-      name: item.label,
-      condition: item.status,
-      comments: item.remarks || ''
-    }));
-    
-    const assetDataString = this.convertAssetDataToString();
-    
-    const payload = {
-      assets: assetsPayload,
-      extraAssetName: '',
-      assetData: assetDataString,
-      formId: this.selectedFormForAssetClearance.id,
-      clearedBy: localStorage.getItem('username') || 'System Admin',
-      clearanceDate: new Date().toISOString()
-    };
-    
-    this.loadingAssetClearance = true;
-    this.apiService.submitAssetClearance(this.selectedFormForAssetClearance.id, payload).subscribe({
-      next: (response: any) => {
-        this.loadingAssetClearance = false;
-        if (response && response.success) {
-          alert('Asset clearance saved successfully!');
-          this.updateFormStatusAfterAssetClearance();
-        } else {
-          alert('Error saving asset clearance: ' + (response?.message || 'Unknown error'));
-        }
-        this.cdRef.detectChanges();
-      },
-      error: (error: any) => {
-        console.error('Error saving asset clearance:', error);
-        this.loadingAssetClearance = false;
-        alert('Error saving asset clearance. Please try again.');
-        this.cdRef.detectChanges();
-      }
-    });
-  }
-
-  private convertAssetDataToString(): string {
-    return this.assetClearanceData
-      .map(item => `${item.label} : ${item.status} || ${item.remarks || ''}`)
-      .join(' # ');
-  }
-
-  private updateFormStatusAfterAssetClearance() {
-    const form = this.selectedFormForAssetClearance;
-    if (!form || !form.id) return;
-    
-    const updatePayload: any = {
-      ...form,
-      status: 3,
-      updatedBy: localStorage.getItem('username') || 'System Admin',
-      updatedDate: new Date().toISOString()
-    };
-    
-    this.apiService.updateExitForm(form.id, updatePayload).subscribe({
-      next: (response: any) => {
-        console.log('Form status updated to HR Round 2 after asset clearance');
-        this.fetchExitForms();
-      },
-      error: (error: any) => {
-        console.error('Error updating form status after asset clearance:', error);
-        alert('Asset clearance saved but status update failed. Please contact admin.');
-      }
-    });
-  }
-
-  onAssetStatusChange(item: AssetClearanceItem, status: string) {
-    if (this.isAssetFormDisabled) return;
-    
-    item.status = status;
-    if (status === 'Good' || status === 'Not Applicable') {
-      item.remarks = '';
-    }
-    this.cdRef.detectChanges();
-  }
-
-  isAssetClearanceValid(): boolean {
-    return this.assetClearanceData.every(item => item.status !== '');
-  }
-
-  navigateToSystemAdminStep(form: any) {
-    if (form && form.id) {
-      this.selectedFormForAssetClearance = form;
-      this.showAssetClearanceForm = true;
-      this.currentHRStep = 4;
-      this.fetchAssetClearanceData(form.id);
-    } else {
-      console.error('Form ID not available in navigateToSystemAdminStep');
-      alert('Cannot show asset clearance: Form ID is missing');
-    }
-    this.cdRef.detectChanges();
-  }
-
-  shouldShowAssetClearanceForm(): boolean {
-    return this.showAssetClearanceForm &&
-           this.selectedFormForAssetClearance &&
-           this.selectedFormForAssetClearance.id;
-  }
-
-  closeAssetClearanceForm() {
-    this.showAssetClearanceForm = false;
-    this.selectedFormForAssetClearance = null;
-    this.assetClearanceData = [];
-    this.currentHRStep = null;
-    this.cdRef.detectChanges();
-  }
-
   private filterFormsByEmployeeId(forms: any[], employeeId: string): any[] {
     if (!Array.isArray(forms) || !employeeId) return [];
     const emp = (employeeId + '').toString().trim();
@@ -817,15 +974,15 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     const status = this.getFormStatus(form);
     this.closeAllForms();
 
-    console.log('Auto-opening step for status:', status, 'User role:', this.currentUserRole);
+    console.log('Auto-opening step for status:', status);
+    console.log('Is reporting manager:', this.canAccessManagerReview());
 
-    // 🟢 UPDATED: Include CEO in all HR-related auto-openings
-    if (status === 0 && this.isManager() && this.canEditManagerReview()) {
+    if (status === 0 && this.canAccessManagerReview()) {
       this.showManagerReviewForm = true;
       this.currentHRStep = 2;
       this.fetchManagerReview();
     }
-    else if (status === 1 && this.canActAsHR()) { // 🟢 Include CEO
+    else if (status === 1 && this.canActAsHR()) {
       this.showHRVerificationForm = true;
       this.currentHRStep = 3;
       this.fetchExistingHRReview();
@@ -837,7 +994,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
       this.currentHRStep = 4;
       this.fetchAssetClearanceData(form.id);
     }
-    else if (status === 3 && this.canActAsHR()) { // 🟢 Include CEO
+    else if (status === 3 && this.canActAsHR()) {
       this.selectedFormForHROffboarding = form;
       this.showHROffboardingInline = true;
       this.currentHRStep = 5;
@@ -848,7 +1005,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
       this.showPayrollCheckFormForHR = false;
       this.currentHRStep = 6;
     }
-    else if (status === 5 && this.canActAsHR()) { // 🟢 Include CEO
+    else if (status === 5 && this.canActAsHR()) {
       this.selectedFormForFinalHR = form;
       this.showFinalHRForm = true;
       this.showFinalHRFormForHR = true;
@@ -859,7 +1016,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   }
 
   fetchExistingHRReview() {
-    if (!this.canActAsHR() || !this.getFirstForm()) return; // 🟢 UPDATED: Include CEO
+    if (!this.canActAsHR() || !this.getFirstForm()) return;
 
     const form = this.getFirstForm();
     const formId = (form as any).id;
@@ -945,7 +1102,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
 
   extractDirectReports(forms: any[], managerId: string) {
     this.directReports = [];
-    if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+    if (this.canActAsHR()) {
       this.showManagerView = false;
       return;
     }
@@ -972,37 +1129,35 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   }
 
   fetchEmployeeData() {
+    console.log('========== FETCHING EMPLOYEE DATA ==========');
+    console.log('Viewing Employee ID:', this.viewingEmployee);
+    
     if (this.exitForms && this.exitForms.length > 0) {
       const formMatch = this.exitForms.find(f => (f.employeeId || '').toString() === this.viewingEmployee.toString());
       if (formMatch) {
         this.employeeData = formMatch;
         this.extractReportingManager(formMatch);
+        console.log('Employee data loaded from form - Reporting Manager:', this.employeeReportingManager);
         this.cdRef.detectChanges();
         return;
       }
     }
-    this.apiService.getExitFormsByEmployee(this.employeeId).subscribe({
-      next: (response: any) => {
-        if (response && response.success && Array.isArray(response.data)) {
-          const forms: any[] = response.data;
-          const found = forms.find(f => (f.employeeId || '').toString() === this.viewingEmployee.toString());
-          if (found) {
-            this.employeeData = found;
-            this.extractReportingManager(found);
-          } else {
-            this.employeeData = null;
-            this.employeeReportingManager = '';
-          }
-        } else {
-          this.employeeData = null;
-          this.employeeReportingManager = '';
+    
+    this.apiService.getEmployeeById(this.viewingEmployee).subscribe({
+      next: (employee: any) => {
+        if (employee) {
+          this.employeeData = employee;
+          this.extractReportingManager(employee);
+          console.log('Employee data from API - Reporting Manager:', this.employeeReportingManager);
         }
         this.cdRef.detectChanges();
       },
       error: (err: any) => {
-        console.error('Error fetching employee data fallback:', err);
-        this.employeeData = null;
-        this.employeeReportingManager = '';
+        console.error('Error fetching employee data:', err);
+        const form = this.getFirstForm();
+        if (form) {
+          this.extractReportingManager(form);
+        }
         this.cdRef.detectChanges();
       }
     });
@@ -1013,67 +1168,25 @@ export class ExitPageComponent implements OnInit, OnDestroy {
       formData?.REPOTE_TO,
       formData?.repote_to,
       formData?.reportingManager,
+      formData?.reporting_manager,
       formData?.managerId,
       formData?.managerID,
-      formData?.managerName
+      formData?.manager_id,
+      formData?.managerEmpId,
+      formData?.reportTo,
+      formData?.report_to,
+      formData?.supervisorId,
+      formData?.supervisor_id
     ];
+    
     const found = candidates.find(v => v !== undefined && v !== null && (v + '').trim() !== '');
     if (found) {
       this.employeeReportingManager = (found + '').trim();
+      console.log('✅ Reporting manager found:', this.employeeReportingManager);
     } else {
       this.employeeReportingManager = '';
+      console.log('⚠️ No reporting manager found for employee:', this.viewingEmployee);
     }
-  }
-
-  isManager(): boolean {
-    const role = (this.currentUserRole || '').toUpperCase();
-    const isManagerRole = role.includes('PM') || role.includes('R004') || role.includes('MANAGER');
-    const hasDirectReports = this.directReports.length > 0;
-    
-    return isManagerRole || this.showManagerView || hasDirectReports;
-  }
-
-  isPayrollUser(): boolean {
-    const role = (this.currentUserRole || '').toUpperCase();
-    const username = (localStorage.getItem('username') || '').toUpperCase();
-    
-    const isPayroll = role.includes('ACC') || 
-                     role === 'R008' || 
-                     role.includes('PAYROLL') ||
-                     username.includes('PAYROLL') ||
-                     username.includes('ACC');
-    
-    return isPayroll;
-  }
-
-  isSystemAdmin(): boolean {
-    const role = this.currentUserRole || localStorage.getItem('role') || '';
-    return role === 'R010' || role === 'SA' || role.toLowerCase().includes('system admin') || role.toLowerCase().includes('sa');
-  }
-
-  isDirectManager(): boolean {
-    if (!this.employeeReportingManager) {
-      return false;
-    }
-    return (this.employeeReportingManager + '').toString() === (this.employeeId + '').toString();
-  }
-
-  isManagerOfViewedEmployee(): boolean {
-    if (!this.viewingEmployee || !this.directReports.length) return false;
-    return this.directReports.some(report =>
-      report.employeeId.toString() === this.viewingEmployee.toString()
-    );
-  }
-
-  canViewManagerReview(): boolean {
-    if (this.canActAsHR()) return true; // 🟢 UPDATED: Include CEO
-    if (this.isDirectManager()) return true;
-    if (this.isManagerOfViewedEmployee()) return true;
-    return false;
-  }
-
-  canEditManagerReview(): boolean {
-    return this.isDirectManager() || this.isManagerOfViewedEmployee();
   }
 
   viewEmployeeForm(employee: any) {
@@ -1087,6 +1200,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.fetchExitForms();
     this.fetchManagerReview();
     this.fetchEmployeeData();
+    this.fetchDirectReportsForManager();
   }
 
   viewMyForm() {
@@ -1112,6 +1226,8 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     this.resetHRFormToEmpty();
     this.fetchManagerReview();
     this.fetchEmployeeData();
+    // Refresh direct reports to check if this employee is a direct report
+    this.fetchDirectReportsForManager();
     const filtered = this.allExitForms.filter(f => (f.employeeId || '').toString() === this.viewingEmployee.toString());
     this.exitForms = filtered;
     this.cdRef.detectChanges();
@@ -1140,7 +1256,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   }
 
   navigateToHRStep(step: number, form?: any) {
-    if (!this.canActAsHR() && !this.isSystemAdmin()) return; // 🟢 UPDATED: Include CEO
+    if (!this.canActAsHR() && !this.isSystemAdmin()) return;
 
     this.currentHRStep = step;
     this.selectedFormForHR = form || this.getFirstForm();
@@ -1172,7 +1288,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   }
 
   submitHRReview(action: string) {
-    if (!this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+    if (!this.canActAsHR()) {
       alert('You are not authorized to submit HR reviews.');
       return;
     }
@@ -1398,7 +1514,7 @@ export class ExitPageComponent implements OnInit, OnDestroy {
           this.managerReview = this.convertToManagerReview(reviewRaw);
           this.fillExistingReview(this.managerReview);
           this.currentAction = this.managerReview.action || '';
-          this.isManagerFormDisabled = true;
+          this.isManagerFormDisabled = !this.isManagerFormEditable();
         } else {
           const form = this.exitForms.find(f => (f.employeeId || '') === this.viewingEmployee);
           if (form) {
@@ -1752,59 +1868,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     return form ? ((form as any).reason || 'N/A') : 'N/A';
   }
 
-  isCircleClickable(step: number): boolean {
-    const form = this.getFirstForm();
-    if (!form) return false;
-    
-    const status = this.getFormStatus(form); 
-    const currentStep = this.getProgressStep(status);
-    
-    if (step === currentStep) {
-      switch(step) {
-        case 2: // Manager
-          return this.canEditManagerReview() && !this.isManagerFormDisabled;
-        case 3: // HR Round 1
-          return this.canActAsHR() && !this.isHRFormDisabled; // 🟢 UPDATED
-        case 4: // System Admin
-          return this.isSystemAdmin() && !this.isAssetFormDisabled;
-        case 5: // HR Round 2
-          return this.canActAsHR() && !this.isHRFormDisabled; // 🟢 UPDATED
-        case 6: // Payroll
-          return this.isPayrollUser() && !this.isHRFormDisabled;
-        case 7: // Final HR
-          return this.canActAsHR() && !this.isHRFormDisabled; // 🟢 UPDATED
-        default:
-          return false;
-      }
-    }
-    
-    if (step < currentStep) {
-      const hasViewPermission = 
-        this.canActAsHR() || // 🟢 UPDATED: Include CEO
-        this.isSystemAdmin() || 
-        this.isPayrollUser() || 
-        this.canEditManagerReview();
-      
-      return hasViewPermission;
-    }
-    
-    return false;
-  }
-
-  private getAllowedStepsForStatus(status: number): number[] {
-    switch (status) {
-      case 0: return [1, 2];
-      case 1: return [1, 2, 3];
-      case 2: return [1, 2, 3, 4];
-      case 3: return [1, 2, 3, 4, 5];
-      case 4: return [1, 2, 3, 4, 5, 6];
-      case 10: return [1, 2, 3, 4, 5, 6, 7];
-      case 11: return [1, 2, 3, 4, 5, 6, 7, 8];
-      case 5: case 6: case 7: case 8: return [1, 2, 3, 4, 5];
-      default: return [1, 2, 3];
-    }
-  }
-
   navigateToStep(step: number) {
     const form = this.getFirstForm();
     if (!form) return;
@@ -1812,44 +1875,50 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     const status = this.getFormStatus(form);
     this.closeAllForms();
 
-    console.log('🟢 Navigating to step:', step, 'Status:', status, 'Is HR/CEO:', this.canActAsHR());
+    console.log('========== NAVIGATE TO STEP ==========');
+    console.log('Step:', step);
+    console.log('Current User ID:', this.employeeId);
+    console.log('Viewing Employee:', this.viewingEmployee);
+    console.log('Is Reporting Manager:', this.canAccessManagerReview());
 
     switch (step) {
-      case 1: // User Form
+      case 1:
         this.showUserForm = true;
         this.currentHRStep = 1;
         break;
 
-      case 2: // Manager Review
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
-          if (this.canHRViewStepForm(2)) {
-            this.showManagerReviewForm = true;
-            this.showManagerReviewFormForHR = true;
-            this.currentHRStep = 2;
-            this.fetchManagerReview();
-          } else {
-            alert('Manager review not yet submitted. Cannot view this step.');
-          }
-        } else if (this.canEditManagerReview()) {
+      case 2:
+        if (this.canAccessManagerReview()) {
+          console.log('ACCESS GRANTED: User is reporting manager');
           this.showManagerReviewForm = true;
           this.showManagerReviewFormForHR = false;
           this.currentHRStep = 2;
           this.fetchManagerReview();
+        } else if (this.isCurrentUserFormOwner()) {
+          console.log('ACCESS GRANTED: User is form owner (view only)');
+          this.showManagerReviewForm = true;
+          this.showManagerReviewFormForHR = false;
+          this.currentHRStep = 2;
+          this.fetchManagerReview();
+          this.isManagerFormDisabled = true;
         } else {
-          alert('You are not authorized to access manager review.');
+          console.log('ACCESS DENIED: User is not reporting manager');
+          alert('Access Denied: Only the reporting manager can access the Manager Review for this employee.');
         }
         break;
 
-      case 3: // HR Round 1
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+      case 3:
+        if (this.canActAsHR()) {
           this.showHRVerificationForm = true;
           this.currentHRStep = 3;
           this.fetchExistingHRReview();
+        } else {
+          alert('Access Denied: Only HR can access this step.');
         }
         break;
 
-      case 4: // System Admin (Asset Clearance)
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+      case 4:
+        if (this.canActAsHR()) {
           if (this.canHRViewStepForm(4)) {
             this.showAssetClearanceForm = true;
             this.showAssetClearanceFormForHR = true;
@@ -1865,19 +1934,23 @@ export class ExitPageComponent implements OnInit, OnDestroy {
           this.showAssetClearanceFormForHR = false;
           this.currentHRStep = 4;
           this.fetchAssetClearanceData(form.id);
+        } else {
+          alert('Access Denied: Only System Admin can access this step.');
         }
         break;
 
-      case 5: // HR Round 2
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+      case 5:
+        if (this.canActAsHR()) {
           this.selectedFormForHROffboarding = form;
           this.showHROffboardingInline = true;
           this.currentHRStep = 5;
+        } else {
+          alert('Access Denied: Only HR can access this step.');
         }
         break;
 
-      case 6: // Payroll
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+      case 6:
+        if (this.canActAsHR()) {
           if (this.canHRViewStepForm(6)) {
             this.showPayrollCheckForm = true;
             this.showPayrollCheckFormForHR = true;
@@ -1891,19 +1964,23 @@ export class ExitPageComponent implements OnInit, OnDestroy {
           this.showPayrollCheckForm = true;
           this.showPayrollCheckFormForHR = false;
           this.currentHRStep = 6;
+        } else {
+          alert('Access Denied: Only Payroll user can access this step.');
         }
         break;
 
-      case 7: // Final HR
-        if (this.canActAsHR()) { // 🟢 UPDATED: Include CEO
+      case 7:
+        if (this.canActAsHR()) {
           this.selectedFormForFinalHR = form;
           this.showFinalHRForm = true;
           this.showFinalHRFormForHR = true;
           this.currentHRStep = 7;
+        } else {
+          alert('Access Denied: Only HR can access this step.');
         }
         break;
 
-      case 8: // Approved
+      case 8:
         this.currentHRStep = 8;
         break;
     }
@@ -2056,8 +2133,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
   shouldShowProgressBar(): boolean {
     const form = this.getFirstForm();
     if (!form) return false;
-    
-    const userRole = this.currentUserRole.toUpperCase();
     
     return this.isPayrollUser() || this.canActAsHR() || this.isSystemAdmin() || this.isManager() || !!form;
   }
@@ -2375,7 +2450,6 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     }
   }
 
-  // 🟢 UPDATED: Check if HR/CEO can view a particular step's form
   canHRViewStepForm(step: number): boolean {
     if (!this.canActAsHR()) return false;
     
@@ -2385,11 +2459,16 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     const status = this.getFormStatus(form);
     
     switch(step) {
-      case 2: return status >= 1;
-      case 4: return status >= 3;
-      case 6: return status >= 4;
-      case 7: return status >= 5;
-      default: return false;
+      case 2:
+        return false;
+      case 4:
+        return status >= 3;
+      case 6:
+        return status >= 4;
+      case 7:
+        return status >= 5;
+      default:
+        return false;
     }
   }
 
@@ -2402,11 +2481,16 @@ export class ExitPageComponent implements OnInit, OnDestroy {
     const status = this.getFormStatus(form);
     
     switch(step) {
-      case 2: return status >= 1 && this.managerReview !== null;
-      case 4: return status >= 3 && this.assetClearanceData.length > 0;
-      case 6: return status >= 4;
-      case 7: return status >= 5;
-      default: return false;
+      case 2:
+        return false;
+      case 4:
+        return status >= 3 && this.assetClearanceData.length > 0;
+      case 6:
+        return status >= 4;
+      case 7:
+        return status >= 5;
+      default:
+        return false;
     }
   }
 

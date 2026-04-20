@@ -1,22 +1,6 @@
 <div class="admin-wrapper">
   <div class="header-section">
     <h2 class="page-title">📚 Policy Documents</h2>
-    
-    <!-- Stats Summary -->
-    <!-- <div class="stats-summary">
-      <div class="stat-card">
-        <span class="stat-number">{{ files.length }}</span>
-        <span class="stat-label">Total Documents</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-number">{{ pdfCount }}</span>
-        <span class="stat-label">PDF Files</span>
-      </div>
-      <div class="stat-card">
-        <span class="stat-number">{{ totalSize }}</span>
-        <span class="stat-label">Total Size</span>
-      </div>
-    </div> -->
   </div>
 
   <!-- Loading State -->
@@ -39,13 +23,14 @@
       <div class="card-header">
         <span class="doc-icon">{{ getFileIcon(file.fileName) }}</span>
         <div class="doc-info">
-          <h3 class="doc-name" [title]="file.fileName">{{ file.fileName || 'Unknown File' }}</h3>
+          <!-- CLEAN FILENAME - No timestamp, spaces instead of underscores -->
+          <h3 class="doc-name" [title]="getDisplayFileName(file.fileName)">
+            {{ getDisplayNameWithoutExtension(file.fileName) }}
+          </h3>
           <div class="doc-meta">
             <span class="file-type">{{ getFileType(file) }}</span>
             <span class="file-size">{{ formatFileSize(file.fileSize || 0) }}</span>
-            <span class="file-date" *ngIf="file.lastModified">
-              {{ formatDate(file.lastModified) }}
-            </span>
+            <!-- DATE REMOVED - No date display -->
           </div>
         </div>
       </div>
@@ -65,28 +50,18 @@
 
         <!-- Action Buttons -->
         <div class="btn-group">
-          <button class="btn view" (click)="view(file)" title="View" [disabled]="isRendering">
+          <button class="btn view" (click)="view(file)" title="View Document" [disabled]="isRendering">
             <span class="btn-icon"></span>
             <span>View Document</span>
           </button>
-          
-          <!-- <button class="btn download" (click)="downloadFile(file)" title="Download">
-            <span class="btn-icon">⬇️</span>
-            <span>Download</span>
-          </button> -->
         </div>
       </div>
 
-      <!-- Card Footer -->
-      <div class="card-footer">
-        <small class="text-muted">
-          Last modified: {{ file.lastModified ? formatDate(file.lastModified) : 'Unknown' }}
-        </small>
-      </div>
+      <!-- CARD FOOTER REMOVED - No last modified date -->
     </div>
   </div>
 
-  <!-- Document Viewer Modal - SAME AS ADMIN-LIST -->
+  <!-- Document Viewer Modal -->
   <div class="modal-overlay" *ngIf="viewingFile" (click)="closePopup()">
     <div class="modal-container" (click)="$event.stopPropagation()">
       <!-- Modal Header -->
@@ -94,12 +69,14 @@
         <div class="modal-title-section">
           <span class="modal-icon">{{ getFileIcon(viewingFile.fileName) }}</span>
           <div class="modal-title-info">
-            <h3 class="modal-title" [title]="viewingFile.fileName">
-              {{ viewingFile.fileName || 'Document' }}
+            <!-- CLEAN FILENAME in modal -->
+            <h3 class="modal-title" [title]="getDisplayFileName(viewingFile.fileName)">
+              {{ getDisplayNameWithoutExtension(viewingFile.fileName) }}
             </h3>
             <div class="modal-subtitle">
               <span class="file-type-badge">{{ getFileType(viewingFile) }}</span>
               <span class="file-size-text">{{ formatFileSize(viewingFile.fileSize || 0) }}</span>
+              <!-- DATE REMOVED from modal -->
             </div>
           </div>
         </div>
@@ -216,17 +193,10 @@
       <div class="modal-footer">
         <div class="modal-footer-content">
           <div class="security-notice">
-            <!-- 🛡️ <strong>Advanced Protection Active:</strong> Content protected against screenshots -->
+            <!-- Security notice removed for cleaner UI -->
           </div>
           <div class="modal-actions">
-            <!-- <button class="modal-action-btn download" (click)="downloadFile(viewingFile)">
-              <span class="btn-icon">⬇️</span>
-              Download
-            </button> -->
-            <!-- <button class="modal-action-btn close" (click)="closePopup()">
-              <span class="btn-icon">✖</span>
-              Close
-            </button> -->
+            <!-- Download button removed for view-only mode -->
           </div>
         </div>
       </div>

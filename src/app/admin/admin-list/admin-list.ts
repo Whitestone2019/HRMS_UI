@@ -239,7 +239,7 @@ export class AdminList implements OnInit, OnDestroy {
       return;
     }
 
-    if (!confirm(`Are you sure you want to replace "${fileObj.fileName}"?`)) {
+    if (!confirm(`Are you sure you want to replace "${this.getDisplayFileName(fileObj.fileName)}"?`)) {
       return;
     }
 
@@ -258,7 +258,7 @@ export class AdminList implements OnInit, OnDestroy {
   }
 
   delete(fileObj: any): void {
-    if (!confirm(`Are you sure you want to delete "${fileObj.fileName}"?`)) {
+    if (!confirm(`Are you sure you want to delete "${this.getDisplayFileName(fileObj.fileName)}"?`)) {
       return;
     }
 
@@ -317,6 +317,14 @@ export class AdminList implements OnInit, OnDestroy {
     const sub = this.apiService.viewFile(fileObj.fileName).subscribe({
       next: async (blob) => {
         try {
+          // Check if blob is actually PDF
+          if (blob.type === 'text/html' || blob.type === 'text/plain') {
+            console.error('Server returned HTML instead of PDF');
+            this.showDownloadFallback(fileObj, blob);
+            this.isRendering = false;
+            return;
+          }
+          
           this.pdfData = {
             blob: blob,
             fileName: fileObj.fileName
@@ -358,7 +366,7 @@ export class AdminList implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error loading PDF:', err);
-        alert('Failed to load PDF. Please try downloading the file.');
+        alert('Failed to load PDF. Please try again.');
         this.isRendering = false;
         this.closePopup();
       }
@@ -410,6 +418,36 @@ export class AdminList implements OnInit, OnDestroy {
     if (this.pdfDoc && this.currentPage >= 1 && this.currentPage <= this.totalPages) {
       this.renderPage(this.currentPage);
     }
+  }
+
+  // ==================== DISPLAY NAME CLEANING ====================
+  
+  /**
+   * Remove timestamp prefix from filename for display
+   * Example: 1776659548748_import_React.pdf -> import React.pdf
+   */
+  getDisplayFileName(fileName: string): string {
+    if (!fileName) return 'Unknown File';
+    
+    // Remove timestamp prefix (13+ digit number followed by underscore)
+    let cleaned = fileName.replace(/^\d{13,}_/, '');
+    
+    // Replace underscores with spaces for better readability
+    cleaned = cleaned.replace(/_/g, ' ');
+    
+    // Remove double spaces if any
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    return cleaned;
+  }
+
+  /**
+   * Get filename without extension for display
+   */
+  getDisplayNameWithoutExtension(fileName: string): string {
+    const displayName = this.getDisplayFileName(fileName);
+    const lastDot = displayName.lastIndexOf('.');
+    return lastDot > 0 ? displayName.substring(0, lastDot) : displayName;
   }
 
   // ==================== SIMPLIFIED WATERMARK ====================
@@ -834,7 +872,7 @@ export class AdminList implements OnInit, OnDestroy {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = fileObj.fileName;
+        a.download = this.getDisplayFileName(fileObj.fileName);
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
@@ -872,9 +910,7 @@ export class AdminList implements OnInit, OnDestroy {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   }
 

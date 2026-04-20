@@ -222,6 +222,39 @@ export class UserView implements OnInit, OnDestroy {
     ).length;
   }
 
+  // ==================== DISPLAY NAME CLEANING ====================
+  
+  /**
+   * Clean filename for display - removes timestamp prefix
+   * Example: 1776662863396_Rohit_H_OFFER_LETTER_.pdf -> Rohit H OFFER LETTER.pdf
+   */
+  getDisplayFileName(fileName: string): string {
+    if (!fileName) return 'Unknown Document';
+    
+    // Remove timestamp prefix (13+ digit number followed by underscore)
+    let cleaned = fileName.replace(/^\d{13,}_/, '');
+    
+    // Replace underscores with spaces
+    cleaned = cleaned.replace(/_/g, ' ');
+    
+    // Remove multiple spaces
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    // Clean up any double extensions or special cases
+    cleaned = cleaned.replace(/\.\./g, '.');
+    
+    return cleaned;
+  }
+
+  /**
+   * Get clean filename without extension
+   */
+  getDisplayNameWithoutExtension(fileName: string): string {
+    const displayName = this.getDisplayFileName(fileName);
+    const lastDot = displayName.lastIndexOf('.');
+    return lastDot > 0 ? displayName.substring(0, lastDot) : displayName;
+  }
+
   view(fileObj: any): void {
     // Check if black screen is active - if yes, prevent viewing
     if (this.isBlackScreenActive) {
@@ -265,6 +298,14 @@ export class UserView implements OnInit, OnDestroy {
     const sub = this.apiService.viewFile(fileObj.fileName).subscribe({
       next: async (blob) => {
         try {
+          // Check if blob is actually PDF
+          if (blob.type === 'text/html' || blob.type === 'text/plain') {
+            console.error('Server returned HTML instead of PDF');
+            this.showDownloadFallback(fileObj, blob);
+            this.isRendering = false;
+            return;
+          }
+          
           this.pdfData = {
             blob: blob,
             fileName: fileObj.fileName
@@ -306,7 +347,7 @@ export class UserView implements OnInit, OnDestroy {
       },
       error: (err) => {
         console.error('Error loading PDF:', err);
-        alert('Failed to load PDF. Please try downloading the file.');
+        alert('Failed to load PDF. Please try again.');
         this.isRendering = false;
         this.closePopup();
       }
@@ -335,7 +376,7 @@ export class UserView implements OnInit, OnDestroy {
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.clearRect(0, 0, canvas.width, canvas.width);
       
       const renderContext = {
         canvasContext: context,
@@ -788,7 +829,7 @@ export class UserView implements OnInit, OnDestroy {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = fileObj.fileName;
+        a.download = this.getDisplayFileName(fileObj.fileName);
         a.style.display = 'none';
         document.body.appendChild(a);
         a.click();
@@ -826,9 +867,7 @@ export class UserView implements OnInit, OnDestroy {
     return date.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+      day: 'numeric'
     });
   }
 
